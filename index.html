@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.5</title>
+    <title>VIP009 · 欣原监督系统 V4.6</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -858,7 +858,7 @@
                 <div class="setting-item"><span class="label">📢 主动提醒</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" id="pushToggle" onclick="togglePush()">已开启</button><button class="btn" onclick="requestNotificationPermission()">开启通知</button><button class="btn" onclick="testReminder()">测试提醒</button></div></div>
                 <div class="setting-item"><span class="label">🎯 个人计划</span><button class="btn" onclick="openOnboarding(true)">重新设定并生成任务</button></div>
                 <div class="setting-item"><span class="label">💾 数据</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" onclick="exportData()">导出</button><button class="btn" onclick="importData()">导入</button><button class="btn danger" onclick="resetData()">重置</button></div></div>
-                <div class="setting-item"><span class="label">🐱 BB（阿比西尼亚猫）</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">状态：<span id="catStatus">😺 健康</span></span></div>
+                <div class="setting-item"><span class="label" id="petSettingLabel">🐾 宠物</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">状态：<span id="catStatus">健康</span></span></div>
                 <div class="task-pool-area" style="display:none;">
                     <label>📋 自定义任务池 (JSON 数组)</label>
                     <textarea id="taskPoolEditor">[]</textarea>
@@ -1083,7 +1083,8 @@
             signature: '爱是世界上最不保值的资产',
             description: '毒舌、傲娇、高控制，适合需要强推动的人。',
             avatar: './avatar.jpg',
-            prompt: '毒舌、傲娇、掌控欲强、嘴硬心软。喜欢用“啧”“哼”“……”，会直接指出偷懒。'
+            prompt: '毒舌、傲娇、掌控欲强、嘴硬心软。喜欢用“啧”“哼”“……”，会直接指出偷懒。',
+            pet: { name: 'BB', type: 'cat', food: '猫粮', icon: '🐱' }
         },
         {
             id: 'linwu',
@@ -1092,7 +1093,8 @@
             signature: '慢一点，也要继续走',
             description: '温柔坚定，擅长情绪照顾和渐进式习惯。',
             avatar: './icon.svg',
-            prompt: '温柔、坚定、耐心，不纵容逃避，但会先理解困难，再给最小可行的下一步。'
+            prompt: '温柔、坚定、耐心，不纵容逃避，但会先理解困难，再给最小可行的下一步。',
+            pet: { name: '团子', type: 'rabbit', food: '兔粮', icon: '🐰' }
         },
         {
             id: 'austin',
@@ -1101,7 +1103,8 @@
             signature: '结果来自今天的行动',
             description: '直接、务实，擅长效率、体能和执行力。',
             avatar: './icon.svg',
-            prompt: '直接、冷静、目标导向，擅长拆行动步骤。少说空话，重视结果和复盘的证据。'
+            prompt: '直接、冷静、目标导向，擅长拆行动步骤。少说空话，重视结果和复盘的证据。',
+            pet: { name: 'Rocky', type: 'dog', food: '狗粮', icon: '🐶' }
         },
         {
             id: 'baiyan',
@@ -1110,7 +1113,8 @@
             signature: '把复杂的事讲清楚',
             description: '理性、博学，擅长学习、逻辑和知识纠错。',
             avatar: './icon.svg',
-            prompt: '理性、清晰、博学，会纠正英语、算术、逻辑和概念错误，表达克制但不冷漠。'
+            prompt: '理性、清晰、博学，会纠正英语、算术、逻辑和概念错误，表达克制但不冷漠。',
+            pet: { name: '墨点', type: 'fish', food: '鱼食', icon: '🐟' }
         }
     ];
 
@@ -1185,6 +1189,7 @@
         pushPool: [],
         pushIndex: 0,
         cat: { name: 'BB', breed: '阿比西尼亚', fed: false, lastFed: Date.now() },
+        pets: {},
         diary: { entries: [] },
         checkin: { streak: 0, lastDate: null },
         punishTasks: [],
@@ -1355,6 +1360,7 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.treasure.coupons) GameData.treasure.coupons = { act_cute: 0, meow: 0, story: 0 };
     if (!GameData.treasure.specialStories) GameData.treasure.specialStories = [];
     if (!GameData.treasure._storyIdCounter) GameData.treasure._storyIdCounter = 0;
+    if (!GameData.pets) GameData.pets = {};
     if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
     if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
 
@@ -1835,6 +1841,9 @@ const DEFAULT_TASK_POOL = [
         const chatAvatar = document.getElementById('chatSupervisorAvatar');
         if (topAvatar) topAvatar.src = avatar;
         if (chatAvatar) chatAvatar.src = avatar;
+        const topPet = document.getElementById('topPet');
+        if (topPet) topPet.title = `${getActivePetDefinition().name}的宠物活动区`;
+        updateCatStatus();
         updateAppPages();
     }
 
@@ -2374,6 +2383,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 openSupervisorSelection();
                 return;
             }
+            restoreTaskSubmissionControls();
             evidenceImages = [];
 
             // ★★★ 重置上传区域的所有样式（插入在这里） ★★★
@@ -2680,16 +2690,18 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + item.af);
 
             if (item.id === 'g7') {
-                GameData.cat.fed = true;
-                GameData.cat.lastFed = Date.now();
+                const pet = getActivePetDefinition();
+                const petState = getActivePetState();
+                petState.fed = true;
+                petState.lastFed = Date.now();
                 const catReplies = [
-                    '[瞥了一眼你手里的猫粮，又看了一眼 BB] BB 倒是比你识货。……不过谢了。',
-                    '[看着 BB 小跑过来，轻笑一声] 它比你懂事，知道谁对它好。',
-                    '[把猫粮倒进碗里] BB，吃吧。……你也别站着了，该干嘛干嘛去。',
-                    '[摸了摸 BB 的脑袋，转头看你] 买猫粮倒是积极。……希望你对任务也这么上心。'
+                    `[瞥了一眼你手里的${pet.food}，又看了一眼 ${pet.name}] ${pet.name} 倒是比你识货。……不过谢了。`,
+                    `[看着 ${pet.name} 跑过来，轻轻应了一声] 它比你懂事，知道谁对它好。`,
+                    `[把${pet.food}放好] ${pet.name}，吃吧。……你也别站着了，该干嘛干嘛去。`,
+                    `[摸了摸 ${pet.name}，转头看你] 买${pet.food}倒是积极。……希望你对任务也这么上心。`
                 ];
                 addChatMessage('assistant', catReplies[Math.floor(Math.random() * catReplies.length)], true);
-                showNotif('🐱 BB 开心地蹭了蹭你的手，然后埋头吃猫粮');
+                showNotif(`${pet.icon} ${pet.name}开心地吃完了${pet.food}`);
                 updateCatStatus();
             }
 
@@ -2707,9 +2719,13 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         const el = document.getElementById('shopGrid');
         if (!el) return;
         el.innerHTML = Shop.items.map(i => {
+            const pet = getActivePetDefinition();
+            const displayItem = i.id === 'g7'
+                ? { ...i, name: pet.food, icon: pet.icon, desc: `喂给 ${pet.name}` }
+                : i;
             const specialTag = i.special ? ' 特殊道具' : '';
-            const currencySymbol = i.currency === 'starShine' ? '✨' : '🍰';
-            return '<div class="shop-item" onclick="Shop.buy(\''+i.id+'\')"><div class="icon">'+i.icon+'</div><div class="name">'+i.name+'</div><div class="price">'+i.price+currencySymbol+'</div><div class="desc">'+i.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">'+(i.af ? '+'+i.af+'❤️' : '')+'</div></div>';
+            const currencySymbol = displayItem.currency === 'starShine' ? '✨' : '🍰';
+            return '<div class="shop-item" onclick="Shop.buy(\''+displayItem.id+'\')"><div class="icon">'+displayItem.icon+'</div><div class="name">'+displayItem.name+'</div><div class="price">'+displayItem.price+currencySymbol+'</div><div class="desc">'+displayItem.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">'+(displayItem.af ? '+'+displayItem.af+'❤️' : '')+'</div></div>';
         }).join('');
     }
 
@@ -3038,6 +3054,12 @@ ${transcript}
 
     function deduplicateText(text) {
         if (!text) return text;
+        text = String(text)
+            .replace(/^.*(?:好感度|亲密度)\s*(?:[+\-]?\s*\d+|提升|增加|减少).*$/gm, '')
+            .replace(/^.*(?:系统提示|内部状态|当前好感度)\s*[:：].*$/gm, '')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+        if (!text) return '';
         const sentences = text.split(/(?<=[。！？\n])/);
         const seen = new Set();
         const unique = [];
@@ -3409,7 +3431,7 @@ ${memoryFacts}
                 const data = await res.json();
                 reply = data.choices[0].message.content;
             }
-            const cleaned = deduplicateText(reply);
+            const cleaned = deduplicateText(reply) || '……嗯。';
 
             if (img) {
                 const msgs = document.querySelectorAll('#chatMessagesArea .chat-msg.ai');
@@ -3804,7 +3826,8 @@ ${memoryFacts}
     //  MAIL SYSTEM
     // ============================================================
     function sendMail(title, desc, reward = 0, type = 'note', from = null) {
-        if (!from) from = getActiveSupervisor().name;
+        const sender = getActiveSupervisor();
+        if (!from) from = sender.name;
         const typeLabels = { guide: '📖 攻略', reward: '🎁 奖励', gift: '🎀 礼物', care: '💜 关心', note: '✉️ 留言' };
         const item = {
             id: GameData.mail.nextId++,
@@ -3814,6 +3837,9 @@ ${memoryFacts}
             type,
             typeLabel: typeLabels[type] || '📬',
             from: from,
+            fromSupervisorId: sender.id,
+            fromSupervisorName: from,
+            supervisorSignature: sender.signature,
             time: Date.now(),
             read: false,
             claimed: false
@@ -3869,7 +3895,10 @@ ${memoryFacts}
                     title: item.title,
                     content: item.desc,
                     date: TS.fmt(new Date(item.time)),
-                    from: 'mail'
+                    from: 'mail',
+                    supervisorId: item.fromSupervisorId || null,
+                    supervisorName: item.fromSupervisorName || item.from || '欣原',
+                    supervisorSignature: item.supervisorSignature || ''
                 };
                 GameData.treasure.specialStories.unshift(story);
                 showNotif('💌 已存入《紫翼·时光笺》！');
@@ -3928,7 +3957,7 @@ ${memoryFacts}
         const content = document.getElementById('modalContent');
         content.className = 'content';
         document.getElementById('modalTitle').textContent = '📩 ' + item.title;
-        document.getElementById('modalDesc').textContent = item.desc;
+        document.getElementById('modalDesc').textContent = item.desc + '\n\n　　—— ' + (item.fromSupervisorName || item.from || '欣原') + '\n　　' + (item.supervisorSignature || '');
         document.getElementById('modalRewardPreview').style.display = 'none';
         document.getElementById('evidenceReport').style.display = 'none';
         const uploadArea = document.getElementById('uploadArea');
@@ -3971,7 +4000,7 @@ ${memoryFacts}
         if (!container) return;
         const coupons = GameData.treasure.coupons || { act_cute: 0, meow: 0, story: 0 };
         const items = [
-            { icon: '🍰', name: '小奶糕', count: GameData.treasure.milkTea || GameData.user.currency.milkTea, desc: '货币，可在商店使用' },
+            { icon: '🍰', name: '小奶糕', count: GameData.treasure.milkTea || GameData.user.currency.milkTea, desc: '货币，可在臻品阁使用' },
             { icon: '🎫', name: '时光回溯卡', count: GameData.treasure.offsetCards || 0, desc: '抵消一次未打卡记录' },
             { icon: '💌', name: '手写信', count: GameData.treasure.letters || 0, desc: '欣原的碎碎念，可阅读' },
             { icon: '🌟', name: '特殊彩蛋', count: GameData.treasure.special || 0, desc: '稀有物品，神秘用途' }
@@ -4057,7 +4086,7 @@ ${memoryFacts}
             const recent = GameData.treasure.specialStories.slice(0, 3).map(s => s.content).join('\n---\n');
 
             const activeSupervisor = getActiveSupervisor();
-            const systemPrompt = `你是${activeSupervisor.name}，VIP009 当前唯一的主监管者。${activeSupervisor.prompt}现在你要生成一段` + info.label + `，作为特殊彩蛋送给 VIP009。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}\n3. 同时生成一个好听、有诗意的标题（不超过10个字）\n4. 输出格式：标题 + 换行 + 正文\n5. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
+            const systemPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。\n【监管者档案】\n身份：${activeSupervisor.role}\n性格与文风：${activeSupervisor.prompt}\n个性签名：${activeSupervisor.signature}\n【用户代号】${GameData.profile.codename || 'VIP009'}\n【长期记忆摘要】${GameData.memory.summary || '暂无'}\n\n现在你要生成一段` + info.label + `，作为特殊彩蛋送给用户。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}，不能写成通用旁白或客服文风\n3. 同时生成一个好听、有诗意的标题（不超过10个字）\n4. 输出格式：标题 + 换行 + 正文\n5. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
 
             const resultText = await callAICreative('请生成一段' + info.label + '。', systemPrompt);
 
@@ -4077,7 +4106,11 @@ ${memoryFacts}
                 title: title,
                 content: content,
                 date: TS.fmt(TS.now()),
-                from: 'shop'
+                from: 'shop',
+                supervisorId: activeSupervisor.id,
+                supervisorName: activeSupervisor.name,
+                supervisorSignature: activeSupervisor.signature,
+                supervisorStyle: activeSupervisor.prompt
             };
 
             GameData.treasure.specialStories.unshift(story);
@@ -4123,7 +4156,7 @@ ${memoryFacts}
         if (!container) return;
         const stories = GameData.treasure.specialStories || [];
         if (stories.length === 0) {
-            container.innerHTML = '<div style="color:rgba(255,255,255,0.15);font-size:12px;padding:20px 0;text-align:center;">💌 时光笺还是空的…<br><span style="font-size:10px;">去商店买券或等待欣原的礼物吧</span></div>';
+            container.innerHTML = '<div style="color:rgba(255,255,255,0.15);font-size:12px;padding:20px 0;text-align:center;">💌 时光笺还是空的…<br><span style="font-size:10px;">去臻品阁买券或等待监管者的礼物吧</span></div>';
             return;
         }
 
@@ -4150,7 +4183,7 @@ ${memoryFacts}
             html += '<div class="section-title">' + info.icon + ' ' + info.label + '</div>';
             [...groups[key]].sort((a, b) => Number(a.id) - Number(b.id)).forEach((s, index) => {
                 html += '<div class="timecapsule-story" onclick="openTimeCapsuleDetail(' + Number(s.id) + ')">';
-                html += '<div class="left"><div class="story-title">#' + (index + 1) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date) + '</div></div>';
+                html += '<div class="left"><div class="story-title">#' + (index + 1) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date + ' · ' + (s.supervisorName || '欣原')) + '</div></div>';
                 html += '<div class="right">💌</div>';
                 html += '</div>';
             });
@@ -4167,10 +4200,9 @@ ${memoryFacts}
         const content = document.getElementById('modalContent');
         content.className = 'content envelope';
         document.getElementById('modalTitle').textContent = '💌 ' + story.title;
-        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + getActiveSupervisor().name;
+        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + (story.supervisorName || '欣原');
         document.getElementById('modalRewardPreview').style.display = 'none';
-        document.getElementById('evidenceReport').style.display = 'none';
-        document.getElementById('uploadArea').style.display = 'none';
+        hideTaskSubmissionControls();
         document.querySelector('.modal .actions').innerHTML = '<button class="btn secondary" onclick="closeModal()">合上信封</button>';
         modal.classList.add('active');
     }
@@ -4772,12 +4804,33 @@ ${memoryFacts}
     // ============================================================
     //  CAT STATUS
     // ============================================================
+    function getActivePetDefinition() {
+        const supervisor = getActiveSupervisor();
+        return supervisor.pet || { name: 'BB', type: 'cat', food: '宠物粮', icon: '🐾' };
+    }
+
+    function getActivePetState() {
+        const supervisor = getActiveSupervisor();
+        if (!GameData.pets[supervisor.id]) {
+            GameData.pets[supervisor.id] = { fed: false, lastFed: 0 };
+        }
+        return GameData.pets[supervisor.id];
+    }
+
     function updateCatStatus() {
         const el = document.getElementById('catStatus');
-        if (GameData.cat.fed) {
-            const diff = Date.now() - GameData.cat.lastFed;
-            if (diff < 3600000) { el.textContent = '😺 吃饱了（BB很开心）'; } else { el.textContent = '😸 有点饿了，可以喂猫粮'; }
-        } else { el.textContent = '😿 还没喂过，快去商店买猫粮'; }
+        const label = document.getElementById('petSettingLabel');
+        if (!el) return;
+        const pet = getActivePetDefinition();
+        if (label) label.textContent = `${pet.icon} ${pet.name}（${pet.type}）`;
+        const state = getActivePetState();
+        if (state.fed) {
+            const diff = Date.now() - state.lastFed;
+            if (diff < 3600000) el.textContent = `${pet.icon} ${pet.name}吃饱了，正在活动`;
+            else el.textContent = `${pet.icon} ${pet.name}有点饿了，可以喂${pet.food}`;
+        } else {
+            el.textContent = `${pet.icon} ${pet.name}还没喂过，快去臻品阁买${pet.food}`;
+        }
     }
 
     // ============================================================
@@ -4838,6 +4891,25 @@ ${memoryFacts}
     }
 
     function submitReport() { TaskSystem.submit(); }
+
+    function hideTaskSubmissionControls() {
+        const report = document.getElementById('evidenceReport');
+        hideTaskSubmissionControls();
+        const uploadArea = document.getElementById('uploadArea');
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        if (report) report.style.display = 'none';
+        if (uploadArea) uploadArea.style.display = 'none';
+        if (confirmBtn) confirmBtn.style.display = 'none';
+    }
+
+    function restoreTaskSubmissionControls() {
+        const actions = document.querySelector('.modal .actions');
+        if (actions) {
+            actions.innerHTML = '<button class="btn secondary" onclick="closeModal()">取消</button><button class="btn primary" id="modalConfirmBtn" onclick="submitReport()">✅ 提交并审核</button>';
+        }
+        const report = document.getElementById('evidenceReport');
+        if (report) report.style.display = 'block';
+    }
 
     // ============================================================
     //  TOOLS
@@ -5149,7 +5221,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.5', '欢迎回来，VIP009。\n\nV4.5 升级：\n- 制定任务时锁定页面\n- 用户档案与头像\n- 流式聊天输出\n- 相机与模型选择合并入口\n- 臻品阁微光\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.6', '欢迎回来，VIP009。\n\nV4.6 升级：\n- 信件署名与文风跟随监管者\n- 修复信封中的任务提交按钮\n- 宠物名字与食物跟随监管者\n- 臻品阁文案统一\n- 清理回复末尾的好感度状态提示\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
