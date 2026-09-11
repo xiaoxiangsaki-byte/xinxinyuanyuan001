@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.8</title>
+    <title>VIP009 · 欣原监督系统 V4.9</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -4901,7 +4901,6 @@ ${memoryFacts}
 
     function hideTaskSubmissionControls() {
         const report = document.getElementById('evidenceReport');
-        hideTaskSubmissionControls();
         const uploadArea = document.getElementById('uploadArea');
         const confirmBtn = document.getElementById('modalConfirmBtn');
         if (report) report.style.display = 'none';
@@ -5228,7 +5227,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.8', '欢迎回来，VIP009。\n\nV4.8 升级：\n- 彻底清理旧聊天中的爱心系统消息\n- 关系阶段提示只在首次到达时出现一次\n- 每封信保留原始监管者署名与文风\n- 时光笺按分类独立编号并可直接查看\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.9', '欢迎回来，VIP009。\n\nV4.9 升级：\n- 修复信封无法打开\n- 彻底清理旧爱心系统消息\n- 关系阶段提示只出现一次\n- 修复信封与任务按钮冲突\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
