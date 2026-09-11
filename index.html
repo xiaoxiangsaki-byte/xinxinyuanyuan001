@@ -1,9 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VIP009 · 欣原监督系统 V3.4</title>
+    <meta name="theme-color" content="#120a1e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="./manifest.json">
+    <link rel="icon" href="./icon.svg" type="image/svg+xml">
+    <title>VIP009 · 欣原监督系统 V4.0</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -302,10 +307,12 @@
         .chat-msg.user .time { text-align: left; }
         .chat-msg .continue-btn { font-size: 10px; color: rgba(255,255,255,0.12); background: transparent; border: none; cursor: pointer; padding: 1px 4px; margin-top: 1px; align-self: flex-start; transition: color 0.3s; }
         .chat-msg .story-badge { display: inline-block; font-size: 9px; background: rgba(255,213,79,0.10); color: var(--gold); padding: 1px 8px; border-radius: 10px; margin-top: 4px; }
-        .chat-input-area { display: flex; gap: 6px; align-items: center; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); }
+        .memory-btn { border: 1px solid rgba(197,163,255,0.12); background: rgba(197,163,255,0.05); color: rgba(255,255,255,0.45); border-radius: 12px; font-size: 9px; padding: 3px 7px; cursor: pointer; flex-shrink: 0; }
+        .memory-btn:active { opacity: 0.65; }
+        .chat-input-area { display: flex; gap: 6px; align-items: flex-end; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); }
         .chat-input-area .file-label { cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.2); transition: 0.3s; flex-shrink: 0; line-height: 1; }
         .chat-input-area .file-label:active { color: var(--primary); }
-        .chat-input-area .chat-input { flex: 1; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); border-radius: 20px; padding: 8px 14px; color: #fff; font-size: 13px; outline: none; min-width: 0; }
+        .chat-input-area .chat-input { flex: 1; min-height: 36px; max-height: 120px; overflow-y: auto; resize: none; line-height: 1.45; font-family: inherit; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); border-radius: 18px; padding: 8px 14px; color: #fff; font-size: 13px; outline: none; min-width: 0; }
         .chat-input-area .chat-input::placeholder { color: rgba(255,255,255,0.15); }
         .chat-input-area .chat-input:focus { border-color: rgba(197,163,255,0.1); }
         .chat-input-area .chat-send { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #c5a3ff, #9c64ff); border: none; color: #000; font-size: 14px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 16px rgba(156,100,255,0.08); }
@@ -444,6 +451,16 @@
         .modal .content.confirm-box .actions .btn { padding: 6px 20px; border-radius: 10px; font-size: 12px; }
         .modal .content.confirm-box .actions .btn.primary { background: linear-gradient(135deg, #c5a3ff, #9c64ff); color: #000; }
         .modal .content.confirm-box .actions .btn.secondary { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3); }
+
+        .setup-copy { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.65; margin: 4px 0 8px; }
+        .setup-copy strong { color: var(--primary); }
+        .setup-status { min-height: 16px; margin-top: 6px; font-size: 10px; color: var(--gold); text-align: center; }
+        .memory-search { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 9px; color: #fff; outline: none; font-size: 11px; }
+        .memory-search:focus { border-color: rgba(197,163,255,0.18); }
+        .memory-results { margin-top: 8px; max-height: 42vh; overflow-y: auto; }
+        .memory-item { padding: 7px 8px; margin-bottom: 5px; border-radius: 7px; background: rgba(255,255,255,0.025); border-left: 2px solid rgba(197,163,255,0.25); }
+        .memory-item .meta { font-size: 9px; color: rgba(255,255,255,0.25); margin-bottom: 2px; }
+        .memory-item .text { font-size: 11px; color: rgba(255,255,255,0.62); line-height: 1.55; white-space: pre-wrap; word-break: break-word; }
 
         .diary-detail-content { background: rgba(18,10,30,0.96); border: 1px solid rgba(197,163,255,0.06); border-radius: 14px; padding: 16px; max-width: 340px; width: 90%; max-height: 85vh; overflow-y: auto; }
         .diary-detail-content h3 { color: var(--primary); margin-bottom: 4px; font-size: 14px; }
@@ -609,6 +626,7 @@
                 <div class="back-avatar"><img src="https://i.postimg.cc/7hbrq47D/wei-xin-tu-pian-20260723051447-419-40.jpg" alt="欣原"></div>
                 <div class="chat-title"><h3>欣原</h3><div class="signature">爱是世界上最不保值的资产</div></div>
                 <div class="chat-unread" id="chatUnreadBadge">未读</div>
+                <button class="memory-btn" id="memoryBtn" onclick="event.stopPropagation();openMemorySearch()">记忆</button>
                 <!-- ★ 爱心 + 星星环绕 -->
                 <div class="chat-heart-wrapper">
                     <span class="orbit-star">✦</span>
@@ -620,7 +638,7 @@
             <div class="chat-input-area">
                 <label class="file-label" title="上传图片">📷<input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="handleChatImage(this)"></label>
                 <img id="chatImgPreview" src="">
-                <input type="text" class="chat-input" id="chatInput" placeholder="输入消息..." readonly onfocus="this.removeAttribute('readonly')" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <textarea rows="1" class="chat-input" id="chatInput" placeholder="输入消息..." oninput="autoGrowChatInput(this)" onkeydown="handleChatInputKeydown(event)"></textarea>
                 <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">▶</button>
             </div>
         </div>
@@ -662,8 +680,10 @@
                 <span style="font-size:20px; color:rgba(255,255,255,0.3);">←</span><span style="font-size:16px; color:#fff; font-weight:600;">⚙️ 系统设置</span>
             </div>
             <div style="flex:1; overflow-y:auto; padding:8px 0;">
-                <div class="setting-item"><span class="label">🔑 API Key</span><input type="text" id="apiKeyInput" placeholder="输入硅基密钥"></div>
-                <div class="setting-item"><span class="label">📢 主动推送</span><button class="btn" id="pushToggle" onclick="togglePush()">已开启</button></div>
+                <div class="setting-item"><span class="label">🔑 API Key</span><input type="password" id="apiKeyInput" autocomplete="off" placeholder="输入硅基密钥"></div>
+                <div class="setting-item"><span class="label">📢 主动提醒</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" id="pushToggle" onclick="togglePush()">已开启</button><button class="btn" onclick="requestNotificationPermission()">开启通知</button><button class="btn" onclick="testReminder()">测试提醒</button></div></div>
+                <div class="setting-item"><span class="label">🎯 个人计划</span><button class="btn" onclick="openOnboarding(true)">重新设定并生成任务</button></div>
+                <div class="setting-item"><span class="label">🧠 长期记忆</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">已保存 <span id="memoryCount">0</span> 条对话</span></div>
                 <div class="setting-item"><span class="label">💾 数据</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" onclick="exportData()">导出</button><button class="btn" onclick="importData()">导入</button><button class="btn danger" onclick="resetData()">重置</button></div></div>
                 <div class="setting-item"><span class="label">🐱 BB（阿比西尼亚猫）</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">状态：<span id="catStatus">😺 健康</span></span></div>
                 <div class="task-pool-area" style="display:none;">
@@ -695,25 +715,28 @@
 
     <!-- ===== 模态框 ===== -->
     <div class="modal" id="modal">
-        <div class="content" id="modalContent" style="max-height: 80vh; display: flex; flex-direction: column; padding-bottom: 10px;">
-            <h3 id="modalTitle">📋 任务呈递</h3>
-            <div class="desc" id="modalDesc" style="flex-shrink: 0;">描述</div>
-            <div class="random-reward-preview" id="modalRewardPreview" style="display:none; flex-shrink: 0;"></div>
-            <div class="evidence-hint" id="evidenceHint" style="flex-shrink: 0;">📸 请附上实操照片/截图证据（可选）</div>
-            <div class="upload-area" id="uploadArea" style="flex-shrink: 0;">
-                <label class="upload-label" id="uploadLabel">📤 点击上传图片证据（最多3张）
-                    <input type="file" id="evidenceImages" accept="image/*" multiple onchange="handleEvidenceImages(this)">
-                </label>
-                <div class="preview-list" id="evidencePreviewList"></div>
-                <div class="count-hint" id="evidenceCountHint">已选 0 / 3 张</div>
-            </div>
-            <textarea id="evidenceReport" placeholder="输入你的成果汇报..." style="flex-shrink: 0; height: 60px;"></textarea>
-            <div class="actions" style="flex-shrink: 0; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
-                <button class="btn secondary" onclick="closeModal()">取消</button>
-                <button class="btn primary" id="modalConfirmBtn" onclick="submitReport()">✅ 提交并审核</button>
-            </div>
+    <div class="content" id="modalContent" style="max-height: 80vh; display: flex; flex-direction: column; padding-bottom: 10px;">
+        <h3 id="modalTitle">📋 任务呈递</h3>
+        <div class="desc" id="modalDesc" style="flex-shrink: 0;">描述</div>
+        <div class="random-reward-preview" id="modalRewardPreview" style="display:none; flex-shrink: 0;"></div>
+        <div class="evidence-hint" id="evidenceHint" style="flex-shrink: 0;">📸 请附上实操照片/截图证据（可选）</div>
+
+        <!-- ★ upload-area 必须放在 content 内部，且位于 evidence-hint 和 textarea 之间 ★ -->
+        <div class="upload-area" id="uploadArea" style="flex-shrink: 0;">
+            <label class="upload-label" id="uploadLabel">📤 点击上传图片证据（最多3张）
+                <input type="file" id="evidenceImages" accept="image/*" multiple onchange="handleEvidenceImages(this)">
+            </label>
+            <div class="preview-list" id="evidencePreviewList"></div>
+            <div class="count-hint" id="evidenceCountHint">已选 0 / 3 张</div>
+        </div>
+
+        <textarea id="evidenceReport" placeholder="输入你的成果汇报..." style="flex-shrink: 0; height: 60px;"></textarea>
+        <div class="actions" style="flex-shrink: 0; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+            <button class="btn secondary" onclick="closeModal()">取消</button>
+            <button class="btn primary" id="modalConfirmBtn" onclick="submitReport()">✅ 提交并审核</button>
         </div>
     </div>
+</div>
 
     <!-- ★ 傲娇确认框 -->
     <div class="modal" id="confirmModal">
@@ -742,6 +765,31 @@
             </div>
             <div class="actions">
                 <button class="btn secondary" onclick="closeDiaryDetail()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="onboardingModal">
+        <div class="content">
+            <h3>先把你的目标告诉我</h3>
+            <div class="setup-copy">写下你最近真正想完成的事、每天能投入多少时间，以及你不希望被安排的方向。<strong>欣原会据此生成第一版每日、主线和支线任务。</strong></div>
+            <textarea id="onboardingProfile" style="height:120px;" placeholder="例如：想提高英语口语，每天能练30分钟；想健身但膝盖不好；最近在准备考试；晚上11点后不要安排任务。"></textarea>
+            <div class="actions">
+                <button class="btn secondary" onclick="closeOnboarding()">稍后再说</button>
+                <button class="btn primary" id="onboardingGenerateBtn" onclick="generateTasksFromProfile()">生成专属任务</button>
+            </div>
+            <div class="setup-status" id="onboardingStatus"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="memoryModal">
+        <div class="content">
+            <h3>长期记忆</h3>
+            <div class="setup-copy">可以按关键词查找以前的对话。记忆会保存在当前浏览器中，并用于后续聊天。</div>
+            <input class="memory-search" id="memorySearchInput" placeholder="搜索以前说过的话..." oninput="renderMemorySearch(this.value)">
+            <div class="memory-results" id="memoryResults"></div>
+            <div class="actions">
+                <button class="btn secondary" onclick="closeMemorySearch()">关闭</button>
             </div>
         </div>
     </div>
@@ -789,8 +837,18 @@
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
         ai: { affection: 0, dialogHistory: [] },
+        profile: { onboarded: false, summary: '', goals: [], updatedAt: null },
+        memory: { version: 1, lastCompactedAt: null, facts: [] },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
         settings: { apiKey: '', autoPushEnabled: true },
+        reminder: {
+            enabled: true,
+            lastInactivityAt: 0,
+            lastMissedDayAt: 0,
+            lastTaskActionAt: Date.now(),
+            lastCompletionDate: null,
+            lastMessageAt: 0
+        },
         random: { active: null, cooldown: 0, lastTrigger: 0, mood: 50 },
         mail: { items: [], nextId: 1 },
         chat: { unreadCount: 0, storyUnread: false },
@@ -831,26 +889,42 @@
         }
     };
 
-    // ★ 默认任务池
-    const DEFAULT_TASK_POOL = [
-        // 每日必做（英语 + 金融）
-        { title: '英语: 动画磨耳朵', desc: '看一集英语动画（带字幕），标记3个新学到的表达', type: 'daily', difficulty: 1 },
-        { title: '英语: 场景对话练习', desc: '完成一个场景对话（餐厅/购物/机场），录音或写下来', type: 'daily', difficulty: 1 },
-        { title: '英语: 跨境词汇积累', desc: '学习5个跨境英语关键词汇，造句并记录', type: 'daily', difficulty: 2 },
-        { title: '金融: 小知识学习', desc: '学习一个金融概念，写下你的理解', type: 'daily', difficulty: 1 },
-        { title: '金融: 财报初体验', desc: '尝试看懂一张简易财报的利润部分', type: 'daily', difficulty: 2 },
-        // 可选挑战（健身 + 阅读 + 普通话）
-        { title: '塑形瘦腿训练', desc: '完成15分钟塑形瘦腿跟练视频', type: 'side', difficulty: 1 },
-        { title: '马甲线训练', desc: '完成一套马甲线训练（累但不崩溃版）', type: 'side', difficulty: 2 },
-        { title: '3000步有氧', desc: '跟练3000步有氧运动视频', type: 'side', difficulty: 1 },
-        { title: '力量训练（初级）', desc: '完成一套基础力量训练，拍照记录', type: 'side', difficulty: 2 },
-        { title: '阅读: 指定文章', desc: '阅读一篇指定文章，写下3点收获', type: 'side', difficulty: 1 },
-        { title: '普通话: 咬字练习', desc: '朗读一段文字，录音自查发音', type: 'side', difficulty: 1 },
-        // 轻度补充
-        { title: '粤语: 日常一句', desc: '学会一句粤语日常用语，录下来', type: 'side', difficulty: 1 },
-        { title: '人际交往: 小技巧', desc: '学习一个人际交往小技巧，写心得', type: 'side', difficulty: 1 }
-    ];
-
+  // ★ 默认任务池
+const DEFAULT_TASK_POOL = [
+    // ========== 主线任务 (type: 'main') ==========
+    { title: '跨境英语: 开发信写作', desc: '写一封给海外客户的开发信，要求专业、礼貌、语法正确', type: 'main', difficulty: 2 },
+    { title: '跨境英语: 产品标题优化', desc: '为3款产品撰写符合亚马逊/速卖通风格的标题', type: 'main', difficulty: 2 },
+    { title: '跨境英语: 客户投诉回复', desc: '模拟回复一封海外买家的差评，提出解决方案', type: 'main', difficulty: 3 },
+    { title: '跨境英语: 五点描述编写', desc: '为一款核心产品编写5条卖点描述，突出差异化', type: 'main', difficulty: 2 },
+    { title: '金融: 读懂利润表', desc: '找一家上市公司利润表，分析其毛利率和净利率趋势', type: 'main', difficulty: 2 },
+    { title: '金融: 资产负债表分析', desc: '分析一家企业的资产负债率，判断其财务风险', type: 'main', difficulty: 3 },
+    { title: '金融: 现金流解读', desc: '解读一家企业的经营现金流，判断其造血能力', type: 'main', difficulty: 3 },
+    { title: '金融: 宏观指标学习', desc: '学习CPI/PPI/PMI中的一个指标，写一篇200字解读', type: 'main', difficulty: 2 },
+    { title: '健身: 力量训练计划', desc: '制定一周力量训练计划，包含动作和组数', type: 'main', difficulty: 2 },
+    { title: '健身: 饮食记录分析', desc: '记录3天饮食，分析蛋白质/碳水/脂肪比例', type: 'main', difficulty: 2 },
+    { title: '阅读: 深度书评', desc: '读完一本书，写一篇500字以上的书评', type: 'main', difficulty: 3 },
+    { title: '思维: 逻辑谬误识别', desc: '在生活中找到一个逻辑谬误案例，分析并记录', type: 'main', difficulty: 2 },
+    { title: '项目复盘: 月度总结', desc: '写一份本月任务完成复盘，包含亮点和不足', type: 'main', difficulty: 2 },
+    { title: '技能: PPT制作', desc: '制作一份关于你最近学习内容的PPT（至少10页）', type: 'main', difficulty: 3 },
+    { title: '英语: TED演讲笔记', desc: '看一个TED演讲，用英语写下3个关键观点', type: 'main', difficulty: 2 },
+    // ========== 每日必做 (type: 'daily') ==========
+    { title: '英语: 动画磨耳朵', desc: '看一集英语动画（带字幕），标记3个新学到的表达', type: 'daily', difficulty: 1 },
+    { title: '英语: 场景对话练习', desc: '完成一个场景对话（餐厅/购物/机场），录音或写下来', type: 'daily', difficulty: 1 },
+    { title: '英语: 跨境词汇积累', desc: '学习5个跨境英语关键词汇，造句并记录', type: 'daily', difficulty: 2 },
+    { title: '英语: 阅读短文', desc: '读一篇英语短文，写下3个关键句的翻译', type: 'daily', difficulty: 1 },
+    { title: '金融: 小知识学习', desc: '学习一个金融概念，写下你的理解', type: 'daily', difficulty: 1 },
+    { title: '金融: 财报初体验', desc: '尝试看懂一张简易财报的利润部分', type: 'daily', difficulty: 2 },
+    { title: '金融: 名词解释', desc: '解释一个金融术语，用自己的话说出来', type: 'daily', difficulty: 1 },
+    // ========== 可选挑战 (type: 'side') ==========
+    { title: '塑形瘦腿训练', desc: '完成15分钟塑形瘦腿跟练视频', type: 'side', difficulty: 1 },
+    { title: '马甲线训练', desc: '完成一套马甲线训练', type: 'side', difficulty: 2 },
+    { title: '3000步有氧', desc: '跟练3000步有氧运动视频', type: 'side', difficulty: 1 },
+    { title: '力量训练（初级）', desc: '完成一套基础力量训练，拍照记录', type: 'side', difficulty: 2 },
+    { title: '阅读: 指定文章', desc: '阅读一篇指定文章，写下3点收获', type: 'side', difficulty: 1 },
+    { title: '普通话: 咬字练习', desc: '朗读一段文字，录音自查发音', type: 'side', difficulty: 1 },
+    { title: '粤语: 日常一句', desc: '学会一句粤语日常用语，录下来', type: 'side', difficulty: 1 },
+    { title: '人际交往: 小技巧', desc: '学习一个人际交往小技巧，写心得', type: 'side', difficulty: 1 }
+];
     // ============================================================
     //  TIME
     // ============================================================
@@ -876,89 +950,137 @@
         setTimeout(() => el.remove(), 2800);
     }
 
+    function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[ch]);
+    }
+
+    function formatChatText(value) {
+        return escapeHtml(value).replace(/\n/g, '<br>');
+    }
+
     // ============================================================
     //  SAVE / LOAD
     // ============================================================
-    function saveData() { localStorage.setItem('xinyuanGameData', JSON.stringify(GameData)); }
-
-    function loadData() {
-        const saved = localStorage.getItem('xinyuanGameData');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                Object.keys(parsed).forEach(key => {
-                    if (GameData.hasOwnProperty(key)) GameData[key] = parsed[key];
-                });
-            } catch(_) {}
+    function saveData() {
+        try {
+            localStorage.setItem('xinyuanGameData', JSON.stringify(GameData));
+            return true;
+        } catch (e) {
+            showNotif('保存失败，浏览器空间可能已满');
+            return false;
         }
-
-        if (!GameData.taskHistory) GameData.taskHistory = [];
-        if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
-        if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
-        if (!GameData.treasure.coupons) GameData.treasure.coupons = { act_cute: 0, meow: 0, story: 0 };
-        if (!GameData.treasure.specialStories) GameData.treasure.specialStories = [];
-        if (!GameData.treasure._storyIdCounter) GameData.treasure._storyIdCounter = 0;
-        if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
-        if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
-
-        chatMessages = GameData.ai.dialogHistory.slice(-30).map(m => {
-            let c = m.content;
-            let img = null;
-            if (typeof c === 'object' && c !== null) {
-                if (c.image) { img = c.image; }
-                const txt = c.text || '';
-                c = txt;
-            }
-            if (Array.isArray(c)) {
-                const txtPart = c.find(x => x.type === 'text');
-                c = txtPart ? txtPart.text : '';
-            }
-            return { role: m.role || 'assistant', content: String(c || ''), time: TS.fmt(new Date(m.time || Date.now())), img: img || null };
-        });
-
-        // ★ 凌晨自动刷新每日任务
-        if (TS.isNewDay(GameData._lastDailyReset)) {
-            GameData.tasks.daily = TaskSystem.genDaily();
-            GameData.tasks.daily.forEach(t => { t.done = false; t.exempted = false; t.progress = 0; });
-            GameData._lastDailyReset = Date.now();
-            if (GameData.exemptionStatus) {
-                GameData.exemptionStatus.usedToday = 0;
-                GameData.exemptionStatus.active = false;
-                GameData.exemptionStatus.endDate = null;
-            }
-            showNotif('🌅 新的一天，每日任务已刷新！');
-            saveData();
-        }
-
-        if (TS.isNewDay(GameData._lastGuideDate)) { GameData._guideSentToday = false; }
-        if (TS.isNewDay(GameData.user.records.lastCheckIn)) {
-            GameData.tasks.daily = TaskSystem.genDaily();
-        }
-        if (!GameData.tasks.daily || !GameData.tasks.daily.length) GameData.tasks.daily = TaskSystem.genDaily();
-        if (!GameData.tasks.mainQuests || !GameData.tasks.mainQuests.length) GameData.tasks.mainQuests = TaskSystem.initMain();
-        if (!GameData.tasks.sideQuests || !GameData.tasks.sideQuests.length) GameData.tasks.sideQuests = TaskSystem.initSide();
-
-        if (GameData.settings.apiKey) document.getElementById('apiKeyInput').value = GameData.settings.apiKey;
-        document.getElementById('pushToggle').textContent = GameData.settings.autoPushEnabled ? '已开启' : '已关闭';
-
-        const poolEditor = document.getElementById('taskPoolEditor');
-        if (poolEditor) poolEditor.value = JSON.stringify(GameData.taskPool, null, 2);
-
-        initPushPool();
-        saveData();
-        updateUI();
-        updateMailUI();
-        updateUnreadBadge();
-        updateCatStatus();
-        updateStreakDisplay();
-        renderPunishTasks();
-        renderTimeCapsule();
-        updateHeartColor();
-        document.getElementById('uploadArea').style.display = 'none';
-        checkExemptionStatus();
-        checkTaskSchedule();
     }
 
+    function loadData() {
+    const saved = localStorage.getItem('xinyuanGameData');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            Object.keys(parsed).forEach(key => {
+                if (GameData.hasOwnProperty(key)) GameData[key] = parsed[key];
+            });
+        } catch(_) {}
+    }
+
+    if (!GameData.taskHistory) GameData.taskHistory = [];
+    if (!GameData.profile) GameData.profile = { onboarded: false, summary: '', goals: [], updatedAt: null };
+    if (!GameData.memory) GameData.memory = { version: 1, lastCompactedAt: null, facts: [] };
+    if (!GameData.reminder) {
+        GameData.reminder = {
+            enabled: true,
+            lastInactivityAt: 0,
+            lastMissedDayAt: 0,
+            lastTaskActionAt: Date.now(),
+            lastCompletionDate: null,
+            lastMessageAt: 0
+        };
+    }
+    if (!Array.isArray(GameData.ai.dialogHistory)) GameData.ai.dialogHistory = [];
+    if (GameData.ai.dialogHistory.length > 500) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-500);
+    if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
+    if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
+    if (!GameData.treasure.coupons) GameData.treasure.coupons = { act_cute: 0, meow: 0, story: 0 };
+    if (!GameData.treasure.specialStories) GameData.treasure.specialStories = [];
+    if (!GameData.treasure._storyIdCounter) GameData.treasure._storyIdCounter = 0;
+    if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
+    if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
+
+    chatMessages = GameData.ai.dialogHistory.slice(-500).map(m => {
+        let c = m.content;
+        let img = null;
+        if (typeof c === 'object' && c !== null) {
+            if (c.image) { img = c.image; }
+            const txt = c.text || '';
+            c = txt;
+        }
+        if (Array.isArray(c)) {
+            const txtPart = c.find(x => x.type === 'text');
+            c = txtPart ? txtPart.text : '';
+        }
+        return { role: m.role || 'assistant', content: String(c || ''), time: TS.fmt(new Date(m.time || Date.now())), img: img || null };
+    });
+
+    if (TS.isNewDay(GameData._lastDailyReset)) {
+        GameData.tasks.daily = TaskSystem.genDaily();
+        GameData.tasks.daily.forEach(t => { t.done = false; t.exempted = false; t.progress = 0; });
+        GameData.tasks.sideQuests = TaskSystem.initSide();
+        GameData.tasks.sideQuests.forEach(t => { t.done = false; t.exempted = false; t.progress = 0; });
+        GameData._lastDailyReset = Date.now();
+        if (GameData.exemptionStatus) {
+            GameData.exemptionStatus.usedToday = 0;
+            GameData.exemptionStatus.active = false;
+            GameData.exemptionStatus.endDate = null;
+        }
+        showNotif('📅 新的一天，每日任务已刷新！');
+        saveData();
+    }
+
+    if (TS.isNewDay(GameData._lastGuideDate)) { GameData._guideSentToday = false; }
+
+    if (!GameData.tasks.daily || !GameData.tasks.daily.length) {
+        GameData.tasks.daily = TaskSystem.genDaily();
+    }
+    if (!GameData.tasks.mainQuests || !GameData.tasks.mainQuests.length) {
+        GameData.tasks.mainQuests = TaskSystem.initMain();
+    }
+    if (!GameData.tasks.sideQuests || !GameData.tasks.sideQuests.length) {
+        GameData.tasks.sideQuests = TaskSystem.initSide();
+    }
+
+    [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests].forEach(t => {
+        if (t && t.irreversibleExemption) {
+            t.exempted = true;
+            t.done = true;
+        }
+    });
+
+    if (GameData.settings.apiKey) document.getElementById('apiKeyInput').value = GameData.settings.apiKey;
+    document.getElementById('pushToggle').textContent = GameData.settings.autoPushEnabled ? '已开启' : '已关闭';
+
+    const poolEditor = document.getElementById('taskPoolEditor');
+    if (poolEditor) poolEditor.value = JSON.stringify(GameData.taskPool, null, 2);
+
+    initPushPool();
+    updateMemoryCount();
+    saveData();
+    updateUI();
+    updateMailUI();
+    updateUnreadBadge();
+    updateCatStatus();
+    updateStreakDisplay();
+    renderPunishTasks();
+    renderTimeCapsule();
+    updateHeartColor();
+    document.getElementById('uploadArea').style.display = 'none';
+    checkExemptionStatus();
+    checkTaskSchedule();
+}  // ← 这里确保有这个闭合 }
     // ============================================================
     //  PUSH MESSAGES
     // ============================================================
@@ -1218,10 +1340,27 @@
         if (status.usedToday >= status.maxPerDay) { showNotif('⚠️ 今日豁免次数已用完'); return; }
         const task = GameData.tasks.daily.find(t => t.id === taskId);
         if (!task || task.done || task.exempted) return;
+        document.getElementById('confirmIcon').textContent = '✨';
+        document.getElementById('confirmTitle').textContent = '确定豁免？';
+        document.getElementById('confirmDesc').textContent = '豁免后任务会直接完成，而且不能撤销。确定要把这次机会用在它身上吗？';
+        document.getElementById('confirmYesBtn').onclick = function() {
+            closeConfirmModal();
+            executeExemptDailyTask(taskId);
+        };
+        document.getElementById('confirmModal').classList.add('active');
+    }
+
+    function executeExemptDailyTask(taskId) {
+        const status = GameData.exemptionStatus;
+        const task = GameData.tasks.daily.find(t => t.id === taskId);
+        if (!task || task.done || task.exempted) return;
         task.exempted = true;
         task.done = true;
+        task.irreversibleExemption = true;
+        task.exemptedAt = Date.now();
         status.usedToday += 1;
         status.lastUsedDate = TS.getDateKey(TS.now());
+        markTaskActivity(true);
         showNotif(`✅ 已豁免任务「${task.title}」`);
         addChatMessage('assistant', `[指尖轻点] 既然你有豁免权，这个「${task.title}」就算你过了。`, true);
         updateTaskHistory();
@@ -1235,10 +1374,13 @@
         if (text.trim().startsWith('$加任务')) return true;
         if (text.trim().startsWith('$强制加任务')) return true;
         if (text.trim().startsWith('$想亲姐姐')) return true; // ★ 亲姐姐互动触发
-        const keywords = ['我想加任务', '加个任务', '申请任务', '给我加任务'];
+        if (/^\$(改|修改|调整|删除|取消)任务/.test(text.trim())) return true;
+        const keywords = ['我想加任务', '加个任务', '申请任务', '给我加任务', '修改任务', '调整任务', '删除任务', '取消任务', '换一个任务', '改成任务'];
         for (let kw of keywords) {
             if (text.includes(kw)) return true;
         }
+        if (/(把|将).{0,20}任务.{0,20}(改成|换成|改为)/.test(text)) return true;
+        if (/(修改|调整|删除|取消).{0,12}任务|任务.{0,12}(修改|调整|删除|取消)/.test(text)) return true;
         return false;
     }
 
@@ -1253,6 +1395,228 @@
             showNotif('✅ 任务池已保存');
         } catch(e) {
             showNotif('❌ JSON格式错误：' + e.message);
+        }
+    }
+
+    function parseAIJson(text) {
+        const raw = String(text || '').trim();
+        const start = raw.indexOf('{');
+        const end = raw.lastIndexOf('}');
+        if (start === -1 || end <= start) throw new Error('AI 没有返回有效任务数据');
+        return JSON.parse(raw.slice(start, end + 1));
+    }
+
+    function normalizePlannedTask(item, prefix, index, defaults) {
+        const title = String(item && item.title || defaults.title).trim().slice(0, 40);
+        const desc = String(item && item.desc || defaults.desc).trim().slice(0, 180);
+        const max = Math.max(1, Math.min(5, Number(item && item.max) || defaults.max));
+        const difficulty = Math.max(1, Math.min(3, Number(item && item.difficulty) || defaults.difficulty));
+        return {
+            id: prefix + (index + 1),
+            title: title || defaults.title,
+            desc: desc || defaults.desc,
+            progress: 0,
+            max,
+            reward: defaults.reward + index * defaults.rewardStep,
+            done: false,
+            exempted: false,
+            deadline: prefix === 'm' ? Date.now() + 30 * 86400000 : null,
+            expired: false,
+            subTasks: [],
+            lastUpdate: Date.now(),
+            difficulty
+        };
+    }
+
+    function openOnboarding(force) {
+        if (!force && GameData.profile && GameData.profile.onboarded) return;
+        document.getElementById('onboardingProfile').value = (GameData.profile && GameData.profile.summary) || '';
+        document.getElementById('onboardingStatus').textContent = '';
+        document.getElementById('onboardingModal').classList.add('active');
+    }
+
+    function closeOnboarding() {
+        document.getElementById('onboardingModal').classList.remove('active');
+    }
+
+    async function generateTasksFromProfile() {
+        const input = document.getElementById('onboardingProfile');
+        const status = document.getElementById('onboardingStatus');
+        const button = document.getElementById('onboardingGenerateBtn');
+        const profile = input.value.trim();
+        if (profile.length < 10) {
+            status.textContent = '至少多写一点，我才能看懂你的真实情况。';
+            return;
+        }
+        if (!GameData.settings.apiKey) {
+            status.textContent = '先去设置里填 API Key，再回来生成。';
+            return;
+        }
+
+        button.disabled = true;
+        status.textContent = '正在根据你的情况编排任务...';
+        try {
+            const current = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests]
+                .map(t => t.title).join('、') || '暂无';
+            const prompt = `请根据用户自述，为“欣原监督系统”制定一套可执行任务。
+
+【用户自述】
+${profile}
+
+【当前已有任务】
+${current}
+
+【规则】
+1. 每日任务 3-5 个，必须能当天反复执行和记录。
+2. 主线任务 2-4 个，是未来几周的核心成长方向。
+3. 支线任务 2-4 个，是能补充状态但不应压垮用户的轻量挑战。
+4. 尊重用户的身体限制、时间限制和明确禁忌。
+5. 标题简短，desc 写清楚完成标准。
+6. max 是完成所需次数，范围 1-5；difficulty 是 1-3。
+7. 只输出 JSON，不要 Markdown，不要解释。
+
+【JSON 格式】
+{"summary":"对用户基础和目标的简短总结","daily":[{"title":"","desc":"","max":1,"difficulty":1}],"main":[{"title":"","desc":"","max":1,"difficulty":1}],"side":[{"title":"","desc":"","max":1,"difficulty":1}]}`;
+
+            let plan;
+            const firstResponse = await callAIChat(prompt, '你是欣原，专业、克制的任务规划师。严格遵守用户限制，只输出合格 JSON。');
+            try {
+                plan = parseAIJson(firstResponse);
+            } catch (firstError) {
+                const repair = await callAIChat('把下面内容整理成要求的纯 JSON，不要解释：\n' + firstResponse, '只输出合法 JSON。');
+                plan = parseAIJson(repair);
+            }
+
+            const dailyRaw = Array.isArray(plan.daily) ? plan.daily.slice(0, 5) : [];
+            const mainRaw = Array.isArray(plan.main) ? plan.main.slice(0, 4) : [];
+            const sideRaw = Array.isArray(plan.side) ? plan.side.slice(0, 4) : [];
+            if (dailyRaw.length < 3 || mainRaw.length < 2 || sideRaw.length < 2) {
+                throw new Error('任务数量和分类不完整');
+            }
+
+            GameData.profile = {
+                onboarded: true,
+                summary: String(plan.summary || profile).trim().slice(0, 500),
+                goals: [profile],
+                updatedAt: Date.now()
+            };
+            GameData.taskPool = dailyRaw.map((item, index) => {
+                const task = normalizePlannedTask(item, 'd', index, {
+                    title: '自我提升',
+                    desc: '完成一项明确的自我提升任务',
+                    max: 1,
+                    difficulty: 1,
+                    reward: 80,
+                    rewardStep: 10
+                });
+                return { type: 'daily', title: task.title, desc: task.desc, max: task.max, difficulty: task.difficulty };
+            });
+            GameData.tasks.daily = dailyRaw.map((item, index) => normalizePlannedTask(item, 'd', index, {
+                title: '自我提升',
+                desc: '完成一项明确的自我提升任务',
+                max: 1,
+                difficulty: 1,
+                reward: 80,
+                rewardStep: 10
+            }));
+            GameData.tasks.mainQuests = mainRaw.map((item, index) => normalizePlannedTask(item, 'm', index, {
+                title: '主线成长',
+                desc: '推进长期目标',
+                max: 3,
+                difficulty: 2,
+                reward: 600,
+                rewardStep: 200
+            }));
+            GameData.tasks.sideQuests = sideRaw.map((item, index) => normalizePlannedTask(item, 's', index, {
+                title: '轻量挑战',
+                desc: '完成一次轻量挑战',
+                max: 2,
+                difficulty: 1,
+                reward: 200,
+                rewardStep: 100
+            }));
+            GameData._lastDailyReset = Date.now();
+            GameData.reminder.lastTaskActionAt = Date.now();
+            saveData();
+            closeOnboarding();
+            updateUI();
+            addChatMessage('assistant', `[看了一眼你的计划] 行，我按你的情况排好了。别把“不适合”当成偷懒的借口，限时做完再跟我谈调整。`, true);
+        } catch (e) {
+            status.textContent = '生成失败：' + (e.message || '请稍后重试');
+        } finally {
+            button.disabled = false;
+        }
+    }
+
+    function findTaskLocation(taskId) {
+        const lists = [
+            { key: 'daily', list: GameData.tasks.daily },
+            { key: 'main', list: GameData.tasks.mainQuests },
+            { key: 'side', list: GameData.tasks.sideQuests }
+        ];
+        for (const item of lists) {
+            const index = item.list.findIndex(t => t.id === taskId);
+            if (index !== -1) return { key: item.key, list: item.list, index, task: item.list[index] };
+        }
+        return null;
+    }
+
+    async function handleTaskModificationRequest(userMessage) {
+        if (!GameData.settings.apiKey) {
+            addChatMessage('assistant', '想改任务也得先让我连上大脑。去设置里填 API Key。', true);
+            return;
+        }
+        const allTasks = [
+            ...GameData.tasks.daily.map(t => ({ ...t, area: '每日' })),
+            ...GameData.tasks.mainQuests.map(t => ({ ...t, area: '主线' })),
+            ...GameData.tasks.sideQuests.map(t => ({ ...t, area: '支线' }))
+        ];
+        const taskLines = allTasks.map(t => `${t.id}｜${t.area}｜${t.title}｜进度${t.progress}/${t.max}｜${t.desc || ''}`).join('\n');
+        const prompt = `用户在聊天中提出修改任务。
+
+【当前任务】
+${taskLines}
+
+【用户要求】
+${userMessage}
+
+请判断要求是否合理、明确、可持续。只输出 JSON，不要 Markdown。
+允许 action: "update" 或 "delete"。
+如果要求指向不够明确或理由不充分，approved 必须为 false。
+如果 approved 为 true，taskId 必须使用上面的准确 id。
+update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180 字，max 为 1-5，difficulty 为 1-3。
+
+{"approved":true,"action":"update","taskId":"","title":"","desc":"","max":1,"difficulty":1,"reason":"符合人设、简短、说明为什么合理"}`
+        try {
+            const decision = parseAIJson(await callAIChat(prompt, '你是欣原，严格但讲道理的监督者。你只输出合法 JSON，不迁就逃避行为。'));
+            if (!decision.approved) {
+                addChatMessage('assistant', String(decision.reason || '这个修改理由站不住脚，先按原计划做。'), true);
+                return;
+            }
+            const location = findTaskLocation(String(decision.taskId || ''));
+            if (!location) throw new Error('没有找到要修改的任务');
+            if (decision.action === 'delete') {
+                if (location.key === 'main') {
+                    addChatMessage('assistant', '主线不是随手就能删的。想换方向，先把你为什么走不通说清楚。', true);
+                    return;
+                }
+                const removed = location.list.splice(location.index, 1)[0];
+                GameData.reminder.lastTaskActionAt = Date.now();
+                addChatMessage('assistant', `[合上任务簿] 我把「${removed.title}」撤了。${decision.reason ? '理由我记着，别拿这次当漏洞。' : ''}`, true);
+            } else {
+                const task = location.task;
+                if (decision.title) task.title = String(decision.title).trim().slice(0, 40);
+                if (decision.desc) task.desc = String(decision.desc).trim().slice(0, 180);
+                if (decision.max != null) task.max = Math.max(1, Math.min(5, Number(decision.max) || task.max));
+                if (decision.difficulty != null) task.difficulty = Math.max(1, Math.min(3, Number(decision.difficulty) || task.difficulty));
+                task.lastUpdate = Date.now();
+                GameData.reminder.lastTaskActionAt = Date.now();
+                addChatMessage('assistant', `[划掉旧条目，重新落笔] 行，我改了。${decision.reason ? '理由算你过关。' : ''}`, true);
+            }
+            saveData();
+            updateUI();
+        } catch (e) {
+            addChatMessage('assistant', '你说得太含糊，我没法改。把任务名和具体改法说清楚。', true);
         }
     }
 
@@ -1302,10 +1666,10 @@
                 const adviceBtn = `<div class="t-advice-btn ${disabledClass}" onclick="${isDone ? '' : "getTaskAdvice('" + t.id + "')"}">💡 建议</div>`;
                 const exemptBtn = (isDaily && !isDone && status.active && status.usedToday < status.maxPerDay) ?
                     `<button class="t-btn exempt-btn" onclick="exemptDailyTask('${t.id}')">✨ 豁免</button>` : '';
-                const exemptDone = t.exempted ? '<div class="done">✨ 已豁免</div>' : '';
+                const exemptDone = t.exempted ? '<div class="done">✨ 已豁免（不可撤销）</div>' : '';
                 const diffBtn = `<button class="diff-btn" onclick="changeDifficulty('${t.id}')">难度</button> <span class="difficulty-stars">${diffStars}</span>`;
 
-                return '<div class="task-item '+cls+' '+stuckClass+' '+exemptCls+'"><div class="t-title">'+t.title+'</div><div class="t-desc">'+(t.desc||'')+'</div><div class="t-progress-bar"><div class="fill" style="width:'+pct+'%"></div></div><div class="t-progress">进度: '+t.progress+' / '+('⭐'.repeat(t.difficulty || 1))+'</div><div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;">'+diffBtn+adviceBtn+submitBtn+exemptBtn+'</div>'+exemptDone+'</div>';
+                return '<div class="task-item '+cls+' '+stuckClass+' '+exemptCls+'"><div class="t-title">'+escapeHtml(t.title)+'</div><div class="t-desc">'+escapeHtml(t.desc||'')+'</div><div class="t-progress-bar"><div class="fill" style="width:'+pct+'%"></div></div><div class="t-progress">进度: '+escapeHtml(t.progress)+' / '+('⭐'.repeat(t.difficulty || 1))+'</div><div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;">'+diffBtn+adviceBtn+submitBtn+exemptBtn+'</div>'+exemptDone+'</div>';
             }).join('');
         };
         render(GameData.tasks.daily, 'dailyTasksList', 'daily');
@@ -1405,6 +1769,19 @@
         },
         triggerVerify(taskId, isPunish) {
             evidenceImages = [];
+
+            // ★★★ 重置上传区域的所有样式（插入在这里） ★★★
+            var uploadArea = document.getElementById('uploadArea');
+            if (uploadArea) {
+                uploadArea.style.display = 'block';
+                uploadArea.style.visibility = 'visible';
+                uploadArea.style.height = '';
+                uploadArea.style.overflow = '';
+                uploadArea.style.padding = '';
+                uploadArea.style.margin = '';
+                uploadArea.style.border = '';
+        }
+            
             updateEvidencePreview();
             document.getElementById('uploadLabel').style.opacity = '1';
             document.getElementById('uploadLabel').style.pointerEvents = 'auto';
@@ -1452,6 +1829,7 @@
                 return;
             }
 
+            markTaskActivity(false);
             const images = [...evidenceImages];
             closeModal();
 
@@ -1519,6 +1897,7 @@
 
                     if (task.progress >= task.max && !task.done) {
                         task.done = true;
+                        markTaskActivity(true);
                         GameData.user.currency.milkTea += task.reward;
                         GameData.treasure.milkTea = GameData.user.currency.milkTea;
                         showNotif(`✅ 任务完成！+${task.reward} 🍰 小奶糕`);
@@ -1617,7 +1996,7 @@
                 const hours = Math.max(0, Math.floor(remaining / 3600000));
                 const mins = Math.max(0, Math.floor((remaining % 3600000) / 60000));
                 const urgent = remaining < 3600000;
-                return '<div class="task-item punish-task"><div class="t-title">'+t.title+'</div><div class="t-desc">'+t.desc+'</div><div class="t-countdown '+(urgent?'urgent':'')+'">⏱️ 剩余 '+hours+' 小时 '+mins+' 分钟</div><button class="t-btn danger" onclick="TaskSystem.triggerVerify(\''+t.id+'\', true)">📝 提交完成证据</button></div>';
+                return '<div class="task-item punish-task"><div class="t-title">'+escapeHtml(t.title)+'</div><div class="t-desc">'+escapeHtml(t.desc)+'</div><div class="t-countdown '+(urgent?'urgent':'')+'">⏱️ 剩余 '+hours+' 小时 '+mins+' 分钟</div><button class="t-btn danger" onclick="TaskSystem.triggerVerify(\''+escapeHtml(t.id)+'\', true)">📝 提交完成证据</button></div>';
             }).join('')+'</div>';
         if (active.length > 0) { setTimeout(renderPunishTasks, 30000); }
     }
@@ -1790,6 +2169,73 @@
     let isSending = false;
     let sisterKissCooldown = false; // 亲姐姐每日冷却
 
+    function memoryEntryText(entry) {
+        if (!entry) return '';
+        let content = entry.content;
+        if (content && typeof content === 'object' && !Array.isArray(content)) content = content.text || '';
+        if (Array.isArray(content)) {
+            const textPart = content.find(x => x && x.type === 'text');
+            content = textPart ? textPart.text : '';
+        }
+        return String(content || '').trim();
+    }
+
+    function updateMemoryCount() {
+        const el = document.getElementById('memoryCount');
+        if (el) el.textContent = String((GameData.ai.dialogHistory || []).length);
+    }
+
+    function buildRelevantMemory(query, limit = 12) {
+        const history = GameData.ai.dialogHistory || [];
+        const recent = history.slice(-8);
+        const terms = String(query || '').toLowerCase().split(/\s+/).filter(t => t.length >= 2);
+        const matched = [];
+        for (let i = history.length - 1; i >= 0 && matched.length < limit; i--) {
+            const entry = history[i];
+            const text = memoryEntryText(entry).toLowerCase();
+            if (!text) continue;
+            if (!terms.length || terms.some(term => text.includes(term))) matched.push(entry);
+        }
+        const merged = [...matched.reverse(), ...recent];
+        const seen = new Set();
+        return merged.filter(entry => {
+            const key = (entry.time || '') + '|' + memoryEntryText(entry);
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        }).slice(-limit);
+    }
+
+    function openMemorySearch() {
+        document.getElementById('memoryModal').classList.add('active');
+        const input = document.getElementById('memorySearchInput');
+        input.value = '';
+        renderMemorySearch('');
+        setTimeout(() => input.focus(), 50);
+    }
+
+    function closeMemorySearch() {
+        document.getElementById('memoryModal').classList.remove('active');
+    }
+
+    function renderMemorySearch(query) {
+        const container = document.getElementById('memoryResults');
+        const q = String(query || '').trim().toLowerCase();
+        const rows = [...(GameData.ai.dialogHistory || [])].reverse().filter(entry => {
+            const text = memoryEntryText(entry).toLowerCase();
+            return text && (!q || text.includes(q));
+        }).slice(0, 60);
+        if (!rows.length) {
+            container.innerHTML = '<div class="memory-item"><div class="text">没有找到相关记忆。</div></div>';
+            return;
+        }
+        container.innerHTML = rows.map(entry => {
+            const role = entry.role === 'user' ? '你' : '欣原';
+            const time = entry.time ? TS.fmt(new Date(entry.time)) : '';
+            return '<div class="memory-item"><div class="meta">' + escapeHtml(role + ' · ' + time) + '</div><div class="text">' + escapeHtml(memoryEntryText(entry)) + '</div></div>';
+        }).join('');
+    }
+
     function addChatMessage(role, content, push = false, img = null) {
         const time = TS.fmt(TS.now());
         let finalContent = content;
@@ -1823,10 +2269,11 @@
         let lastHistContent = lastHist ? (typeof lastHist.content === 'object' ? lastHist.content.text : lastHist.content) : '';
         if (!lastHist || lastHistContent !== historyEntry.content || lastHist.role !== historyEntry.role) {
             GameData.ai.dialogHistory.push(historyEntry);
-            if (GameData.ai.dialogHistory.length > 30) {
-                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-30);
+            if (GameData.ai.dialogHistory.length > 500) {
+                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-500);
             }
         }
+        updateMemoryCount();
 
         if (!push) {
             if (role === 'assistant') {
@@ -1865,7 +2312,7 @@
         if (role === 'assistant') {
             continueBtn = '<button class="continue-btn" onclick="handleChatContinueFromMsg(\'' + msgId + '\', this)">✉ 续写</button>';
         }
-        const html = '<div class="chat-msg ' + (role === 'user' ? 'user' : 'ai') + '" id="' + msgId + '"><div class="bubble">' + imgHtml + content + '</div>' + storyBadge + '<div class="time">' + time + '</div>' + continueBtn + '</div>';
+        const html = '<div class="chat-msg ' + (role === 'user' ? 'user' : 'ai') + '" id="' + msgId + '"><div class="bubble">' + imgHtml + formatChatText(content) + '</div>' + storyBadge + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
         area.insertAdjacentHTML('beforeend', html);
         area.scrollTop = area.scrollHeight;
     }
@@ -1873,7 +2320,7 @@
     function syncChatMessages() {
         const area = document.getElementById('chatMessagesArea');
         area.innerHTML = '';
-        const msgs = chatMessages.slice(-30);
+        const msgs = chatMessages.slice(-100);
         for (let m of msgs) {
             const time = m.time || TS.fmt(TS.now());
             let imgHtml = '';
@@ -1887,7 +2334,7 @@
                 const msgId = 'chatmsg_sync_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
                 continueBtn = '<button class="continue-btn" onclick="handleChatContinueFromMsg(\'' + msgId + '\', this)">✉ 续写</button>';
             }
-            const html = '<div class="chat-msg ' + (m.role === 'user' ? 'user' : 'ai') + '"><div class="bubble">' + imgHtml + m.content + '</div>' + storyBadge + '<div class="time">' + time + '</div>' + continueBtn + '</div>';
+            const html = '<div class="chat-msg ' + (m.role === 'user' ? 'user' : 'ai') + '"><div class="bubble">' + imgHtml + formatChatText(m.content) + '</div>' + storyBadge + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
             area.insertAdjacentHTML('beforeend', html);
         }
         area.scrollTop = area.scrollHeight;
@@ -1952,6 +2399,18 @@
             btn.textContent = '✉ 续写';
             btn.style.color = '';
             btn.disabled = false;
+        }
+    }
+
+    function autoGrowChatInput(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    }
+
+    function handleChatInputKeydown(event) {
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+            event.preventDefault();
+            sendChatMessage();
         }
     }
 
@@ -2020,6 +2479,7 @@
             const daily = GameData.tasks.daily.filter(t => !t.done).map(t => t.title).join('、') || '无';
             const main = GameData.tasks.mainQuests.filter(t => !t.done).map(t => t.title).join('、') || '无';
             const rel = getRel(GameData.ai.affection);
+            const profileSummary = GameData.profile && GameData.profile.summary ? GameData.profile.summary : '尚未设置';
 
             // ★ 人设写死系统 Prompt
             let sysPrompt = `你是欣原，VIP009 的监护人。你深爱她，但表达方式毒舌、傲娇、嘴硬心软。
@@ -2045,6 +2505,7 @@
 【VIP009 当前状态】
 - 好感度：${GameData.ai.affection} / 520
 - 关系：${rel.label}
+- 个人目标与基础：${profileSummary}
 - 未完成每日任务：${daily}
 - 未完成主线任务：${main}
 
@@ -2071,7 +2532,10 @@
                 userContent = msg;
             }
 
-            const hist = GameData.ai.dialogHistory.slice(-6).map(m => {
+            const hist = buildRelevantMemory(msg, 12).filter(m => {
+                if (!m || m.role !== 'user') return true;
+                return memoryEntryText(m).trim() !== String(msg || '').trim();
+            }).map(m => {
                 let c = m.content;
                 if (typeof c === 'object' && c !== null) {
                     const txt = c.text || '';
@@ -2176,7 +2640,18 @@
         try {
             addChatMessage('user', text || '📷 [图片]', false, img);
             input.value = '';
+            autoGrowChatInput(input);
             GameData.user.records.lastActiveTime = Date.now();
+
+            if (/^\$?(重新|重新规划|重新生成|重做).{0,6}任务/.test(text.trim())) {
+                addChatMessage('assistant', '[把旧计划推到一边] 想重排计划可以。把最近的情况写清楚，别只写一句“都行”。', true);
+                openOnboarding(true);
+                sendBtn.disabled = false;
+                sendBtn.style.opacity = '1';
+                input.disabled = false;
+                input.focus();
+                return;
+            }
 
             // ★ 检测加任务指令
             if (detectTaskRequest(text)) {
@@ -2194,6 +2669,7 @@
                 dTask.lastUpdate = Date.now();
                 if (dTask.progress >= dTask.max) {
                     dTask.done = true;
+                    markTaskActivity(true);
                     GameData.user.currency.milkTea += dTask.reward;
                     GameData.treasure.milkTea = GameData.user.currency.milkTea;
                     showNotif('✅ 深度咨询完成！+' + dTask.reward + ' 🍰 小奶糕');
@@ -2212,6 +2688,7 @@
             sendBtn.disabled = false;
             sendBtn.style.opacity = '1';
             input.disabled = false;
+            autoGrowChatInput(input);
             input.focus();
         }
     }
@@ -2220,6 +2697,8 @@
     async function handleTaskRequest(userMessage) {
         const isForceMode = userMessage.trim().startsWith('$强制加任务');
         const isSisterKiss = userMessage.trim().startsWith('$想亲姐姐');
+        const isModifyMode = /^\$(改|修改|调整|删除|取消)任务/.test(userMessage.trim()) ||
+            /(修改任务|调整任务|删除任务|取消任务|换一个任务|改成任务|(把|将).{0,20}任务.{0,20}(改成|换成|改为)|(修改|调整|删除|取消).{0,12}任务|任务.{0,12}(修改|调整|删除|取消))/.test(userMessage);
 
         // ★ 亲姐姐互动
         if (isSisterKiss) {
@@ -2239,6 +2718,11 @@
             GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + 2);
             saveData();
             updateUI();
+            return;
+        }
+
+        if (isModifyMode) {
+            await handleTaskModificationRequest(userMessage);
             return;
         }
 
@@ -2271,6 +2755,7 @@
                 difficulty: 1
             };
             GameData.tasks.mainQuests.push(newTask);
+            markTaskActivity(false);
             const reply = '[啧] 强制加任务？行，你厉害。给你加了「' + taskDesc.substring(0, 20) + '」。完不成的话，你知道后果。';
             addChatMessage('assistant', reply, true);
             showNotif('✅ 强制添加成功：「' + taskDesc.substring(0, 15) + '…」');
@@ -2302,6 +2787,7 @@
                     difficulty: 1
                 };
                 GameData.tasks.mainQuests.push(newTask);
+                markTaskActivity(false);
                 const reply = '[轻哼一声] 行，既然你坚持，就给你加了「' + taskDesc.substring(0, 20) + '」。别让我失望。';
                 addChatMessage('assistant', reply, true);
                 showNotif('✅ 新任务已添加：「' + taskDesc.substring(0, 15) + '…」');
@@ -2330,6 +2816,7 @@
                     difficulty: 1
                 };
                 GameData.tasks.mainQuests.push(newTask);
+                markTaskActivity(false);
                 addChatMessage('assistant', '[微微颔首] 既然你问了，就给你加上。不过别让我失望。', true);
                 showNotif('✅ 新任务已添加：「' + taskDesc.substring(0, 15) + '…」');
                 saveData();
@@ -2590,7 +3077,7 @@
         container.innerHTML = GameData.mail.items.map(m => {
             const unreadClass = m.read ? '' : 'unread';
             const statusText = m.read ? '已读' : '未读';
-            return '<div class="mail-item ' + unreadClass + '"><div class="mail-info" onclick="openMailDetail(' + m.id + ')"><div class="mail-title">' + m.title + '</div><div class="mail-desc">' + m.desc + '</div><div class="mail-sender">' + m.from + ' · ' + TS.fmt(new Date(m.time)) + '</div><span class="mail-tag">' + m.typeLabel + '</span></div><div class="mail-status ' + (m.read ? 'read' : '') + '">' + statusText + '</div><button class="mail-delete-btn" onclick="deleteMail(' + m.id + ')" title="删除邮件">🗑️</button></div>';
+            return '<div class="mail-item ' + unreadClass + '"><div class="mail-info" onclick="openMailDetail(' + Number(m.id) + ')"><div class="mail-title">' + escapeHtml(m.title) + '</div><div class="mail-desc">' + escapeHtml(m.desc) + '</div><div class="mail-sender">' + escapeHtml(m.from) + ' · ' + escapeHtml(TS.fmt(new Date(m.time))) + '</div><span class="mail-tag">' + escapeHtml(m.typeLabel) + '</span></div><div class="mail-status ' + (m.read ? 'read' : '') + '">' + statusText + '</div><button class="mail-delete-btn" onclick="deleteMail(' + Number(m.id) + ')" title="删除邮件">🗑️</button></div>';
         }).join('');
     }
 
@@ -2823,8 +3310,8 @@
             html += '<div class="timecapsule-section">';
             html += '<div class="section-title">' + info.icon + ' ' + info.label + '</div>';
             groups[key].forEach(s => {
-                html += '<div class="timecapsule-story" onclick="openTimeCapsuleDetail(' + s.id + ')">';
-                html += '<div class="left"><div class="story-title">#' + s.id + ' ' + s.title + '</div><div class="story-date">' + s.date + '</div></div>';
+                html += '<div class="timecapsule-story" onclick="openTimeCapsuleDetail(' + Number(s.id) + ')">';
+                html += '<div class="left"><div class="story-title">#' + Number(s.id) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date) + '</div></div>';
                 html += '<div class="right">💌</div>';
                 html += '</div>';
             });
@@ -2928,8 +3415,8 @@
         el.innerHTML = GameData.diary.entries.map(e => {
             const date = new Date(e.date);
             const dateStr = String(date.getMonth() + 1).padStart(2, '0') + '/' + String(date.getDate()).padStart(2, '0');
-            const notePreview = e.note ? '<div class="note-preview">📝 ' + e.note.substring(0, 20) + (e.note.length > 20 ? '…' : '') + '</div>' : '';
-            return '<div class="diary-entry-item" onclick="openDiaryDetail(' + e.id + ')"><div class="left"><div class="date">' + dateStr + '</div><div class="text">' + e.text.substring(0, 50) + (e.text.length > 50 ? '…' : '') + '</div>' + notePreview + '</div><button class="del-btn" onclick="event.stopPropagation();deleteDiaryEntry(' + e.id + ')">✕</button></div>';
+            const notePreview = e.note ? '<div class="note-preview">📝 ' + escapeHtml(e.note.substring(0, 20)) + (e.note.length > 20 ? '…' : '') + '</div>' : '';
+            return '<div class="diary-entry-item" onclick="openDiaryDetail(' + Number(e.id) + ')"><div class="left"><div class="date">' + dateStr + '</div><div class="text">' + escapeHtml(e.text.substring(0, 50)) + (e.text.length > 50 ? '…' : '') + '</div>' + notePreview + '</div><button class="del-btn" onclick="event.stopPropagation();deleteDiaryEntry(' + Number(e.id) + ')">✕</button></div>';
         }).join('');
     }
 
@@ -3034,6 +3521,7 @@
         showView('settingsView');
         document.getElementById('apiKeyInput').value = GameData.settings.apiKey || '';
         document.getElementById('pushToggle').textContent = GameData.settings.autoPushEnabled ? '已开启' : '已关闭';
+        updateMemoryCount();
         updateCatStatus();
         const poolEditor = document.getElementById('taskPoolEditor');
         if (poolEditor) poolEditor.value = JSON.stringify(GameData.taskPool, null, 2);
@@ -3350,7 +3838,11 @@
     }
 
     function exportData() {
-        const b = new Blob([JSON.stringify(GameData, null, 2)], { type: 'application/json' });
+        const safeData = JSON.parse(JSON.stringify(GameData));
+        delete safeData.settings.apiKey;
+        safeData._exportedWithoutApiKey = true;
+        safeData._exportedAt = new Date().toISOString();
+        const b = new Blob([JSON.stringify(safeData, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(b);
         a.download = '欣原_备份_' + Date.now() + '.json';
@@ -3366,7 +3858,19 @@
             const f = e.target.files[0];
             const r = new FileReader();
             r.onload = function(ev) {
-                try { Object.assign(GameData, JSON.parse(ev.target.result));
+                try {
+                    const parsed = JSON.parse(ev.target.result);
+                    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('bad data');
+                    const currentApiKey = GameData.settings.apiKey;
+                    Object.assign(GameData, parsed);
+                    if (!GameData.settings) GameData.settings = { apiKey: currentApiKey, autoPushEnabled: true };
+                    GameData.settings.apiKey = currentApiKey;
+                    [...(GameData.tasks.daily || []), ...(GameData.tasks.mainQuests || []), ...(GameData.tasks.sideQuests || [])].forEach(t => {
+                        if (t && t.irreversibleExemption) {
+                            t.exempted = true;
+                            t.done = true;
+                        }
+                    });
                     saveData();
                     updateUI();
                     showNotif('✅ 导入成功，刷新');
@@ -3390,24 +3894,126 @@
     // ============================================================
     let pushInt = null;
 
+    function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            showNotif('这个浏览器不支持系统通知');
+            return;
+        }
+        Notification.requestPermission().then(permission => {
+            showNotif(permission === 'granted' ? '系统通知已开启' : '系统通知没有开启');
+        });
+    }
+
+    function sendBrowserNotification(message) {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        const options = {
+            body: message,
+            tag: 'xinyuan-reminder',
+            renotify: true,
+            icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="48" fill="%239c64ff"/%3E%3Ctext x="50" y="65" font-size="50" text-anchor="middle" fill="white"%3E欣%3C/text%3E%3C/svg%3E'
+        };
+        try {
+            new Notification('欣原提醒', options);
+        } catch (_) {
+            if (navigator.serviceWorker && navigator.serviceWorker.ready) {
+                navigator.serviceWorker.ready.then(reg => reg.showNotification('欣原提醒', options)).catch(() => {});
+            }
+        }
+    }
+
+    function markTaskActivity(completed) {
+        if (!GameData.reminder) return;
+        GameData.reminder.lastTaskActionAt = Date.now();
+        if (completed) GameData.reminder.lastCompletionDate = TS.getDateKey(TS.now());
+    }
+
+    function getReminderStats() {
+        const now = Date.now();
+        const all = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests];
+        const incomplete = all.filter(t => !t.done && !t.exempted).length;
+        const noTouchMs = now - (GameData.reminder.lastTaskActionAt || now);
+        const completionKey = GameData.reminder.lastCompletionDate;
+        const historyWithCompletion = (GameData.taskHistory || []).filter(h => h.completed > 0);
+        const lastCompletionKey = completionKey || (historyWithCompletion.length ? historyWithCompletion[historyWithCompletion.length - 1].date : null);
+        let missedDays = 0;
+        if (lastCompletionKey) {
+            const diff = new Date(TS.getToday()) - new Date(lastCompletionKey);
+            missedDays = Math.max(0, Math.floor(diff / 86400000));
+        } else if (GameData.taskHistory && GameData.taskHistory.length) {
+            missedDays = GameData.taskHistory.length;
+        }
+        return { incomplete, noTouchMs, missedDays, recentRate: calculateRecentRate() };
+    }
+
+    function fallbackReminderMessage(reason, stats) {
+        if (reason === 'multi-day') {
+            return `[合上手里的文件] 已经 ${stats.missedDays} 天没有完成记录了。你不是不会，是一直在躲。先挑最简单的一项，十分钟内开始。`;
+        }
+        if (reason === 'missed-day') {
+            return '[看了一眼任务栏] 今天还没有任何完成记录。别等我把话说难听，先做一项。';
+        }
+        return `[敲了敲任务栏] 你在这里停了很久，任务还有 ${stats.incomplete} 项没动。别装作没看见，先开一个头。`;
+    }
+
+    async function generateReminderMessage(reason, stats) {
+        const fallback = fallbackReminderMessage(reason, stats);
+        if (!GameData.settings.apiKey) return fallback;
+        try {
+            const taskTitles = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests]
+                .filter(t => !t.done && !t.exempted).slice(0, 6).map(t => t.title).join('、') || '暂无';
+            const reasonText = reason === 'multi-day' ? `已经 ${stats.missedDays} 天没有完成记录` : reason === 'missed-day' ? '今天还没有完成记录' : `任务栏长时间没有行动，已经停了约 ${Math.floor(stats.noTouchMs / 3600000)} 小时`;
+            const prompt = `请以欣原的口吻写一句主动提醒。情况：${reasonText}。未完成任务：${taskTitles}。最近完成率：${Math.round(stats.recentRate * 100)}%。要求：像活人，不像系统通知；毒舌、傲娇、嘴硬心软；具体催一个最容易开始的行动；30-70 字；不要使用 Markdown。`;
+            const result = await callAIChat(prompt, '你是欣原，毒舌、傲娇、嘴硬心软，真正关心用户能否开始行动。只说一句提醒。');
+            return String(result || fallback).trim().slice(0, 180);
+        } catch (_) {
+            return fallback;
+        }
+    }
+
+    async function deliverReminder(reason) {
+        const stats = getReminderStats();
+        const message = await generateReminderMessage(reason, stats);
+        addChatMessage('assistant', message, true);
+        GameData.chat.unreadCount++;
+        updateUnreadBadge();
+        sendBrowserNotification(message);
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80]);
+        saveData();
+    }
+
+    async function checkActivityReminders() {
+        if (!GameData.settings.autoPushEnabled || !GameData.reminder) return;
+        const reminder = GameData.reminder;
+        const now = Date.now();
+        const stats = getReminderStats();
+        let reason = null;
+        if (stats.missedDays >= 2 && now - (reminder.lastMissedDayAt || 0) > 18 * 3600000) {
+            reason = 'multi-day';
+            reminder.lastMissedDayAt = now;
+        } else if (stats.missedDays >= 1 && now - (reminder.lastMissedDayAt || 0) > 18 * 3600000) {
+            reason = 'missed-day';
+            reminder.lastMissedDayAt = now;
+        } else if (stats.incomplete > 0 && stats.noTouchMs >= 2 * 3600000 && now - (reminder.lastInactivityAt || 0) > 4 * 3600000) {
+            reason = 'inactivity';
+            reminder.lastInactivityAt = now;
+        }
+        if (!reason) return;
+        reminder.lastMessageAt = now;
+        await deliverReminder(reason);
+    }
+
     function startPush() {
         if (pushInt) clearInterval(pushInt);
-        pushInt = setInterval(() => {
-            if (!GameData.settings.autoPushEnabled) return;
-            if (Date.now() - GameData.user.records.lastActiveTime > 30 * 60000) {
-                const msg = getNextPush();
-                addChatMessage('assistant', msg, true);
-                if (navigator.setAppBadge) navigator.setAppBadge(1).catch(() => {});
-                if (Notification.permission === 'granted') {
-                    new Notification('💜 欣原', {
-                        body: msg,
-                        icon: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="48" fill="%239c64ff"/%3E%3Ctext x="50" y="65" font-size="50" text-anchor="middle" fill="white"%3E欣%3C/text%3E%3C/svg%3E'
-                    });
-                }
-                GameData.user.records.lastActiveTime = Date.now();
-                saveData();
-            }
-        }, 10 * 60000);
+        checkActivityReminders();
+        pushInt = setInterval(checkActivityReminders, 5 * 60000);
+    }
+
+    async function testReminder() {
+        if (!GameData.settings.autoPushEnabled) {
+            showNotif('先开启主动提醒');
+            return;
+        }
+        await deliverReminder('inactivity');
     }
 
     // ============================================================
@@ -3472,6 +4078,8 @@
     document.getElementById('diaryBack').addEventListener('click', closeDiaryView);
     document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
     document.getElementById('diaryDetailModal').addEventListener('click', function(e) { if (e.target === this) closeDiaryDetail(); });
+    document.getElementById('onboardingModal').addEventListener('click', function(e) { if (e.target === this) closeOnboarding(); });
+    document.getElementById('memoryModal').addEventListener('click', function(e) { if (e.target === this) closeMemorySearch(); });
 
     document.getElementById('apiKeyInput').addEventListener('change', function() {
         GameData.settings.apiKey = this.value.trim();
@@ -3480,6 +4088,12 @@
     });
 
     window.addEventListener('focus', () => { if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {}); });
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            if (navigator.clearAppBadge) navigator.clearAppBadge().catch(() => {});
+            setTimeout(checkActivityReminders, 1200);
+        }
+    });
 
     // ============================================================
     //  START
@@ -3487,10 +4101,11 @@
     document.addEventListener('DOMContentLoaded', function() {
         loadData();
         startPush();
-        if (Notification.permission === 'default') Notification.requestPermission();
+        updateMemoryCount();
+        if (!GameData.profile.onboarded) setTimeout(() => openOnboarding(false), 900);
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
-                sendMail('📌 欢迎来到欣原监督系统 V3.4', '欢迎回来，VIP009。\n\nV3.4 全新升级：\n- ✅ 任务完成状态永久固化\n- ✅ 每日任务凌晨自动刷新\n- ✅ 双VL模型分工（审核用32B，聊天用30B-A3B）\n- ✅ 亲姐姐互动奖励（完成任务30%概率触发）\n- ✅ 爱心+星星点缀，无黑块\n- ✅ 台词去重 + 人设写死\n- ✅ 处罚系统升级（扣🍰+好感度+追加任务）\n- ✅ 金融知识自动生成（包教包会）\n- ✅ 已完成任务按钮禁用\n\n慢慢变强，我在看着你。', 30, 'gift', '欣原');
+                sendMail('📌 欢迎来到欣原监督系统 V4.0', '欢迎回来，VIP009。\n\nV4.0 升级：\n- 长期记忆与历史搜索\n- 首次目标设定和专属任务生成\n- 聊天调整任务并经过合理性判断\n- 长时间无行动与多日未完成提醒\n- 豁免结果不可撤销\n- 聊天输入框自动增高\n\n慢慢变强，我在看着你。', 30, 'gift', '欣原');
             }, 1500);
         }
         document.getElementById('tabShop').addEventListener('click', function(e) { e.stopPropagation();
