@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.1</title>
+    <title>VIP009 · 欣原监督系统 V4.2</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -612,7 +612,7 @@
                 <div class="checkin-section" id="checkinSection">
                     <div class="left"><div class="label">🌱 成长连续</div><div class="streak" id="streakDisplay">🔥 0 天</div></div>
                     <button class="btn-checkin" id="checkinBtn" onclick="doCheckin()">
-                        ✨ 刻下印记
+                        <span id="checkinBtnText">✨ 刻下印记</span>
                         <span class="star-dust"></span>
                         <span class="star-dust"></span>
                         <span class="star-dust"></span>
@@ -623,6 +623,7 @@
                     <div class="entry" onclick="openDiaryView()"><span class="icon">📔</span> 日记</div>
                     <div class="entry" onclick="openMailView()"><span class="icon">✉️</span> 邮箱</div>
                     <div class="entry treasure-entry" onclick="openTreasureView()"><span class="icon">🔮</span> 珍藏阁</div>
+                    <div class="entry" onclick="openShopView()"><span class="icon">✨</span> 臻品阁</div>
                     <div class="entry timecapsule-entry" onclick="openTimeCapsuleView()"><span class="icon">💌</span> 时光笺</div>
                 </div>
                 <div class="mail-section" id="mailEntry">
@@ -649,7 +650,6 @@
                         </div>
                         <div class="card-actions">
                             <button class="btn primary" onclick="openOnboarding(true)">重新生成计划</button>
-                            <button class="btn" onclick="switchPageById('today')">查看今日任务</button>
                             <button class="btn" onclick="openShopView()">打开臻品阁</button>
                         </div>
                     </div>
@@ -666,12 +666,11 @@
                         <div class="page-stats">
                             <div class="page-stat"><strong id="messageUnreadCount">0</strong><span>未读消息</span></div>
                             <div class="page-stat"><strong id="messageMailCount">0</strong><span>未读邮件</span></div>
-                            <div class="page-stat"><strong id="messageMemoryCount">0</strong><span>长期记忆</span></div>
+                            <div class="page-stat"><strong id="messageTodayCount">0</strong><span>今日完成</span></div>
                         </div>
                         <div class="card-actions">
                             <button class="btn primary" onclick="openSupervisorChat()">打开对话</button>
                             <button class="btn" onclick="openMailView()">打开邮箱</button>
-                            <button class="btn" onclick="openMemorySearch()">搜索记忆</button>
                         </div>
                     </div>
                 </div>
@@ -679,7 +678,7 @@
                 <div class="app-page" id="pageGrowth">
                     <div class="page-card">
                         <h3>成长面板</h3>
-                        <p>任务完成、连续打卡和长期记忆会在这里汇总。</p>
+                        <p>任务完成、连续打卡和成长数据会在这里汇总。</p>
                         <div class="page-stats">
                             <div class="page-stat"><strong id="growthStreak">0</strong><span>连续天数</span></div>
                             <div class="page-stat"><strong id="growthAffection">0</strong><span>好感度</span></div>
@@ -712,6 +711,13 @@
                         <h3>当前统计</h3>
                         <p id="profileSummaryText">数据读取中。</p>
                     </div>
+                    <div class="page-card">
+                        <h3>订阅与充值</h3>
+                        <p>额度用于聊天、图片识别和任务审核。订阅用户将获得额度、专属监管者皮肤和更多记忆容量。</p>
+                        <div class="card-actions">
+                            <button class="btn primary" onclick="openBillingView()">查看方案</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="bottom-tabs">
@@ -729,7 +735,6 @@
                 <div class="back-avatar"><img src="./avatar.jpg" alt="欣原" id="chatSupervisorAvatar"></div>
                 <div class="chat-title"><h3 id="chatSupervisorName">欣原</h3><div class="signature" id="chatSupervisorSignature">爱是世界上最不保值的资产</div></div>
                 <div class="chat-unread" id="chatUnreadBadge">未读</div>
-                <button class="memory-btn" id="memoryBtn" onclick="event.stopPropagation();openMemorySearch()">记忆</button>
                 <!-- ★ 爱心 + 星星环绕 -->
                 <div class="chat-heart-wrapper">
                     <span class="orbit-star">✦</span>
@@ -760,7 +765,7 @@
         <div id="diaryView" class="view">
             <div class="diary-top" id="diaryTop"><span class="back" id="diaryBack">←</span><span class="diary-title">📔 日记</span></div>
             <div class="diary-area">
-                <textarea class="diary-input" id="diaryInput" placeholder="写点什么吧… 她会看到的。"></textarea>
+                <textarea class="diary-input" id="diaryInput" placeholder="写下今天真正发生的事…"></textarea>
                 <div class="diary-actions">
                     <button class="btn primary" onclick="saveDiary()">💾 保存</button>
                     <button class="btn secondary" onclick="clearDiaryInput()">清空</button>
@@ -786,7 +791,6 @@
                 <div class="setting-item"><span class="label">🔑 API Key</span><input type="password" id="apiKeyInput" autocomplete="off" placeholder="输入硅基密钥"></div>
                 <div class="setting-item"><span class="label">📢 主动提醒</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" id="pushToggle" onclick="togglePush()">已开启</button><button class="btn" onclick="requestNotificationPermission()">开启通知</button><button class="btn" onclick="testReminder()">测试提醒</button></div></div>
                 <div class="setting-item"><span class="label">🎯 个人计划</span><button class="btn" onclick="openOnboarding(true)">重新设定并生成任务</button></div>
-                <div class="setting-item"><span class="label">🧠 长期记忆</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">已保存 <span id="memoryCount">0</span> 条对话</span></div>
                 <div class="setting-item"><span class="label">💾 数据</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" onclick="exportData()">导出</button><button class="btn" onclick="importData()">导入</button><button class="btn danger" onclick="resetData()">重置</button></div></div>
                 <div class="setting-item"><span class="label">🐱 BB（阿比西尼亚猫）</span><span style="font-size:11px; color:rgba(255,255,255,0.3);">状态：<span id="catStatus">😺 健康</span></span></div>
                 <div class="task-pool-area" style="display:none;">
@@ -796,6 +800,29 @@
                         <button class="btn primary" onclick="saveTaskPool()">保存任务池</button>
                         <button class="btn" onclick="resetTaskPool()">恢复默认</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="billingView" class="view">
+            <div style="display:flex; align-items:center; padding:8px 0 8px; border-bottom:1px solid rgba(255,255,255,0.04); flex-shrink:0; gap:10px; cursor:pointer;" onclick="closeBillingView()">
+                <span style="font-size:20px; color:rgba(255,255,255,0.3);">←</span>
+                <span style="font-size:16px; color:#fff; font-weight:600;">订阅与充值</span>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding:10px 0;">
+                <div class="page-card">
+                    <h3>体验版</h3>
+                    <p>内测期间所有功能免费，小奶糕保持无限，不扣除真实额度。</p>
+                </div>
+                <div class="page-card">
+                    <h3>陪伴订阅</h3>
+                    <p>正式版计划包含每月 AI 额度、长期记忆扩容、专属监管者主题和优先提醒。</p>
+                    <div class="card-actions"><button class="btn primary" disabled>即将开放</button></div>
+                </div>
+                <div class="page-card">
+                    <h3>额外额度</h3>
+                    <p>按聊天、图片识别和任务审核的实际用量扣减。正式上线后再开启支付。</p>
+                    <div class="card-actions"><button class="btn primary" disabled>即将开放</button></div>
                 </div>
             </div>
         </div>
@@ -899,18 +926,6 @@
         </div>
     </div>
 
-    <div class="modal" id="memoryModal">
-        <div class="content">
-            <h3>长期记忆</h3>
-            <div class="setup-copy">可以按关键词查找以前的对话。记忆会保存在当前浏览器中，并用于后续聊天。</div>
-            <input class="memory-search" id="memorySearchInput" placeholder="搜索以前说过的话..." oninput="renderMemorySearch(this.value)">
-            <div class="memory-results" id="memoryResults"></div>
-            <div class="actions">
-                <button class="btn secondary" onclick="closeMemorySearch()">关闭</button>
-            </div>
-        </div>
-    </div>
-
     <div id="randomNotificationContainer"></div>
     <!-- ===== 第二段结束 ===== -->
     <!-- ===== 第三段开始 ===== -->
@@ -989,7 +1004,7 @@
     // ★ GameData 结构
     const GameData = {
         user: {
-            currency: { milkTea: 300 },
+            currency: { milkTea: 99999999 },
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
         ai: { affection: 0, dialogHistory: [] },
@@ -1002,7 +1017,7 @@
             lockedAt: null,
             history: []
         },
-        memory: { version: 1, lastCompactedAt: null, facts: [] },
+        memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
         settings: { apiKey: '', autoPushEnabled: true },
         reminder: {
@@ -1017,7 +1032,7 @@
         mail: { items: [], nextId: 1 },
         chat: { unreadCount: 0, storyUnread: false },
         treasure: {
-            milkTea: 300,
+            milkTea: 99999999,
             offsetCards: 0,
             letters: 0,
             special: 0,
@@ -1165,7 +1180,10 @@ const DEFAULT_TASK_POOL = [
         };
     }
     if (!Array.isArray(GameData.supervisor.history)) GameData.supervisor.history = [];
-    if (!GameData.memory) GameData.memory = { version: 1, lastCompactedAt: null, facts: [] };
+    if (!GameData.memory) GameData.memory = { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null };
+    if (!Array.isArray(GameData.memory.facts)) GameData.memory.facts = [];
+    if (typeof GameData.memory.summary !== 'string') GameData.memory.summary = '';
+    if (typeof GameData.memory.lastProcessedIndex !== 'number') GameData.memory.lastProcessedIndex = 0;
     if (!GameData.reminder) {
         GameData.reminder = {
             enabled: true,
@@ -1177,7 +1195,10 @@ const DEFAULT_TASK_POOL = [
         };
     }
     if (!Array.isArray(GameData.ai.dialogHistory)) GameData.ai.dialogHistory = [];
-    if (GameData.ai.dialogHistory.length > 500) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-500);
+    if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
+    GameData.settings.betaUnlimitedCurrency = true;
+    GameData.user.currency.milkTea = 99999999;
+    GameData.treasure.milkTea = 99999999;
     if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
     if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
     if (!GameData.treasure.coupons) GameData.treasure.coupons = { act_cute: 0, meow: 0, story: 0 };
@@ -1220,6 +1241,9 @@ const DEFAULT_TASK_POOL = [
 
     if (!GameData.tasks.daily || !GameData.tasks.daily.length) {
         GameData.tasks.daily = TaskSystem.genDaily();
+    }
+    if (GameData.tasks.daily.length > 2) {
+        GameData.tasks.daily = GameData.tasks.daily.slice(0, 2);
     }
     if (!GameData.tasks.mainQuests || !GameData.tasks.mainQuests.length) {
         GameData.tasks.mainQuests = TaskSystem.initMain();
@@ -1829,7 +1853,7 @@ ${profile}
 ${current}
 
 【规则】
-1. 每日任务 3-5 个，必须能当天反复执行和记录。
+1. 每日任务固定 2 个，必须能当天反复执行和记录。
 2. 主线任务 2-4 个，是未来几周的核心成长方向。
 3. 支线任务 2-4 个，是能补充状态但不应压垮用户的轻量挑战。
 4. 尊重用户的身体限制、时间限制和明确禁忌。
@@ -1849,10 +1873,10 @@ ${current}
                 plan = parseAIJson(repair);
             }
 
-            const dailyRaw = Array.isArray(plan.daily) ? plan.daily.slice(0, 5) : [];
+            const dailyRaw = Array.isArray(plan.daily) ? plan.daily.slice(0, 2) : [];
             const mainRaw = Array.isArray(plan.main) ? plan.main.slice(0, 4) : [];
             const sideRaw = Array.isArray(plan.side) ? plan.side.slice(0, 4) : [];
-            if (dailyRaw.length < 3 || mainRaw.length < 2 || sideRaw.length < 2) {
+            if (dailyRaw.length < 2 || mainRaw.length < 2 || sideRaw.length < 2) {
                 throw new Error('任务数量和分类不完整');
             }
 
@@ -2006,6 +2030,33 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
     // ============================================================
     //  ★ updateTasks 渲染（已完成任务按钮禁用）
     // ============================================================
+    function getDailyStandard() {
+        const core = [...GameData.tasks.daily, ...GameData.tasks.mainQuests];
+        const completed = core.filter(t => t.done || t.exempted).length;
+        const required = Math.max(3, Math.ceil(core.length * 0.5));
+        const mainCompleted = GameData.tasks.mainQuests.filter(t => t.done || t.exempted).length;
+        return {
+            completed,
+            required,
+            mainCompleted,
+            met: completed >= required && mainCompleted >= 1
+        };
+    }
+
+    function updateCheckinGate() {
+        const btn = document.getElementById('checkinBtn');
+        const label = document.getElementById('checkinBtnText');
+        if (!btn || !label) return;
+        const today = new Date().toDateString();
+        const checkedToday = GameData.checkin.lastDate === today;
+        const standard = getDailyStandard();
+        btn.disabled = checkedToday || !standard.met;
+        btn.classList.toggle('done', checkedToday);
+        if (checkedToday) label.textContent = '今日已刻印';
+        else if (!standard.met) label.textContent = `达标 ${standard.completed}/${standard.required}`;
+        else label.textContent = '✨ 刻下印记';
+    }
+
     function updateTasks() {
         const render = (list, id, type) => {
             const el = document.getElementById(id);
@@ -2020,8 +2071,6 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 const pct = Math.min(100, (t.progress / (t.max || 1)) * 100);
                 const stuck = !isDone && t.progress === 0 && (Date.now() - t.lastUpdate > 3600000);
                 const stuckClass = stuck ? 'stuck' : '';
-                const diffStars = t.difficulty ? '⭐'.repeat(t.difficulty) : '⭐';
-
                 // ★ 禁用已完成任务的按钮
                 const disabledClass = isDone ? 'disabled-btn' : '';
                 const submitBtn = !isDone ?
@@ -2031,15 +2080,14 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 const exemptBtn = (isDaily && !isDone && status.active && status.usedToday < status.maxPerDay) ?
                     `<button class="t-btn exempt-btn" onclick="exemptDailyTask('${t.id}')">✨ 豁免</button>` : '';
                 const exemptDone = t.exempted ? '<div class="done">✨ 已豁免（不可撤销）</div>' : '';
-                const diffBtn = `<button class="diff-btn" onclick="changeDifficulty('${t.id}')">难度</button> <span class="difficulty-stars">${diffStars}</span>`;
-
-                return '<div class="task-item '+cls+' '+stuckClass+' '+exemptCls+'"><div class="t-title">'+escapeHtml(t.title)+'</div><div class="t-desc">'+escapeHtml(t.desc||'')+'</div><div class="t-progress-bar"><div class="fill" style="width:'+pct+'%"></div></div><div class="t-progress">进度: '+escapeHtml(t.progress)+' / '+('⭐'.repeat(t.difficulty || 1))+'</div><div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;">'+diffBtn+adviceBtn+submitBtn+exemptBtn+'</div>'+exemptDone+'</div>';
+                return '<div class="task-item '+cls+' '+stuckClass+' '+exemptCls+'"><div class="t-title">'+escapeHtml(t.title)+'</div><div class="t-desc">'+escapeHtml(t.desc||'')+'</div><div class="t-progress-bar"><div class="fill" style="width:'+pct+'%"></div></div><div class="t-progress">完成次数: '+escapeHtml(t.progress)+' / '+escapeHtml(t.max || 1)+'</div><div style="display:flex; gap:4px; flex-wrap:wrap; margin-top:2px;">'+adviceBtn+submitBtn+exemptBtn+'</div>'+exemptDone+'</div>';
             }).join('');
         };
         render(GameData.tasks.daily, 'dailyTasksList', 'daily');
         render(GameData.tasks.mainQuests, 'mainQuestsList', 'main');
         render(GameData.tasks.sideQuests, 'sideQuestsList', 'side');
         updateExemptionUI();
+        updateCheckinGate();
     }
 
     // ============================================================
@@ -2051,7 +2099,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             // 每日必做：英语 + 金融
             const dailyPool = pool.filter(t => t.type === 'daily');
             const shuffled = [...dailyPool].sort(() => Math.random() - 0.5);
-            const tasks = shuffled.slice(0, 4).map((t, idx) => ({
+            const tasks = shuffled.slice(0, 2).map((t, idx) => ({
                 id: 'd' + (idx + 1),
                 title: t.title,
                 desc: t.desc || '完成这项任务',
@@ -2064,7 +2112,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 lastUpdate: Date.now(),
                 difficulty: t.difficulty || 1
             }));
-            while (tasks.length < 4) {
+            while (tasks.length < 2) {
                 tasks.push({
                     id: 'd' + (tasks.length + 1),
                     title: '额外任务: 自我提升',
@@ -2269,7 +2317,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                     if (task.progress >= task.max && !task.done) {
                         task.done = true;
                         markTaskActivity(true);
-                        GameData.user.currency.milkTea += task.reward;
+                        if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += task.reward;
                         GameData.treasure.milkTea = GameData.user.currency.milkTea;
                         showNotif(`✅ 任务完成！+${task.reward} 🍰 小奶糕`);
                         GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + 5);
@@ -2279,13 +2327,12 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                             triggerMax();
                         }
 
-                        if (key === 'daily') {
-                            const allDone = GameData.tasks.daily.every(t => t.done || t.exempted);
-                            if (allDone) {
-                                document.getElementById('checkinBtn').classList.remove('done');
-                                document.getElementById('checkinBtn').disabled = false;
+                        if (key === 'daily' || key === 'main') {
+                            const standard = getDailyStandard();
+                            if (standard.met) {
+                                updateCheckinGate();
                                 setTimeout(() => {
-                                    sendMail('🌱 今日任务全部完成！', '所有每日任务已完成。记得去"刻下印记"，记录你变强的这一天。', 0, 'guide', getActiveSupervisor().name);
+                                    sendMail('🌱 今日监督已达标', `今日已完成 ${standard.completed}/${standard.required} 项核心任务，可以刻下成长印记了。`, 0, 'guide', getActiveSupervisor().name);
                                 }, 1000);
                             }
                         }
@@ -2418,7 +2465,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
 
             if (item.special) {
                 const type = item.type || 'story';
-                GameData.user.currency.milkTea -= item.price;
+                if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea -= item.price;
                 GameData.treasure.milkTea = GameData.user.currency.milkTea;
                 GameData.treasure.coupons[type] = (GameData.treasure.coupons[type] || 0) + 1;
                 GameData.treasure.lastSpecialBuyDate = TS.dateStr(TS.now());
@@ -2437,7 +2484,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 return;
             }
 
-            GameData.user.currency.milkTea -= item.price;
+            if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea -= item.price;
             GameData.treasure.milkTea = GameData.user.currency.milkTea;
             GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + item.af);
 
@@ -2577,6 +2624,83 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         }).slice(-limit);
     }
 
+    function mergeMemoryFacts(facts) {
+        if (!Array.isArray(facts)) return;
+        const current = GameData.memory.facts || [];
+        const cleaned = facts
+            .map(item => String(item || '').trim())
+            .filter(item => item.length >= 4)
+            .map(item => item.slice(0, 120));
+        const merged = [];
+        const seen = new Set();
+        [...current, ...cleaned].forEach(item => {
+            const key = item.replace(/\s+/g, '').toLowerCase();
+            if (!key || seen.has(key)) return;
+            seen.add(key);
+            merged.push(item);
+        });
+        GameData.memory.facts = merged.slice(-40);
+    }
+
+    async function extractFactsFromText(text, source) {
+        if (!GameData.settings.apiKey || !text || text.length < 8) return;
+        try {
+            const prompt = `从下面的用户内容中提取真正值得长期记住的信息。来源：${source}。
+
+【用户内容】
+${String(text).slice(0, 4000)}
+
+只提取能帮助未来对话保持连续性的内容，例如：身份、目标、偏好、禁忌、承诺、重要关系和情绪变化。
+不要记录临时闲聊，不要编造。没有值得记的内容就返回空数组。
+只输出 JSON：{"facts":["事实1","事实2"]}`;
+            const result = parseAIJson(await callAIChat(prompt, '你是长期记忆整理器。只输出合法 JSON，不添加解释。'));
+            mergeMemoryFacts(result.facts);
+            saveData();
+        } catch (_) {}
+    }
+
+    async function analyzeDiaryEntry(entry) {
+        if (!entry || !entry.text) return;
+        await extractFactsFromText(entry.text, 'private_diary');
+    }
+
+    async function maybeCompressMemory() {
+        if (window._memoryCompressRunning || !GameData.settings.apiKey) return;
+        const history = GameData.ai.dialogHistory || [];
+        const start = Math.max(0, Number(GameData.memory.lastProcessedIndex) || 0);
+        if (history.length - start < 12) return;
+        const end = Math.min(start + 36, history.length);
+        window._memoryCompressRunning = true;
+        try {
+            const transcript = history.slice(start, end).map(entry => {
+                const role = entry.role === 'user' ? '用户' : '监管者';
+                return `${role}：${memoryEntryText(entry)}`;
+            }).filter(line => line.length > 3).join('\n');
+            const existingFacts = (GameData.memory.facts || []).slice(-20).join('\n');
+            const prompt = `压缩并更新长期记忆，目标是让未来聊天不出现记忆断层，同时避免保存过多原始对话。
+
+【原有精华记忆】
+${existingFacts || '暂无'}
+
+【新的对话片段】
+${transcript}
+
+请输出：
+1. summary：对用户当前状态、长期目标和最近变化的简短总结，最多 300 字。
+2. facts：从新旧信息中提取 0-6 条最值得长期保留的精华事实。优先保留特别强调、重要偏好、禁忌、目标、承诺和关系变化。
+只输出 JSON：{"summary":"","facts":[""]}`;
+            const result = parseAIJson(await callAIChat(prompt, '你是长期记忆压缩器。必须忠于原文，不能编造。只输出合法 JSON。'));
+            if (result.summary) GameData.memory.summary = String(result.summary).trim().slice(0, 500);
+            mergeMemoryFacts(result.facts);
+            GameData.memory.lastProcessedIndex = end;
+            GameData.memory.lastCompactedAt = Date.now();
+            saveData();
+        } catch (_) {
+        } finally {
+            window._memoryCompressRunning = false;
+        }
+    }
+
     function openMemorySearch() {
         document.getElementById('memoryModal').classList.add('active');
         const input = document.getElementById('memorySearchInput');
@@ -2640,8 +2764,9 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         let lastHistContent = lastHist ? (typeof lastHist.content === 'object' ? lastHist.content.text : lastHist.content) : '';
         if (!lastHist || lastHistContent !== historyEntry.content || lastHist.role !== historyEntry.role) {
             GameData.ai.dialogHistory.push(historyEntry);
-            if (GameData.ai.dialogHistory.length > 500) {
-                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-500);
+            if (GameData.ai.dialogHistory.length > 240) {
+                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
+                GameData.memory.lastProcessedIndex = Math.max(0, GameData.memory.lastProcessedIndex - 1);
             }
         }
         updateMemoryCount();
@@ -2668,6 +2793,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         if (document.getElementById('chatView').classList.contains('active')) {
             renderChatMessage(role, finalContent, time, img);
         }
+        if (role === 'assistant') setTimeout(maybeCompressMemory, 0);
     }
 
     function renderChatMessage(role, content, time, img = null) {
@@ -2853,6 +2979,8 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             const rel = getRel(GameData.ai.affection);
             const profileSummary = GameData.profile && GameData.profile.summary ? GameData.profile.summary : '尚未设置';
             const activeSupervisor = getActiveSupervisor();
+            const memorySummary = GameData.memory.summary || '暂无压缩记忆';
+            const memoryFacts = (GameData.memory.facts || []).slice(-16).map(item => `- ${item}`).join('\n') || '- 暂无精华记忆';
 
             // ★ 人设写死系统 Prompt
             let sysPrompt = `你是${activeSupervisor.name}，VIP009 当前唯一的主监管者。你的身份是：${activeSupervisor.role}。
@@ -2876,6 +3004,9 @@ ${activeSupervisor.prompt}
 - 好感度：${GameData.ai.affection} / 520
 - 关系：${rel.label}
 - 个人目标与基础：${profileSummary}
+- 长期记忆摘要：${memorySummary}
+- 必须记住的精华事实：
+${memoryFacts}
 - 未完成每日任务：${daily}
 - 未完成主线任务：${main}
 
@@ -3045,7 +3176,7 @@ ${activeSupervisor.prompt}
                 if (dTask.progress >= dTask.max) {
                     dTask.done = true;
                     markTaskActivity(true);
-                    GameData.user.currency.milkTea += dTask.reward;
+                    if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += dTask.reward;
                     GameData.treasure.milkTea = GameData.user.currency.milkTea;
                     showNotif('✅ 深度咨询完成！+' + dTask.reward + ' 🍰 小奶糕');
                     updateTaskHistory();
@@ -3389,7 +3520,7 @@ ${activeSupervisor.prompt}
         const item = GameData.mail.items.find(m => m.id === id);
         if (!item || item.claimed) return;
         if (item.reward > 0) {
-            GameData.user.currency.milkTea += item.reward;
+            if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += item.reward;
             GameData.treasure.milkTea = GameData.user.currency.milkTea;
             showNotif('✅ 领取成功！+' + item.reward + ' 🍰 小奶糕');
         }
@@ -3734,17 +3865,8 @@ ${activeSupervisor.prompt}
         input.value = '';
         renderDiaryHistory();
         saveData();
-        showNotif('📔 日记已保存，她会看到的');
-        const reactions = ['我看到了。……你写这些的时候，在想什么？', '日记我看了。……你最近好像比之前柔软了一点。', '你写日记的样子，比你想象的要好看。', '[沉默片刻] ……嗯。我知道了。', '你写的我都看了。……不许删。'];
-        const msg = reactions[Math.floor(Math.random() * reactions.length)];
-        setTimeout(() => {
-            addChatMessage('assistant', msg, true);
-            GameData.chat.unreadCount++;
-            updateUnreadBadge();
-            GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + 1);
-            saveData();
-            updateUI();
-        }, 1500);
+        showNotif('日记已保存');
+        analyzeDiaryEntry(entry);
     }
 
     function deleteDiaryEntry(id) {
@@ -3805,10 +3927,9 @@ ${activeSupervisor.prompt}
         const today = new Date().toDateString();
         const last = GameData.checkin.lastDate;
         if (last === today) { showNotif('🌱 今日已刻下印记，明天再来吧'); return; }
-        const dailyTasks = GameData.tasks.daily;
-        const allDone = dailyTasks.every(t => t.done || t.exempted);
-        if (!allDone) {
-            const failMsg = '还有任务未完成，完成所有每日任务才能刻下印记。';
+        const standard = getDailyStandard();
+        if (!standard.met) {
+            const failMsg = `今天至少完成 ${standard.required} 项核心任务，并且至少完成一项主线任务，才能刻下印记。`;
             showEmotionBubble(failMsg, 'tsundere', 2500);
             showNotif('❌ ' + failMsg);
             return;
@@ -3826,7 +3947,7 @@ ${activeSupervisor.prompt}
 
         if (streak % 7 === 0 && streak > 0) {
             GameData.treasure.offsetCards += 1;
-            sendMail('🎉 连续成长7天！', '你连续刻下7天印记，奖励时光回溯卡 x1。继续加油。', 0, 'gift', '欣原');
+            sendMail('🎉 连续成长7天！', '你连续刻下7天印记，奖励时光回溯卡 x1。继续加油。', 0, 'gift', getActiveSupervisor().name);
             showNotif('🎉 连续成长7天！获得时光回溯卡 x1');
         }
 
@@ -3908,6 +4029,13 @@ ${activeSupervisor.prompt}
     function closeSettingsView() { showView('mainView');
         updateUI(); }
 
+    function openBillingView() { showView('billingView'); }
+
+    function closeBillingView() {
+        showView('mainView');
+        updateUI();
+    }
+
     let mailTab = 'mails';
 
     function switchMailTab(tab, el) {
@@ -3961,10 +4089,11 @@ ${activeSupervisor.prompt}
         setText('planDailyCount', GameData.tasks.daily.length);
         setText('planMainCount', GameData.tasks.mainQuests.length);
         setText('planSideCount', GameData.tasks.sideQuests.length);
-        setText('planStatusText', `最近三天完成率 ${Math.round(calculateRecentRate() * 100)}%，当前还有 ${allTasks.filter(t => !t.done && !t.exempted).length} 项未完成。`);
+        const standard = getDailyStandard();
+        setText('planStatusText', `今日核心任务达标 ${standard.completed}/${standard.required}，主线至少完成一项。最近三天完成率 ${Math.round(calculateRecentRate() * 100)}%。`);
         setText('messageUnreadCount', GameData.chat.unreadCount + (GameData.chat.storyUnread ? 1 : 0));
         setText('messageMailCount', GameData.mail.items.filter(m => !m.read).length);
-        setText('messageMemoryCount', (GameData.ai.dialogHistory || []).length);
+        setText('messageTodayCount', allTasks.filter(t => t.done || t.exempted).length);
         setText('growthStreak', GameData.checkin.streak || 0);
         setText('growthAffection', GameData.ai.affection || 0);
         setText('growthCompleted', completed);
@@ -4548,7 +4677,6 @@ ${activeSupervisor.prompt}
     document.getElementById('diaryDetailModal').addEventListener('click', function(e) { if (e.target === this) closeDiaryDetail(); });
     document.getElementById('onboardingModal').addEventListener('click', function(e) { if (e.target === this) closeOnboarding(); });
     document.getElementById('supervisorModal').addEventListener('click', function(e) { if (e.target === this) closeSupervisorSelection(); });
-    document.getElementById('memoryModal').addEventListener('click', function(e) { if (e.target === this) closeMemorySearch(); });
 
     document.getElementById('apiKeyInput').addEventListener('change', function() {
         GameData.settings.apiKey = this.value.trim();
@@ -4581,7 +4709,7 @@ ${activeSupervisor.prompt}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.1', '欢迎回来，VIP009。\n\nV4.1 升级：\n- 软件化五页导航\n- 主监管者选择与永久绑定\n- 一次返回机会\n- PWA 桌面安装与离线外壳\n- 保留长期记忆、任务审核和提醒系统\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.2', '欢迎回来，VIP009。\n\nV4.2 升级：\n- 内测无限小奶糕\n- 每日任务调整为 2 项\n- 核心任务达标制与主线优先\n- 隐藏长期记忆压缩\n- 日记内容真实提取记忆\n- 新增订阅与充值入口\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
