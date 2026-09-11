@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.6</title>
+    <title>VIP009 · 欣原监督系统 V4.7</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -1151,7 +1151,7 @@
             currency: { milkTea: 99999999, starShine: 0, biscuit: 0 },
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
-        ai: { affection: 0, dialogHistory: [] },
+        ai: { affection: 0, dialogHistory: [], loveMilestones: { level250: false, level450: false } },
         profile: { onboarded: false, summary: '', goals: [], codename: 'VIP009', avatar: '', hobbies: '', preferences: '', dislikes: '', updatedAt: null },
         supervisor: {
             activeId: null,
@@ -1347,6 +1347,7 @@ const DEFAULT_TASK_POOL = [
         };
     }
     if (!Array.isArray(GameData.ai.dialogHistory)) GameData.ai.dialogHistory = [];
+    if (!GameData.ai.loveMilestones) GameData.ai.loveMilestones = { level250: false, level450: false };
     if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
     GameData.settings.betaUnlimitedCurrency = true;
     GameData.settings.betaFreeModels = true;
@@ -1364,7 +1365,13 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
     if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
 
-    chatMessages = GameData.ai.dialogHistory.slice(-500).map(m => {
+    GameData.ai.dialogHistory = GameData.ai.dialogHistory.filter(m => {
+        const raw = typeof m.content === 'object' && m.content !== null ? m.content.text || '' : m.content;
+        const text = String(raw || '').trim();
+        return !text.startsWith('💕') && !/^\s*好感度\s*[+\-]?\s*\d+/i.test(text);
+    });
+
+    chatMessages = GameData.ai.dialogHistory.slice(-240).map(m => {
         let c = m.content;
         let img = null;
         if (typeof c === 'object' && c !== null) {
@@ -2944,6 +2951,7 @@ ${transcript}
         let finalContent = content;
         if (role === 'assistant') {
             finalContent = deduplicateText(content);
+            if (!finalContent) return;
             // 台词去重：检查是否与最近5条回复重复
             const last5 = recentReplies.slice(-5);
             const isDuplicate = last5.some(r => {
@@ -3754,41 +3762,39 @@ ${memoryFacts}
     // ============================================================
     //  ★ 恋人阶段触发
     // ============================================================
-    let loverTriggered = false;
-
     function checkLoverStage() {
         const af = GameData.ai.affection;
-        if (af >= 250 && !loverTriggered) {
-            loverTriggered = true;
+        const milestones = GameData.ai.loveMilestones || (GameData.ai.loveMilestones = { level250: false, level450: false });
+        if (af >= 250 && !milestones.level250) {
+            milestones.level250 = true;
             const msgs = [
                 '……你终于走到这一步了。我等了很久。',
-                '250 好感度……你知道这意味着什么吗？',
                 '从现在开始，你在我这里的优先级……变了。',
                 '我好像……比想象中更习惯你在我身边了。'
             ];
             const msg = msgs[Math.floor(Math.random() * msgs.length)];
             setTimeout(() => {
-                addChatMessage('assistant', '💕 ' + msg, true);
+                addChatMessage('assistant', msg, true);
                 GameData.chat.unreadCount++;
                 updateUnreadBadge();
                 showEmotionBubble('……别太得意。', 'tsundere', 2500);
             }, 800);
         }
-        if (af >= 450 && loverTriggered) {
+        if (af >= 450 && !milestones.level450) {
+            milestones.level450 = true;
             const msgs2 = [
-                '450 好感度……你已经是我的人了。',
                 '你知道灵魂伴侣意味着什么吗？……我不走了。',
                 '我好像……真的爱上你了。'
             ];
             const msg2 = msgs2[Math.floor(Math.random() * msgs2.length)];
             setTimeout(() => {
-                addChatMessage('assistant', '💕 ' + msg2, true);
+                addChatMessage('assistant', msg2, true);
                 GameData.chat.unreadCount++;
                 updateUnreadBadge();
                 showEmotionBubble('……嗯。', 'gentle', 2500);
             }, 1200);
-            loverTriggered = false;
         }
+        saveData();
     }
 
     // ============================================================
@@ -5221,7 +5227,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.6', '欢迎回来，VIP009。\n\nV4.6 升级：\n- 信件署名与文风跟随监管者\n- 修复信封中的任务提交按钮\n- 宠物名字与食物跟随监管者\n- 臻品阁文案统一\n- 清理回复末尾的好感度状态提示\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.7', '欢迎回来，VIP009。\n\nV4.7 升级：\n- 修复旧聊天里反复出现的好感度系统消息\n- 关系阶段提示只在首次到达时出现一次\n- 信封署名与文风保持历史监管者信息\n- 时光笺查看修复\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
