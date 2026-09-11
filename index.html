@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.7</title>
+    <title>VIP009 · 欣原监督系统 V4.8</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -1368,7 +1368,7 @@ const DEFAULT_TASK_POOL = [
     GameData.ai.dialogHistory = GameData.ai.dialogHistory.filter(m => {
         const raw = typeof m.content === 'object' && m.content !== null ? m.content.text || '' : m.content;
         const text = String(raw || '').trim();
-        return !text.startsWith('💕') && !/^\s*好感度\s*[+\-]?\s*\d+/i.test(text);
+        return !text.includes('💕') && !/^\s*好感度\s*[+\-]?\s*\d+/i.test(text);
     });
 
     chatMessages = GameData.ai.dialogHistory.slice(-240).map(m => {
@@ -3063,6 +3063,7 @@ ${transcript}
     function deduplicateText(text) {
         if (!text) return text;
         text = String(text)
+            .replace(/^.*💕.*$/gm, '')
             .replace(/^.*(?:好感度|亲密度)\s*(?:[+\-]?\s*\d+|提升|增加|减少).*$/gm, '')
             .replace(/^.*(?:系统提示|内部状态|当前好感度)\s*[:：].*$/gm, '')
             .replace(/\n{3,}/g, '\n\n')
@@ -5227,7 +5228,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.7', '欢迎回来，VIP009。\n\nV4.7 升级：\n- 修复旧聊天里反复出现的好感度系统消息\n- 关系阶段提示只在首次到达时出现一次\n- 信封署名与文风保持历史监管者信息\n- 时光笺查看修复\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.8', '欢迎回来，VIP009。\n\nV4.8 升级：\n- 彻底清理旧聊天中的爱心系统消息\n- 关系阶段提示只在首次到达时出现一次\n- 每封信保留原始监管者署名与文风\n- 时光笺按分类独立编号并可直接查看\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
