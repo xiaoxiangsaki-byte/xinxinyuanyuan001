@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.3</title>
+    <title>VIP009 · 欣原监督系统 V4.4</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -43,16 +43,16 @@
         #mainView .top-bar .right-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: rgba(255,255,255,0.3); }
         #mainView .top-bar .right-stats .stat-item { display: flex; align-items: center; gap: 3px; }
         #mainView .top-bar .right-stats .stat-item .val { color: #fff; font-weight: 600; }
-        .top-pet { width: 62px; height: 42px; position: relative; overflow: hidden; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(197,163,255,0.08); cursor: pointer; }
+        .top-pet { flex: 1; min-width: 58px; max-width: 180px; height: 42px; margin-left: 10px; position: relative; overflow: hidden; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(197,163,255,0.08); cursor: pointer; }
         .top-pet::after { content: ''; position: absolute; left: 9px; right: 9px; bottom: 5px; height: 4px; border-radius: 50%; background: rgba(0,0,0,0.28); filter: blur(2px); }
-        .top-pet .pet-cat { position: absolute; left: 8px; bottom: 8px; width: 30px; height: 18px; border-radius: 12px 14px 8px 8px; background: linear-gradient(135deg, #f3d6b2, #c99462); animation: petWalk 4.8s ease-in-out infinite alternate; z-index: 2; }
+        .top-pet .pet-cat { position: absolute; left: 6px; bottom: 8px; width: 30px; height: 18px; border-radius: 12px 14px 8px 8px; background: linear-gradient(135deg, #f3d6b2, #c99462); animation: petWalk 5.2s ease-in-out infinite alternate; z-index: 2; }
         .top-pet .pet-cat::before { content: ''; position: absolute; top: -6px; left: 4px; width: 8px; height: 8px; border-radius: 4px 4px 1px 1px; background: #e5bd93; box-shadow: 14px 0 0 #e5bd93; }
         .top-pet .pet-cat::after { content: ''; position: absolute; right: -7px; top: 4px; width: 14px; height: 7px; border-radius: 8px 2px 8px 2px; border-top: 3px solid #c99462; transform-origin: left center; animation: petTail 1.1s ease-in-out infinite; }
         .top-pet .pet-eye { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #2a1a2e; top: 6px; animation: petBlink 4s infinite; }
         .top-pet .pet-eye.left { left: 10px; }
         .top-pet .pet-eye.right { left: 19px; }
         .top-pet .pet-collar { position: absolute; left: 8px; top: 10px; width: 16px; height: 3px; border-radius: 3px; background: #c5a3ff; }
-        @keyframes petWalk { from { transform: translateX(0) translateY(0); } 45% { transform: translateX(17px) translateY(-2px); } 55% { transform: translateX(17px) translateY(0); } to { transform: translateX(0) translateY(0); } }
+        @keyframes petWalk { from { left: 6px; transform: translateY(0); } 50% { left: calc(100% - 38px); transform: translateY(-2px); } to { left: 6px; transform: translateY(0); } }
         @keyframes petTail { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(18deg); } }
         @keyframes petBlink { 0%, 46%, 52%, 100% { transform: scaleY(1); } 49% { transform: scaleY(0.1); } }
         .affection-mini { flex-shrink: 0; padding: 4px 0 6px; display: flex; align-items: center; gap: 8px; }
@@ -348,6 +348,8 @@
         .chat-msg .time { font-size: 9px; color: rgba(255,255,255,0.2); margin-top: 2px; text-align: right; }
         .chat-msg.user .time { text-align: left; }
         .chat-msg .continue-btn { font-size: 10px; color: rgba(255,255,255,0.12); background: transparent; border: none; cursor: pointer; padding: 1px 4px; margin-top: 1px; align-self: flex-start; transition: color 0.3s; }
+        .chat-msg .chat-action-btn { font-size: 10px; color: var(--primary); background: rgba(197,163,255,0.08); border: 1px solid rgba(197,163,255,0.14); border-radius: 10px; padding: 4px 10px; margin-top: 5px; cursor: pointer; align-self: flex-start; }
+        .chat-msg .chat-action-btn:active { opacity: 0.65; }
         .chat-msg .story-badge { display: inline-block; font-size: 9px; background: rgba(255,213,79,0.10); color: var(--gold); padding: 1px 8px; border-radius: 10px; margin-top: 4px; }
         .memory-btn { border: 1px solid rgba(197,163,255,0.12); background: rgba(197,163,255,0.05); color: rgba(255,255,255,0.45); border-radius: 12px; font-size: 9px; padding: 3px 7px; cursor: pointer; flex-shrink: 0; }
         .memory-btn:active { opacity: 0.65; }
@@ -616,21 +618,18 @@
                         <div class="signature" id="currentSupervisorSignature">爱是世界上最不保值的资产</div>
                     </div>
                 </div>
-                <div class="right-stats">
-                    <div class="stat-item">❤️ <span class="val" id="mainAffection">0</span></div>
-                    <div class="top-pet" id="topPet" title="宠物占位">
-                        <div class="pet-cat">
-                            <span class="pet-eye left"></span>
-                            <span class="pet-eye right"></span>
-                            <span class="pet-collar"></span>
-                        </div>
+                <div class="top-pet" id="topPet" title="宠物占位">
+                    <div class="pet-cat">
+                        <span class="pet-eye left"></span>
+                        <span class="pet-eye right"></span>
+                        <span class="pet-collar"></span>
                     </div>
                 </div>
             </div>
             <div class="affection-mini">
-                <span class="label">好感度</span>
+                <span class="label">❤️</span>
                 <div class="bar-wrap"><div class="fill" id="mainAffectionFill" style="width:0%"></div></div>
-                <span class="num" id="mainAffectionNum">0 / 520</span>
+                <span class="num" id="mainAffectionNum">0/520</span>
             </div>
             <div class="tasks-area" id="tasksArea">
                 <div class="app-page active" id="pageToday">
@@ -745,10 +744,10 @@
                             <div class="property-item"><strong id="propertyBiscuit">0</strong><span>饼干</span></div>
                         </div>
                         <div class="exchange-row">
-                            <input id="milkTeaConvertInput" type="number" min="2" step="2" placeholder="输入小奶糕数量">
+                            <input id="milkTeaConvertInput" type="number" min="1" step="1" placeholder="想获得多少星辉" oninput="updateExchangePreview()">
                             <button onclick="convertMilkTeaToStarShine()">兑换星辉</button>
                         </div>
-                        <p style="margin-top:6px;">兑换比例：2 小奶糕 = 1 星辉。用户可自行决定每次兑换数量。</p>
+                        <p id="exchangeCostPreview" style="margin-top:6px;">兑换比例：2 小奶糕 = 1 星辉。</p>
                         <p id="supervisorChangeTokenText" style="margin-top:4px;">更换主监管者权限：0 次</p>
                         <div class="card-actions"><button class="btn primary" id="useChangeTokenBtn" onclick="useSupervisorChangeToken()" style="display:none;">使用更换权限</button></div>
                     </div>
@@ -1265,7 +1264,7 @@ const DEFAULT_TASK_POOL = [
             const txtPart = c.find(x => x.type === 'text');
             c = txtPart ? txtPart.text : '';
         }
-        return { role: m.role || 'assistant', content: String(c || ''), time: TS.fmt(new Date(m.time || Date.now())), img: img || null };
+        return { role: m.role || 'assistant', content: String(c || ''), time: TS.fmt(new Date(m.time || Date.now())), img: img || null, action: m.action || null };
     });
 
     if (TS.isNewDay(GameData._lastDailyReset)) {
@@ -2805,7 +2804,7 @@ ${transcript}
         }).join('');
     }
 
-    function addChatMessage(role, content, push = false, img = null) {
+    function addChatMessage(role, content, push = false, img = null, action = null) {
         const time = TS.fmt(TS.now());
         let finalContent = content;
         if (role === 'assistant') {
@@ -2827,12 +2826,13 @@ ${transcript}
         const lastChat = chatMessages[chatMessages.length - 1];
         if (lastChat && lastChat.role === role && lastChat.content === finalContent && !img) return;
 
-        chatMessages.push({ role, content: finalContent, time, img });
+        chatMessages.push({ role, content: finalContent, time, img, action });
 
         const historyEntry = {
             role: role,
             content: img ? { text: finalContent, image: img } : finalContent,
-            time: Date.now()
+            time: Date.now(),
+            action: action || null
         };
         const lastHist = GameData.ai.dialogHistory[GameData.ai.dialogHistory.length - 1];
         let lastHistContent = lastHist ? (typeof lastHist.content === 'object' ? lastHist.content.text : lastHist.content) : '';
@@ -2865,12 +2865,18 @@ ${transcript}
         }
 
         if (document.getElementById('chatView').classList.contains('active')) {
-            renderChatMessage(role, finalContent, time, img);
+            renderChatMessage(role, finalContent, time, img, action);
         }
         if (role === 'assistant') setTimeout(maybeCompressMemory, 0);
     }
 
-    function renderChatMessage(role, content, time, img = null) {
+    function renderChatActionButton(action) {
+        if (!action || action.type !== 'time_capsule' || !action.id) return '';
+        const label = action.label || '点击查看';
+        return `<button class="chat-action-btn" onclick="openTimeCapsuleDetail(${Number(action.id)})">${escapeHtml(label)}</button>`;
+    }
+
+    function renderChatMessage(role, content, time, img = null, action = null) {
         const area = document.getElementById('chatMessagesArea');
         const msgId = 'chatmsg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
         let imgHtml = '';
@@ -2883,7 +2889,7 @@ ${transcript}
         if (role === 'assistant') {
             continueBtn = '<button class="continue-btn" onclick="handleChatContinueFromMsg(\'' + msgId + '\', this)">✉ 续写</button>';
         }
-        const html = '<div class="chat-msg ' + (role === 'user' ? 'user' : 'ai') + '" id="' + msgId + '"><div class="bubble">' + imgHtml + formatChatText(content) + '</div>' + storyBadge + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
+        const html = '<div class="chat-msg ' + (role === 'user' ? 'user' : 'ai') + '" id="' + msgId + '"><div class="bubble">' + imgHtml + formatChatText(content) + '</div>' + storyBadge + renderChatActionButton(action) + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
         area.insertAdjacentHTML('beforeend', html);
         area.scrollTop = area.scrollHeight;
     }
@@ -2905,7 +2911,7 @@ ${transcript}
                 const msgId = 'chatmsg_sync_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
                 continueBtn = '<button class="continue-btn" onclick="handleChatContinueFromMsg(\'' + msgId + '\', this)">✉ 续写</button>';
             }
-            const html = '<div class="chat-msg ' + (m.role === 'user' ? 'user' : 'ai') + '"><div class="bubble">' + imgHtml + formatChatText(m.content) + '</div>' + storyBadge + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
+            const html = '<div class="chat-msg ' + (m.role === 'user' ? 'user' : 'ai') + '"><div class="bubble">' + imgHtml + formatChatText(m.content) + '</div>' + storyBadge + renderChatActionButton(m.action) + '<div class="time">' + escapeHtml(time) + '</div>' + continueBtn + '</div>';
             area.insertAdjacentHTML('beforeend', html);
         }
         area.scrollTop = area.scrollHeight;
@@ -3434,13 +3440,13 @@ ${memoryFacts}
         }
     }
 
-    function markAllChatRead() {
+    function markAllChatRead(showToast = true) {
         if (GameData.chat.unreadCount > 0 || GameData.chat.storyUnread) {
             GameData.chat.unreadCount = 0;
             GameData.chat.storyUnread = false;
             updateUnreadBadge();
             saveData();
-            showNotif('📖 已全部标记已读');
+            if (showToast) showNotif('📖 已全部标记已读');
         }
     }
 
@@ -3452,8 +3458,6 @@ ${memoryFacts}
         void el.offsetWidth;
         el.classList.add('beating');
         setTimeout(() => el.classList.remove('beating'), 700);
-
-        markAllChatRead();
 
         if (heartClickCount >= 10) {
             heartClickCount = 0;
@@ -3831,7 +3835,7 @@ ${memoryFacts}
 
             const typeLabels = { act_cute: '🥺 撒娇', meow: '🐈 喵喵', story: '💜 暧昧故事' };
             const msg = '💌 收到一条新彩蛋：' + typeLabels[type] + '《' + story.title + '》';
-            addChatMessage('assistant', msg + '\n\n[点击查看] 已存入《紫翼·时光笺》', true);
+            addChatMessage('assistant', msg + '\n\n已存入《紫翼·时光笺》', true, null, { type: 'time_capsule', id: story.id, label: '点击查看' });
             GameData.chat.storyUnread = true;
             GameData.chat.unreadCount++;
             updateUnreadBadge();
@@ -3892,9 +3896,9 @@ ${memoryFacts}
             const info = typeLabels[key] || { icon: '💎', label: '彩蛋' };
             html += '<div class="timecapsule-section">';
             html += '<div class="section-title">' + info.icon + ' ' + info.label + '</div>';
-            groups[key].forEach(s => {
+            [...groups[key]].sort((a, b) => Number(a.id) - Number(b.id)).forEach((s, index) => {
                 html += '<div class="timecapsule-story" onclick="openTimeCapsuleDetail(' + Number(s.id) + ')">';
-                html += '<div class="left"><div class="story-title">#' + Number(s.id) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date) + '</div></div>';
+                html += '<div class="left"><div class="story-title">#' + (index + 1) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date) + '</div></div>';
                 html += '<div class="right">💌</div>';
                 html += '</div>';
             });
@@ -3911,7 +3915,7 @@ ${memoryFacts}
         const content = document.getElementById('modalContent');
         content.className = 'content envelope';
         document.getElementById('modalTitle').textContent = '💌 ' + story.title;
-        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + (story.from === 'shop' ? '欣原' : '欣原');
+        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + getActiveSupervisor().name;
         document.getElementById('modalRewardPreview').style.display = 'none';
         document.getElementById('evidenceReport').style.display = 'none';
         document.getElementById('uploadArea').style.display = 'none';
@@ -4144,35 +4148,53 @@ ${memoryFacts}
             return;
         }
         showView('chatView');
+        markAllChatRead(false);
         syncChatMessages();
-        GameData.chat.unreadCount = 0;
-        updateUnreadBadge();
         setTimeout(() => {
             const area = document.getElementById('chatMessagesArea');
             if (area) area.scrollTop = area.scrollHeight;
         }, 100);
     }
 
+    function updateExchangePreview() {
+        const input = document.getElementById('milkTeaConvertInput');
+        const preview = document.getElementById('exchangeCostPreview');
+        const stars = Math.max(0, Math.floor(Number(input && input.value) || 0));
+        if (preview) preview.textContent = stars > 0 ? `你将获得 ${stars} 星辉，需要支付 ${stars * 2} 小奶糕。` : '兑换比例：2 小奶糕 = 1 星辉。';
+    }
+
     function convertMilkTeaToStarShine() {
         const input = document.getElementById('milkTeaConvertInput');
-        const requested = Math.floor(Number(input && input.value) || 0);
-        const pairs = Math.floor(requested / 2);
-        const cost = pairs * 2;
-        if (pairs < 1) {
-            showNotif('至少输入 2 个小奶糕');
+        const stars = Math.floor(Number(input && input.value) || 0);
+        const cost = stars * 2;
+        if (stars < 1) {
+            showNotif('请先选择要兑换的星辉数量');
             return;
         }
         if (GameData.user.currency.milkTea < cost) {
             showNotif('小奶糕数量不足');
             return;
         }
+        document.getElementById('confirmIcon').textContent = '✨';
+        document.getElementById('confirmTitle').textContent = `兑换 ${stars} 星辉？`;
+        document.getElementById('confirmDesc').textContent = `本次需要支付 ${cost} 小奶糕。确认后立即完成兑换。`;
+        document.getElementById('confirmYesBtn').onclick = function() {
+            closeConfirmModal();
+            executeMilkTeaToStarShine(stars, cost);
+        };
+        document.getElementById('confirmModal').classList.add('active');
+    }
+
+    function executeMilkTeaToStarShine(stars, cost) {
         GameData.user.currency.milkTea -= cost;
-        GameData.user.currency.starShine = (GameData.user.currency.starShine || 0) + pairs;
+        GameData.user.currency.starShine = (GameData.user.currency.starShine || 0) + stars;
         GameData.treasure.milkTea = GameData.user.currency.milkTea;
+        const input = document.getElementById('milkTeaConvertInput');
         if (input) input.value = '';
+        updateExchangePreview();
         saveData();
         updateUI();
-        showNotif(`已兑换 ${pairs} 星辉`);
+        showNotif(`已兑换 ${stars} 星辉`);
     }
 
     function updateAppPages() {
@@ -4412,6 +4434,11 @@ ${memoryFacts}
     //  UNREAD BADGE
     // ============================================================
     function updateUnreadBadge() {
+        const chatOpen = document.getElementById('chatView') && document.getElementById('chatView').classList.contains('active');
+        if (chatOpen) {
+            GameData.chat.unreadCount = 0;
+            GameData.chat.storyUnread = false;
+        }
         const count = GameData.chat.unreadCount + (GameData.chat.storyUnread ? 1 : 0);
         const badge = document.getElementById('unreadBadge');
         const chatBadge = document.getElementById('chatUnreadBadge');
@@ -4445,9 +4472,10 @@ ${memoryFacts}
     function updateUI() {
         const af = GameData.ai.affection;
         const pct = Math.min(100, (af / MAX_AF) * 100);
-        document.getElementById('mainAffection').textContent = af;
+        const mainAffection = document.getElementById('mainAffection');
+        if (mainAffection) mainAffection.textContent = af;
         document.getElementById('mainAffectionFill').style.width = pct + '%';
-        document.getElementById('mainAffectionNum').textContent = af + ' / 520';
+        document.getElementById('mainAffectionNum').textContent = af + '/520';
         const mainMilkTea = document.getElementById('mainMilkTea');
         if (mainMilkTea) mainMilkTea.textContent = GameData.user.currency.milkTea;
         if (af >= MAX_AF) { document.getElementById('mainAffectionFill').classList.add('gold'); } else { document.getElementById('mainAffectionFill').classList.remove('gold'); }
@@ -4752,15 +4780,7 @@ ${memoryFacts}
     //  EVENT BINDINGS & INIT
     // ============================================================
     document.getElementById('topBar').addEventListener('click', function() {
-        if (!GameData.supervisor || !GameData.supervisor.activeId) {
-            openSupervisorSelection();
-            return;
-        }
-        showView('chatView');
-        syncChatMessages();
-        GameData.chat.unreadCount = 0;
-        updateUnreadBadge();
-        setTimeout(() => { const area = document.getElementById('chatMessagesArea'); if (area) area.scrollTop = area.scrollHeight; }, 100);
+        openSupervisorChat();
     });
 
     document.getElementById('chatTop').addEventListener('click', function() {
@@ -4815,7 +4835,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.3', '欢迎回来，VIP009。\n\nV4.3 升级：\n- 小奶糕、星辉和饼干财产框架\n- 小奶糕自由兑换星辉\n- 主页宠物活动占位\n- 稀有商品与监管者更换权限\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.4', '欢迎回来，VIP009。\n\nV4.4 升级：\n- 先选星辉数量再确认支付小奶糕\n- 宠物活动区和好感度位置调整\n- 进入聊天自动全部已读\n- 特殊彩蛋点击跳转修复\n- 时光笺分类编号独立\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
