@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.2</title>
+    <title>VIP009 · 欣原监督系统 V4.3</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -43,6 +43,18 @@
         #mainView .top-bar .right-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: rgba(255,255,255,0.3); }
         #mainView .top-bar .right-stats .stat-item { display: flex; align-items: center; gap: 3px; }
         #mainView .top-bar .right-stats .stat-item .val { color: #fff; font-weight: 600; }
+        .top-pet { width: 62px; height: 42px; position: relative; overflow: hidden; border-radius: 12px; background: rgba(255,255,255,0.025); border: 1px solid rgba(197,163,255,0.08); cursor: pointer; }
+        .top-pet::after { content: ''; position: absolute; left: 9px; right: 9px; bottom: 5px; height: 4px; border-radius: 50%; background: rgba(0,0,0,0.28); filter: blur(2px); }
+        .top-pet .pet-cat { position: absolute; left: 8px; bottom: 8px; width: 30px; height: 18px; border-radius: 12px 14px 8px 8px; background: linear-gradient(135deg, #f3d6b2, #c99462); animation: petWalk 4.8s ease-in-out infinite alternate; z-index: 2; }
+        .top-pet .pet-cat::before { content: ''; position: absolute; top: -6px; left: 4px; width: 8px; height: 8px; border-radius: 4px 4px 1px 1px; background: #e5bd93; box-shadow: 14px 0 0 #e5bd93; }
+        .top-pet .pet-cat::after { content: ''; position: absolute; right: -7px; top: 4px; width: 14px; height: 7px; border-radius: 8px 2px 8px 2px; border-top: 3px solid #c99462; transform-origin: left center; animation: petTail 1.1s ease-in-out infinite; }
+        .top-pet .pet-eye { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #2a1a2e; top: 6px; animation: petBlink 4s infinite; }
+        .top-pet .pet-eye.left { left: 10px; }
+        .top-pet .pet-eye.right { left: 19px; }
+        .top-pet .pet-collar { position: absolute; left: 8px; top: 10px; width: 16px; height: 3px; border-radius: 3px; background: #c5a3ff; }
+        @keyframes petWalk { from { transform: translateX(0) translateY(0); } 45% { transform: translateX(17px) translateY(-2px); } 55% { transform: translateX(17px) translateY(0); } to { transform: translateX(0) translateY(0); } }
+        @keyframes petTail { 0%,100% { transform: rotate(-12deg); } 50% { transform: rotate(18deg); } }
+        @keyframes petBlink { 0%, 46%, 52%, 100% { transform: scaleY(1); } 49% { transform: scaleY(0.1); } }
         .affection-mini { flex-shrink: 0; padding: 4px 0 6px; display: flex; align-items: center; gap: 8px; }
         .affection-mini .label { font-size: 9px; color: rgba(255,255,255,0.3); white-space: nowrap; }
         .affection-mini .bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
@@ -186,6 +198,13 @@
         .supervisor-card .s-desc { color: rgba(255,255,255,0.3); font-size: 9px; line-height: 1.45; margin-top: 4px; min-height: 26px; }
         .binding-card { border-left: 3px solid var(--primary); }
         .binding-state { font-size: 10px; color: var(--gold); margin-top: 4px; }
+        .property-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+        .property-item { background: rgba(255,255,255,0.025); border-radius: 8px; padding: 8px 4px; text-align: center; }
+        .property-item strong { display: block; font-size: 13px; color: #fff; overflow: hidden; text-overflow: ellipsis; }
+        .property-item span { display: block; font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+        .exchange-row { display: flex; gap: 6px; margin-top: 8px; }
+        .exchange-row input { flex: 1; min-width: 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 6px 8px; outline: none; }
+        .exchange-row button { border: none; border-radius: 8px; padding: 6px 10px; background: rgba(197,163,255,0.12); color: var(--primary); cursor: pointer; }
         #shopView .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px 0; overflow-y: auto; flex: 1; }
         #shopView .shop-item { background: rgba(0,0,0,0.15); padding: 10px 4px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.04); transition: 0.3s; }
         #shopView .shop-item:active { transform: scale(0.95); }
@@ -599,7 +618,13 @@
                 </div>
                 <div class="right-stats">
                     <div class="stat-item">❤️ <span class="val" id="mainAffection">0</span></div>
-                    <div class="stat-item">🍰 <span class="val" id="mainMilkTea">0</span></div>
+                    <div class="top-pet" id="topPet" title="宠物占位">
+                        <div class="pet-cat">
+                            <span class="pet-eye left"></span>
+                            <span class="pet-eye right"></span>
+                            <span class="pet-collar"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="affection-mini">
@@ -710,6 +735,22 @@
                     <div class="page-card">
                         <h3>当前统计</h3>
                         <p id="profileSummaryText">数据读取中。</p>
+                    </div>
+                    <div class="page-card">
+                        <h3>财产</h3>
+                        <p id="propertyUserCode">用户代号：VIP009</p>
+                        <div class="property-grid">
+                            <div class="property-item"><strong id="propertyMilkTea">0</strong><span>小奶糕</span></div>
+                            <div class="property-item"><strong id="propertyStarShine">0</strong><span>星辉</span></div>
+                            <div class="property-item"><strong id="propertyBiscuit">0</strong><span>饼干</span></div>
+                        </div>
+                        <div class="exchange-row">
+                            <input id="milkTeaConvertInput" type="number" min="2" step="2" placeholder="输入小奶糕数量">
+                            <button onclick="convertMilkTeaToStarShine()">兑换星辉</button>
+                        </div>
+                        <p style="margin-top:6px;">兑换比例：2 小奶糕 = 1 星辉。用户可自行决定每次兑换数量。</p>
+                        <p id="supervisorChangeTokenText" style="margin-top:4px;">更换主监管者权限：0 次</p>
+                        <div class="card-actions"><button class="btn primary" id="useChangeTokenBtn" onclick="useSupervisorChangeToken()" style="display:none;">使用更换权限</button></div>
                     </div>
                     <div class="page-card">
                         <h3>订阅与充值</h3>
@@ -1004,17 +1045,18 @@
     // ★ GameData 结构
     const GameData = {
         user: {
-            currency: { milkTea: 99999999 },
+            currency: { milkTea: 99999999, starShine: 0, biscuit: 0 },
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
         ai: { affection: 0, dialogHistory: [] },
-        profile: { onboarded: false, summary: '', goals: [], updatedAt: null },
+        profile: { onboarded: false, summary: '', goals: [], codename: 'VIP009', updatedAt: null },
         supervisor: {
             activeId: null,
             state: 'none',
             firstChoiceId: null,
             returnUsed: false,
             lockedAt: null,
+            changeTokens: 0,
             history: []
         },
         memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
@@ -1169,6 +1211,7 @@ const DEFAULT_TASK_POOL = [
 
     if (!GameData.taskHistory) GameData.taskHistory = [];
     if (!GameData.profile) GameData.profile = { onboarded: false, summary: '', goals: [], updatedAt: null };
+    if (!GameData.profile.codename) GameData.profile.codename = 'VIP009';
     if (!GameData.supervisor) {
         GameData.supervisor = {
             activeId: null,
@@ -1180,6 +1223,7 @@ const DEFAULT_TASK_POOL = [
         };
     }
     if (!Array.isArray(GameData.supervisor.history)) GameData.supervisor.history = [];
+    if (typeof GameData.supervisor.changeTokens !== 'number') GameData.supervisor.changeTokens = 0;
     if (!GameData.memory) GameData.memory = { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null };
     if (!Array.isArray(GameData.memory.facts)) GameData.memory.facts = [];
     if (typeof GameData.memory.summary !== 'string') GameData.memory.summary = '';
@@ -1198,6 +1242,8 @@ const DEFAULT_TASK_POOL = [
     if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
     GameData.settings.betaUnlimitedCurrency = true;
     GameData.user.currency.milkTea = 99999999;
+    if (typeof GameData.user.currency.starShine !== 'number') GameData.user.currency.starShine = 0;
+    if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
     GameData.treasure.milkTea = 99999999;
     if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
     if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
@@ -1659,7 +1705,7 @@ const DEFAULT_TASK_POOL = [
             const supervisor = getSupervisorById(state.activeId);
             return `已首次确认：${supervisor ? supervisor.name : '未知监管者'}，仍可使用一次返回机会`;
         }
-        if (state.state === 'returned') return '已使用唯一返回机会，请选择最终主监管者';
+        if (state.state === 'returned') return '等待最终确认新的主监管者';
         return '尚未绑定主监管者';
     }
 
@@ -1814,6 +1860,30 @@ const DEFAULT_TASK_POOL = [
         document.getElementById('confirmModal').classList.add('active');
     }
 
+    function useSupervisorChangeToken() {
+        if ((GameData.supervisor.changeTokens || 0) < 1) {
+            showNotif('没有可用的更换权限');
+            return;
+        }
+        document.getElementById('confirmIcon').textContent = '🔁';
+        document.getElementById('confirmTitle').textContent = '更换主监管者？';
+        document.getElementById('confirmDesc').textContent = '本次会消耗一次高价购买的更换权限。重新选择并最终确认后，新监管者会永久锁定。';
+        document.getElementById('confirmYesBtn').onclick = function() {
+            closeConfirmModal();
+            GameData.supervisor.changeTokens -= 1;
+            GameData.supervisor.state = 'returned';
+            GameData.supervisor.returnUsed = true;
+            GameData.supervisor.activeId = null;
+            GameData.supervisor.history.push({ type: 'paid_change_started', time: Date.now() });
+            pendingSupervisorId = null;
+            saveData();
+            applySupervisorUI();
+            openSupervisorSelection();
+            showNotif('已使用更换权限，请选择新的主监管者');
+        };
+        document.getElementById('confirmModal').classList.add('active');
+    }
+
     function lockSupervisorAfterWork() {
         if (GameData.supervisor && GameData.supervisor.state === 'pending' && GameData.supervisor.activeId) {
             GameData.supervisor.state = 'locked';
@@ -1884,6 +1954,7 @@ ${current}
                 onboarded: true,
                 summary: String(plan.summary || profile).trim().slice(0, 500),
                 goals: [profile],
+                codename: GameData.profile.codename || 'VIP009',
                 updatedAt: Date.now()
             };
             GameData.taskPool = dailyRaw.map((item, index) => {
@@ -2439,33 +2510,36 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             { id:'g13', name:'撒娇兑换券', icon:'🥺', price:500, af:10, desc:'欣原会对你撒娇一次', special: true, type: 'act_cute' },
             { id:'g14', name:'喵喵券', icon:'🐈', price:300, af:5, desc:'她会学猫叫一次', special: true, type: 'meow' },
             { id:'g15', name:'暧昧故事券', icon:'💜', price:800, af:15, desc:'她会讲一个关于你们的暧昧小故事', special: true, type: 'story' },
-            { id:'g16', name:'10克拉粉钻项链', icon:'💎', price:5200, af:200, desc:'稀有粉钻，极致奢华' }
+            { id:'g16', name:'10克拉粉钻项链', icon:'💎', price:5200, af:200, desc:'稀有粉钻，极致奢华' },
+            { id:'g17', name:'更换主监管者权限', icon:'🔁', price:1000, currency:'starShine', af:0, desc:'购买一次更换主监管者的机会', effect:'supervisor_change_token' }
         ],
         buy(id) {
             const item = this.items.find(i => i.id === id);
             if (!item) return;
 
-            if (item.special) {
-                const today = TS.dateStr(TS.now());
-                const lastBuy = GameData.treasure.lastSpecialBuyDate;
-                if (lastBuy === today) {
-                    const failMsg = '今天已经买过特殊道具了，明天再来吧。';
-                    showEmotionBubble(failMsg, 'tsundere', 2500);
-                    showNotif('⏳ ' + failMsg);
-                    return;
-                }
-            }
-
-            if (GameData.user.currency.milkTea < item.price) {
+            const currency = item.currency || 'milkTea';
+            const balance = GameData.user.currency[currency] || 0;
+            if (balance < item.price) {
                 const failMsg = '财务还没自由就想买这些？先完成任务。';
                 showEmotionBubble(failMsg, 'tsundere', 2500);
-                showNotif('❌ 🍰 小奶糕不足');
+                showNotif(currency === 'starShine' ? '❌ 星辉不足' : '❌ 小奶糕不足');
+                return;
+            }
+
+            const shouldDeduct = currency !== 'milkTea' || !GameData.settings.betaUnlimitedCurrency;
+            if (shouldDeduct) GameData.user.currency[currency] -= item.price;
+
+            if (item.effect === 'supervisor_change_token') {
+                GameData.supervisor.changeTokens = (GameData.supervisor.changeTokens || 0) + 1;
+                showNotif('已获得一次更换主监管者权限');
+                saveData();
+                updateUI();
+                updateShopGrid();
                 return;
             }
 
             if (item.special) {
                 const type = item.type || 'story';
-                if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea -= item.price;
                 GameData.treasure.milkTea = GameData.user.currency.milkTea;
                 GameData.treasure.coupons[type] = (GameData.treasure.coupons[type] || 0) + 1;
                 GameData.treasure.lastSpecialBuyDate = TS.dateStr(TS.now());
@@ -2484,7 +2558,6 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 return;
             }
 
-            if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea -= item.price;
             GameData.treasure.milkTea = GameData.user.currency.milkTea;
             GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + item.af);
 
@@ -2516,8 +2589,9 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         const el = document.getElementById('shopGrid');
         if (!el) return;
         el.innerHTML = Shop.items.map(i => {
-            const specialTag = i.special ? ' 🌟每日限购' : '';
-            return '<div class="shop-item" onclick="Shop.buy(\''+i.id+'\')"><div class="icon">'+i.icon+'</div><div class="name">'+i.name+'</div><div class="price">'+i.price+'🍰</div><div class="desc">'+i.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">+'+i.af+'❤️</div></div>';
+            const specialTag = i.special ? ' 特殊道具' : '';
+            const currencySymbol = i.currency === 'starShine' ? '✨' : '🍰';
+            return '<div class="shop-item" onclick="Shop.buy(\''+i.id+'\')"><div class="icon">'+i.icon+'</div><div class="name">'+i.name+'</div><div class="price">'+i.price+currencySymbol+'</div><div class="desc">'+i.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">'+(i.af ? '+'+i.af+'❤️' : '')+'</div></div>';
         }).join('');
     }
 
@@ -4079,6 +4153,28 @@ ${memoryFacts}
         }, 100);
     }
 
+    function convertMilkTeaToStarShine() {
+        const input = document.getElementById('milkTeaConvertInput');
+        const requested = Math.floor(Number(input && input.value) || 0);
+        const pairs = Math.floor(requested / 2);
+        const cost = pairs * 2;
+        if (pairs < 1) {
+            showNotif('至少输入 2 个小奶糕');
+            return;
+        }
+        if (GameData.user.currency.milkTea < cost) {
+            showNotif('小奶糕数量不足');
+            return;
+        }
+        GameData.user.currency.milkTea -= cost;
+        GameData.user.currency.starShine = (GameData.user.currency.starShine || 0) + pairs;
+        GameData.treasure.milkTea = GameData.user.currency.milkTea;
+        if (input) input.value = '';
+        saveData();
+        updateUI();
+        showNotif(`已兑换 ${pairs} 星辉`);
+    }
+
     function updateAppPages() {
         const allTasks = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests];
         const completed = allTasks.filter(t => t.done || t.exempted).length;
@@ -4094,6 +4190,15 @@ ${memoryFacts}
         setText('messageUnreadCount', GameData.chat.unreadCount + (GameData.chat.storyUnread ? 1 : 0));
         setText('messageMailCount', GameData.mail.items.filter(m => !m.read).length);
         setText('messageTodayCount', allTasks.filter(t => t.done || t.exempted).length);
+        setText('propertyMilkTea', GameData.user.currency.milkTea || 0);
+        setText('propertyStarShine', GameData.user.currency.starShine || 0);
+        setText('propertyBiscuit', GameData.user.currency.biscuit || 0);
+        setText('propertyUserCode', `用户代号：${GameData.profile.codename || 'VIP009'}`);
+        setText('supervisorChangeTokenText', `更换主监管者权限：${GameData.supervisor.changeTokens || 0} 次`);
+        const useChangeTokenBtn = document.getElementById('useChangeTokenBtn');
+        if (useChangeTokenBtn) {
+            useChangeTokenBtn.style.display = (GameData.supervisor.changeTokens || 0) > 0 && GameData.supervisor.state === 'locked' ? 'inline-block' : 'none';
+        }
         setText('growthStreak', GameData.checkin.streak || 0);
         setText('growthAffection', GameData.ai.affection || 0);
         setText('growthCompleted', completed);
@@ -4343,7 +4448,8 @@ ${memoryFacts}
         document.getElementById('mainAffection').textContent = af;
         document.getElementById('mainAffectionFill').style.width = pct + '%';
         document.getElementById('mainAffectionNum').textContent = af + ' / 520';
-        document.getElementById('mainMilkTea').textContent = GameData.user.currency.milkTea;
+        const mainMilkTea = document.getElementById('mainMilkTea');
+        if (mainMilkTea) mainMilkTea.textContent = GameData.user.currency.milkTea;
         if (af >= MAX_AF) { document.getElementById('mainAffectionFill').classList.add('gold'); } else { document.getElementById('mainAffectionFill').classList.remove('gold'); }
         updateTasks();
         updateMailUI();
@@ -4709,7 +4815,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.2', '欢迎回来，VIP009。\n\nV4.2 升级：\n- 内测无限小奶糕\n- 每日任务调整为 2 项\n- 核心任务达标制与主线优先\n- 隐藏长期记忆压缩\n- 日记内容真实提取记忆\n- 新增订阅与充值入口\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.3', '欢迎回来，VIP009。\n\nV4.3 升级：\n- 小奶糕、星辉和饼干财产框架\n- 小奶糕自由兑换星辉\n- 主页宠物活动占位\n- 稀有商品与监管者更换权限\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
