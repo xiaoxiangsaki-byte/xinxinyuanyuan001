@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V4.4</title>
+    <title>VIP009 · 欣原监督系统 V4.5</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root { --primary: #c5a3ff; --secondary: #9c64ff; --gold: #ffd54f; --danger: #ff6b6b; --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d; }
@@ -183,6 +183,8 @@
         .page-card .card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
         .page-card .card-actions .btn { padding: 5px 11px; border-radius: 8px; border: none; background: rgba(197,163,255,0.08); color: var(--primary); font-size: 11px; cursor: pointer; }
         .page-card .card-actions .btn.primary { background: linear-gradient(135deg, #c5a3ff, #9c64ff); color: #000; font-weight: 600; }
+        .entry.shop-entry { background: rgba(197,163,255,0.06); border-color: rgba(197,163,255,0.12); box-shadow: 0 0 14px rgba(197,163,255,0.08); animation: shopGlow 2.8s ease-in-out infinite alternate; }
+        @keyframes shopGlow { from { box-shadow: 0 0 8px rgba(197,163,255,0.05); } to { box-shadow: 0 0 18px rgba(197,163,255,0.18); border-color: rgba(197,163,255,0.24); } }
         .page-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
         .page-stat { background: rgba(255,255,255,0.025); border-radius: 8px; padding: 8px 4px; text-align: center; }
         .page-stat strong { display: block; color: #fff; font-size: 16px; }
@@ -205,6 +207,12 @@
         .exchange-row { display: flex; gap: 6px; margin-top: 8px; }
         .exchange-row input { flex: 1; min-width: 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 6px 8px; outline: none; }
         .exchange-row button { border: none; border-radius: 8px; padding: 6px 10px; background: rgba(197,163,255,0.12); color: var(--primary); cursor: pointer; }
+        .profile-form label { display: block; font-size: 10px; color: rgba(255,255,255,0.35); margin: 9px 0 4px; }
+        .profile-form input[type="text"], .profile-form textarea { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 7px 9px; outline: none; font-family: inherit; font-size: 11px; }
+        .profile-form textarea { min-height: 62px; resize: vertical; }
+        .profile-avatar-row { display: flex; align-items: center; gap: 10px; }
+        .profile-avatar-preview { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; background: rgba(197,163,255,0.12); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
+        .profile-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
         #shopView .shop-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 8px 0; overflow-y: auto; flex: 1; }
         #shopView .shop-item { background: rgba(0,0,0,0.15); padding: 10px 4px; border-radius: 10px; text-align: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.04); transition: 0.3s; }
         #shopView .shop-item:active { transform: scale(0.95); }
@@ -356,6 +364,18 @@
         .chat-input-area { display: flex; gap: 6px; align-items: flex-end; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); }
         .chat-input-area .file-label { cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.2); transition: 0.3s; flex-shrink: 0; line-height: 1; }
         .chat-input-area .file-label:active { color: var(--primary); }
+        .chat-input-area .chat-tool-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(197,163,255,0.12); background: rgba(197,163,255,0.07); color: var(--primary); font-size: 18px; cursor: pointer; flex-shrink: 0; }
+        .chat-input-area .chat-tool-btn:active { opacity: 0.65; }
+        .chat-tool-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 8px; }
+        .chat-tool-option { border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.025); border-radius: 12px; padding: 16px 8px; color: #fff; cursor: pointer; text-align: center; }
+        .chat-tool-option .tool-icon { font-size: 24px; display: block; margin-bottom: 5px; }
+        .model-option { border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.025); border-radius: 10px; padding: 10px; margin-bottom: 7px; cursor: pointer; }
+        .model-option.active { border-color: rgba(197,163,255,0.4); background: rgba(197,163,255,0.08); }
+        .model-option .model-name { color: #fff; font-size: 12px; font-weight: 600; }
+        .model-option .model-desc { color: rgba(255,255,255,0.32); font-size: 9px; margin-top: 3px; }
+        .model-option .model-price { color: var(--gold); font-size: 10px; margin-top: 5px; }
+        .typing-cursor { display: inline-block; width: 2px; height: 13px; margin-left: 2px; background: var(--primary); vertical-align: -2px; animation: cursorBlink 0.8s steps(1) infinite; }
+        @keyframes cursorBlink { 50% { opacity: 0; } }
         .chat-input-area .chat-input { flex: 1; min-height: 36px; max-height: 120px; overflow-y: auto; resize: none; line-height: 1.45; font-family: inherit; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.04); border-radius: 18px; padding: 8px 14px; color: #fff; font-size: 13px; outline: none; min-width: 0; }
         .chat-input-area .chat-input::placeholder { color: rgba(255,255,255,0.15); }
         .chat-input-area .chat-input:focus { border-color: rgba(197,163,255,0.1); }
@@ -499,6 +519,10 @@
         .setup-copy { font-size: 11px; color: rgba(255,255,255,0.4); line-height: 1.65; margin: 4px 0 8px; }
         .setup-copy strong { color: var(--primary); }
         .setup-status { min-height: 16px; margin-top: 6px; font-size: 10px; color: var(--gold); text-align: center; }
+        .setup-spinner { width: 28px; height: 28px; margin: 10px auto 2px; border-radius: 50%; border: 3px solid rgba(197,163,255,0.12); border-top-color: var(--primary); animation: setupSpin 0.8s linear infinite; }
+        @keyframes setupSpin { to { transform: rotate(360deg); } }
+        #onboardingModal.generating { pointer-events: none; }
+        #onboardingModal.generating .content { border-color: rgba(197,163,255,0.25); box-shadow: 0 0 40px rgba(156,100,255,0.12); }
         .memory-search { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 7px 9px; color: #fff; outline: none; font-size: 11px; }
         .memory-search:focus { border-color: rgba(197,163,255,0.18); }
         .memory-results { margin-top: 8px; max-height: 42vh; overflow-y: auto; }
@@ -647,7 +671,7 @@
                     <div class="entry" onclick="openDiaryView()"><span class="icon">📔</span> 日记</div>
                     <div class="entry" onclick="openMailView()"><span class="icon">✉️</span> 邮箱</div>
                     <div class="entry treasure-entry" onclick="openTreasureView()"><span class="icon">🔮</span> 珍藏阁</div>
-                    <div class="entry" onclick="openShopView()"><span class="icon">✨</span> 臻品阁</div>
+                    <div class="entry shop-entry" onclick="openShopView()"><span class="icon">✨</span> 臻品阁</div>
                     <div class="entry timecapsule-entry" onclick="openTimeCapsuleView()"><span class="icon">💌</span> 时光笺</div>
                 </div>
                 <div class="mail-section" id="mailEntry">
@@ -734,6 +758,7 @@
                     <div class="page-card">
                         <h3>当前统计</h3>
                         <p id="profileSummaryText">数据读取中。</p>
+                        <div class="card-actions"><button class="btn primary" onclick="openUserProfileView()">编辑用户档案</button></div>
                     </div>
                     <div class="page-card">
                         <h3>财产</h3>
@@ -784,7 +809,8 @@
             </div>
             <div class="chat-messages-area" id="chatMessagesArea"></div>
             <div class="chat-input-area">
-                <label class="file-label" title="上传图片">📷<input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="handleChatImage(this)"></label>
+                <button class="chat-tool-btn" id="chatToolsBtn" onclick="openChatTools()" title="相机与模型">＋</button>
+                <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="handleChatImage(this)">
                 <img id="chatImgPreview" src="">
                 <textarea rows="1" class="chat-input" id="chatInput" placeholder="输入消息..." oninput="autoGrowChatInput(this)" onkeydown="handleChatInputKeydown(event)"></textarea>
                 <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">▶</button>
@@ -867,6 +893,32 @@
             </div>
         </div>
 
+        <div id="userProfileView" class="view">
+            <div style="display:flex; align-items:center; padding:8px 0 8px; border-bottom:1px solid rgba(255,255,255,0.04); flex-shrink:0; gap:10px; cursor:pointer;" onclick="closeUserProfileView()">
+                <span style="font-size:20px; color:rgba(255,255,255,0.3);">←</span>
+                <span style="font-size:16px; color:#fff; font-weight:600;">用户档案</span>
+            </div>
+            <div class="profile-form" style="flex:1; overflow-y:auto; padding:10px 0;">
+                <div class="page-card">
+                    <div class="profile-avatar-row">
+                        <div class="profile-avatar-preview" id="userAvatarPreview">V</div>
+                        <label class="btn" style="display:inline-block; padding:6px 12px; border-radius:8px; background:rgba(197,163,255,0.1); color:var(--primary); cursor:pointer;">上传头像<input type="file" id="userAvatarInput" accept="image/*" style="display:none" onchange="handleUserAvatar(this)"></label>
+                    </div>
+                    <label>用户代号</label>
+                    <input type="text" id="userCodenameInput" maxlength="20" placeholder="输入神秘代号">
+                    <label>个人爱好</label>
+                    <textarea id="userHobbiesInput" placeholder="喜欢什么、平时在做什么"></textarea>
+                    <label>习惯与偏好</label>
+                    <textarea id="userPreferencesInput" placeholder="希望监管者记住的作息、表达方式和习惯"></textarea>
+                    <label>不喜欢或需要避开的内容</label>
+                    <textarea id="userDislikesInput" placeholder="禁忌、容易反感的话题或称呼"></textarea>
+                    <div class="card-actions" style="margin-top:12px;">
+                        <button class="btn primary" onclick="saveUserProfile()">保存档案</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- ===== 紫翼·时光笺 ===== -->
         <div id="timeCapsuleView" class="view">
             <div class="mail-top" id="timeCapsuleTop">
@@ -944,8 +996,9 @@
             <h3>先把你的目标告诉我</h3>
             <div class="setup-copy">写下你最近真正想完成的事、每天能投入多少时间，以及你不希望被安排的方向。<strong>欣原会据此生成第一版每日、主线和支线任务。</strong></div>
             <textarea id="onboardingProfile" style="height:120px;" placeholder="例如：想提高英语口语，每天能练30分钟；想健身但膝盖不好；最近在准备考试；晚上11点后不要安排任务。"></textarea>
+            <div class="setup-spinner" id="onboardingSpinner" style="display:none;"></div>
             <div class="actions">
-                <button class="btn secondary" onclick="closeOnboarding()">稍后再说</button>
+                <button class="btn secondary" id="onboardingCancelBtn" onclick="closeOnboarding()">稍后再说</button>
                 <button class="btn primary" id="onboardingGenerateBtn" onclick="generateTasksFromProfile()">生成专属任务</button>
             </div>
             <div class="setup-status" id="onboardingStatus"></div>
@@ -963,6 +1016,26 @@
                 <button class="btn secondary" id="supervisorReturnBtn" onclick="useSupervisorReturn()" style="display:none;">返回一次</button>
                 <button class="btn primary" id="supervisorConfirmBtn" onclick="confirmSupervisorSelection()">确认</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal" id="chatToolsModal">
+        <div class="content">
+            <h3>发送方式</h3>
+            <div class="chat-tool-options">
+                <button class="chat-tool-option" onclick="chooseChatImage()"><span class="tool-icon">📷</span>相机与图片</button>
+                <button class="chat-tool-option" onclick="openModelSelector()"><span class="tool-icon">🧠</span>选择模型</button>
+            </div>
+            <div class="actions"><button class="btn secondary" onclick="closeChatTools()">关闭</button></div>
+        </div>
+    </div>
+
+    <div class="modal" id="modelModal">
+        <div class="content">
+            <h3>选择聊天模型</h3>
+            <div class="setup-copy">价格以饼干计算。内测期间展示价格，不扣除真实饼干。</div>
+            <div id="modelOptions"></div>
+            <div class="actions"><button class="btn secondary" onclick="closeModelSelector()">返回</button></div>
         </div>
     </div>
 
@@ -1041,6 +1114,33 @@
         }
     ];
 
+    const CHAT_MODELS = [
+        {
+            id: 'qwen-fast',
+            name: '轻量对话',
+            apiId: 'Qwen/Qwen3-VL-30B-A3B-Instruct',
+            price: 4,
+            vision: true,
+            desc: '速度快，适合短聊天和日常提醒'
+        },
+        {
+            id: 'qwen-main',
+            name: '标准监管',
+            apiId: 'Qwen/Qwen2.5-72B-Instruct-128K',
+            price: 8,
+            vision: false,
+            desc: '平衡质量与消耗，适合普通监督聊天'
+        },
+        {
+            id: 'qwen-detail',
+            name: '精细分析',
+            apiId: 'Qwen/Qwen3-VL-32B-Instruct',
+            price: 12,
+            vision: true,
+            desc: '更细致，适合长剧情和复杂任务分析'
+        }
+    ];
+
     // ★ GameData 结构
     const GameData = {
         user: {
@@ -1048,7 +1148,7 @@
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
         ai: { affection: 0, dialogHistory: [] },
-        profile: { onboarded: false, summary: '', goals: [], codename: 'VIP009', updatedAt: null },
+        profile: { onboarded: false, summary: '', goals: [], codename: 'VIP009', avatar: '', hobbies: '', preferences: '', dislikes: '', updatedAt: null },
         supervisor: {
             activeId: null,
             state: 'none',
@@ -1060,7 +1160,7 @@
         },
         memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
-        settings: { apiKey: '', autoPushEnabled: true },
+        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true },
         reminder: {
             enabled: true,
             lastInactivityAt: 0,
@@ -1211,6 +1311,10 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.taskHistory) GameData.taskHistory = [];
     if (!GameData.profile) GameData.profile = { onboarded: false, summary: '', goals: [], updatedAt: null };
     if (!GameData.profile.codename) GameData.profile.codename = 'VIP009';
+    if (typeof GameData.profile.avatar !== 'string') GameData.profile.avatar = '';
+    if (typeof GameData.profile.hobbies !== 'string') GameData.profile.hobbies = '';
+    if (typeof GameData.profile.preferences !== 'string') GameData.profile.preferences = '';
+    if (typeof GameData.profile.dislikes !== 'string') GameData.profile.dislikes = '';
     if (!GameData.supervisor) {
         GameData.supervisor = {
             activeId: null,
@@ -1240,6 +1344,8 @@ const DEFAULT_TASK_POOL = [
     if (!Array.isArray(GameData.ai.dialogHistory)) GameData.ai.dialogHistory = [];
     if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
     GameData.settings.betaUnlimitedCurrency = true;
+    GameData.settings.betaFreeModels = true;
+    if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
     GameData.user.currency.milkTea = 99999999;
     if (typeof GameData.user.currency.starShine !== 'number') GameData.user.currency.starShine = 0;
     if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
@@ -1680,7 +1786,10 @@ const DEFAULT_TASK_POOL = [
         document.getElementById('onboardingModal').classList.add('active');
     }
 
+    let onboardingGenerating = false;
+
     function closeOnboarding() {
+        if (onboardingGenerating) return;
         document.getElementById('onboardingModal').classList.remove('active');
     }
 
@@ -1908,7 +2017,13 @@ const DEFAULT_TASK_POOL = [
         }
 
         button.disabled = true;
-        status.textContent = '正在根据你的情况编排任务...';
+        const cancelButton = document.getElementById('onboardingCancelBtn');
+        const spinner = document.getElementById('onboardingSpinner');
+        onboardingGenerating = true;
+        document.getElementById('onboardingModal').classList.add('generating');
+        if (cancelButton) cancelButton.disabled = true;
+        if (spinner) spinner.style.display = 'block';
+        status.textContent = '正在为你专属制定任务，请耐心等待...';
         try {
             const current = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests]
                 .map(t => t.title).join('、') || '暂无';
@@ -1950,10 +2065,10 @@ ${current}
             }
 
             GameData.profile = {
+                ...GameData.profile,
                 onboarded: true,
                 summary: String(plan.summary || profile).trim().slice(0, 500),
                 goals: [profile],
-                codename: GameData.profile.codename || 'VIP009',
                 updatedAt: Date.now()
             };
             GameData.taskPool = dailyRaw.map((item, index) => {
@@ -2001,6 +2116,10 @@ ${current}
         } catch (e) {
             status.textContent = '生成失败：' + (e.message || '请稍后重试');
         } finally {
+            onboardingGenerating = false;
+            document.getElementById('onboardingModal').classList.remove('generating');
+            if (cancelButton) cancelButton.disabled = false;
+            if (spinner) spinner.style.display = 'none';
             button.disabled = false;
         }
     }
@@ -2992,6 +3111,51 @@ ${transcript}
         }
     }
 
+    function openChatTools() {
+        document.getElementById('chatToolsModal').classList.add('active');
+    }
+
+    function closeChatTools() {
+        document.getElementById('chatToolsModal').classList.remove('active');
+    }
+
+    function chooseChatImage() {
+        closeChatTools();
+        document.getElementById('chatImageInput').click();
+    }
+
+    function renderModelOptions() {
+        const selectedId = GameData.settings.selectedModelId || 'qwen-main';
+        const container = document.getElementById('modelOptions');
+        container.innerHTML = CHAT_MODELS.map(model => `
+            <div class="model-option ${model.id === selectedId ? 'active' : ''}" onclick="selectChatModel('${model.id}')">
+                <div class="model-name">${escapeHtml(model.name)}${model.id === selectedId ? ' · 当前' : ''}</div>
+                <div class="model-desc">${escapeHtml(model.desc)}</div>
+                <div class="model-price">${model.price} 饼干 / 条</div>
+            </div>
+        `).join('');
+    }
+
+    function openModelSelector() {
+        closeChatTools();
+        renderModelOptions();
+        document.getElementById('modelModal').classList.add('active');
+    }
+
+    function closeModelSelector() {
+        document.getElementById('modelModal').classList.remove('active');
+        openChatTools();
+    }
+
+    function selectChatModel(modelId) {
+        const model = CHAT_MODELS.find(item => item.id === modelId);
+        if (!model) return;
+        GameData.settings.selectedModelId = model.id;
+        saveData();
+        renderModelOptions();
+        showNotif(`聊天模型已切换为 ${model.name}`);
+    }
+
     function handleChatImage(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
@@ -3023,8 +3187,36 @@ ${transcript}
         reader.readAsDataURL(file);
     }
 
-    // ★ 聊天AI（日常图片用 30B-A3B）
-    async function callChatAI(msg, img) {
+    let activeStreamMessageId = null;
+
+    function startStreamingBubble() {
+        removeStreamingBubble();
+        const area = document.getElementById('chatMessagesArea');
+        const id = 'stream_' + Date.now();
+        area.insertAdjacentHTML('beforeend', `<div class="chat-msg ai" id="${id}"><div class="bubble"><span class="stream-text"></span><span class="typing-cursor"></span></div></div>`);
+        activeStreamMessageId = id;
+        area.scrollTop = area.scrollHeight;
+        return id;
+    }
+
+    function updateStreamingBubble(text) {
+        if (!activeStreamMessageId) return;
+        const bubble = document.querySelector('#' + activeStreamMessageId + ' .stream-text');
+        if (bubble) bubble.innerHTML = formatChatText(text);
+        const area = document.getElementById('chatMessagesArea');
+        if (area) area.scrollTop = area.scrollHeight;
+    }
+
+    function removeStreamingBubble() {
+        if (activeStreamMessageId) {
+            const el = document.getElementById(activeStreamMessageId);
+            if (el) el.remove();
+            activeStreamMessageId = null;
+        }
+    }
+
+    // ★ 聊天AI（支持流式输出）
+    async function callChatAI(msg, img, onDelta = null) {
         if (isSending) return;
         if (!GameData.settings.apiKey) {
             showNotif('❌ 请先在设置中配置 API Key');
@@ -3058,12 +3250,16 @@ ${transcript}
             const main = GameData.tasks.mainQuests.filter(t => !t.done).map(t => t.title).join('、') || '无';
             const rel = getRel(GameData.ai.affection);
             const profileSummary = GameData.profile && GameData.profile.summary ? GameData.profile.summary : '尚未设置';
+            const userCodename = GameData.profile.codename || 'VIP009';
+            const userHobbies = GameData.profile.hobbies || '未填写';
+            const userPreferences = GameData.profile.preferences || '未填写';
+            const userDislikes = GameData.profile.dislikes || '未填写';
             const activeSupervisor = getActiveSupervisor();
             const memorySummary = GameData.memory.summary || '暂无压缩记忆';
             const memoryFacts = (GameData.memory.facts || []).slice(-16).map(item => `- ${item}`).join('\n') || '- 暂无精华记忆';
 
             // ★ 人设写死系统 Prompt
-            let sysPrompt = `你是${activeSupervisor.name}，VIP009 当前唯一的主监管者。你的身份是：${activeSupervisor.role}。
+            let sysPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。你的身份是：${activeSupervisor.role}。
 
 【人格底色】
 ${activeSupervisor.prompt}
@@ -3080,7 +3276,13 @@ ${activeSupervisor.prompt}
 - 禁止在任务未完成时进行无目的闲聊
 - 如果用户有英语、算术、逻辑或概念错误，必须用符合人设的语气指出
 
-【VIP009 当前状态】
+【用户档案】
+- 用户代号：${userCodename}
+- 个人爱好：${userHobbies}
+- 习惯与偏好：${userPreferences}
+- 不喜欢或需要避开的内容：${userDislikes}
+
+【当前状态】
 - 好感度：${GameData.ai.affection} / 520
 - 关系：${rel.label}
 - 个人目标与基础：${profileSummary}
@@ -3094,14 +3296,18 @@ ${memoryFacts}
 1. 必须带毒舌/傲娇感
 2. 如果她提出要求，先吐槽再答应
 3. 如果她偷懒，直接怼她
-4. 记住：你现在是${activeSupervisor.name}，不是通用助手`;
+4. 必须称呼用户为“${userCodename}”，不能叫错名字
+5. 记住：你现在是${activeSupervisor.name}，不是通用助手`;
 
             let userContent;
             let modelName;
+            const selectedModel = CHAT_MODELS.find(model => model.id === GameData.settings.selectedModelId) || CHAT_MODELS[1];
 
             if (img) {
                 const isSimpleQuery = !msg || msg.length < 15 || /这是什么|描述|识别|看看/.test(msg);
-                modelName = isSimpleQuery ? 'Qwen/Qwen3-VL-30B-A3B-Instruct' : 'Qwen/Qwen3-VL-32B-Instruct';
+                modelName = selectedModel.vision
+                    ? selectedModel.apiId
+                    : (isSimpleQuery ? 'Qwen/Qwen3-VL-30B-A3B-Instruct' : 'Qwen/Qwen3-VL-32B-Instruct');
                 const userPrompt = msg ? msg : '请描述这张图片的内容。';
                 sysPrompt += `\n【重要】用户发来了一张图片，我已经识别到内容如下：${imageDescription}。请在回复中自然融入这些内容。`;
                 userContent = [
@@ -3109,8 +3315,15 @@ ${memoryFacts}
                     { type: "text", text: userPrompt }
                 ];
             } else {
-                modelName = 'Qwen/Qwen2.5-72B-Instruct-128K';
+                modelName = selectedModel.apiId;
                 userContent = msg;
+            }
+
+            if (!GameData.settings.betaFreeModels) {
+                if ((GameData.user.currency.biscuit || 0) < selectedModel.price) {
+                    throw new Error(`饼干不足，当前模型每条需要 ${selectedModel.price} 饼干`);
+                }
+                GameData.user.currency.biscuit -= selectedModel.price;
             }
 
             const hist = buildRelevantMemory(msg, 12).filter(m => {
@@ -3143,7 +3356,8 @@ ${memoryFacts}
                         { role: 'user', content: userContent }
                     ],
                     max_tokens: 500,
-                    temperature: img ? 0.7 : 0.85
+                    temperature: img ? 0.7 : 0.85,
+                    stream: Boolean(onDelta)
                 })
             });
 
@@ -3156,8 +3370,45 @@ ${memoryFacts}
                 throw new Error(e);
             }
 
-            const data = await res.json();
-            const reply = data.choices[0].message.content;
+            let reply = '';
+            if (onDelta) {
+                startStreamingBubble();
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let streamDone = false;
+                while (!streamDone) {
+                    const chunk = await reader.read();
+                    if (chunk.done) break;
+                    buffer += decoder.decode(chunk.value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed.startsWith('data:')) continue;
+                        const dataText = trimmed.slice(5).trim();
+                        if (dataText === '[DONE]') {
+                            streamDone = true;
+                            break;
+                        }
+                        try {
+                            const payload = JSON.parse(dataText);
+                            const delta = payload.choices && payload.choices[0] && payload.choices[0].delta
+                                ? payload.choices[0].delta.content || ''
+                                : '';
+                            if (delta) {
+                                reply += delta;
+                                updateStreamingBubble(reply);
+                                if (onDelta) onDelta(reply);
+                            }
+                        } catch (_) {}
+                    }
+                }
+                removeStreamingBubble();
+            } else {
+                const data = await res.json();
+                reply = data.choices[0].message.content;
+            }
             const cleaned = deduplicateText(reply);
 
             if (img) {
@@ -3189,6 +3440,7 @@ ${memoryFacts}
             updateUI();
 
         } catch (e) {
+            removeStreamingBubble();
             addChatMessage('assistant', '⚠️ ' + (e.message || '请求失败'), false);
             showNotif('❌ ' + (e.message || '请求失败'));
         } finally {
@@ -3266,7 +3518,7 @@ ${memoryFacts}
                 updateUI();
             }
 
-            await callChatAI(text, img);
+            await callChatAI(text, img, function() {});
         } catch (e) {
             addChatMessage('assistant', '⚠️ ' + (e.message || '请求失败'), false);
         } finally {
@@ -4114,6 +4366,68 @@ ${memoryFacts}
         updateUI();
     }
 
+    function openUserProfileView() {
+        const profile = GameData.profile || {};
+        document.getElementById('userCodenameInput').value = profile.codename || 'VIP009';
+        document.getElementById('userHobbiesInput').value = profile.hobbies || '';
+        document.getElementById('userPreferencesInput').value = profile.preferences || '';
+        document.getElementById('userDislikesInput').value = profile.dislikes || '';
+        const preview = document.getElementById('userAvatarPreview');
+        if (profile.avatar) {
+            preview.innerHTML = '<img src="' + profile.avatar + '" alt="用户头像">';
+        } else {
+            preview.textContent = (profile.codename || 'V').charAt(0).toUpperCase();
+        }
+        showView('userProfileView');
+    }
+
+    function closeUserProfileView() {
+        showView('mainView');
+        updateUI();
+    }
+
+    function handleUserAvatar(input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const image = new Image();
+            image.onload = function() {
+                const canvas = document.createElement('canvas');
+                const size = 160;
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const crop = Math.min(image.width, image.height);
+                const sx = (image.width - crop) / 2;
+                const sy = (image.height - crop) / 2;
+                ctx.drawImage(image, sx, sy, crop, crop, 0, 0, size, size);
+                const avatar = canvas.toDataURL('image/jpeg', 0.72);
+                const preview = document.getElementById('userAvatarPreview');
+                preview.innerHTML = '<img src="' + avatar + '" alt="用户头像">';
+                GameData.profile.avatar = avatar;
+                saveData();
+            };
+            image.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function saveUserProfile() {
+        const codename = document.getElementById('userCodenameInput').value.trim().slice(0, 20) || 'VIP009';
+        GameData.profile.codename = codename;
+        GameData.profile.hobbies = document.getElementById('userHobbiesInput').value.trim().slice(0, 500);
+        GameData.profile.preferences = document.getElementById('userPreferencesInput').value.trim().slice(0, 500);
+        GameData.profile.dislikes = document.getElementById('userDislikesInput').value.trim().slice(0, 500);
+        GameData.profile.updatedAt = Date.now();
+        const memoryText = `用户代号：${codename}。爱好：${GameData.profile.hobbies || '未填写'}。习惯偏好：${GameData.profile.preferences || '未填写'}。不喜欢：${GameData.profile.dislikes || '未填写'}`;
+        extractFactsFromText(memoryText, 'user_profile');
+        saveData();
+        updateUI();
+        closeUserProfileView();
+        showNotif('用户档案已保存');
+    }
+
     let mailTab = 'mails';
 
     function switchMailTab(tab, el) {
@@ -4835,7 +5149,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V4.4', '欢迎回来，VIP009。\n\nV4.4 升级：\n- 先选星辉数量再确认支付小奶糕\n- 宠物活动区和好感度位置调整\n- 进入聊天自动全部已读\n- 特殊彩蛋点击跳转修复\n- 时光笺分类编号独立\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V4.5', '欢迎回来，VIP009。\n\nV4.5 升级：\n- 制定任务时锁定页面\n- 用户档案与头像\n- 流式聊天输出\n- 相机与模型选择合并入口\n- 臻品阁微光\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
