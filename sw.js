@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xinyuan-app-v5-1';
+const CACHE_NAME = 'xinyuan-app-v5-2';
 const APP_SHELL = [
   './',
   './index.html',

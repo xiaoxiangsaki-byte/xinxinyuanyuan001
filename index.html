@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.1</title>
+    <title>VIP009 · 欣原监督系统 V5.2</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -240,6 +240,8 @@
         .profile-form label { display: block; font-size: 10px; color: rgba(255,255,255,0.35); margin: 9px 0 4px; }
         .profile-form input[type="text"], .profile-form textarea { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 7px 9px; outline: none; font-family: inherit; font-size: 11px; }
         .profile-form textarea { min-height: 62px; resize: vertical; }
+        .profile-form-label { display: block; font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 8px; }
+        .focus-timer { text-align: center; font-size: 42px; font-weight: 300; color: var(--primary); margin: 18px 0 4px; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
         .profile-avatar-row { display: flex; align-items: center; gap: 10px; }
         .profile-avatar-preview { width: 54px; height: 54px; border-radius: 50%; overflow: hidden; background: rgba(197,163,255,0.12); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; }
         .profile-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
@@ -391,6 +393,7 @@
         .chat-msg .story-badge { display: inline-block; font-size: 9px; background: rgba(255,213,79,0.10); color: var(--gold); padding: 1px 8px; border-radius: 10px; margin-top: 4px; }
         .memory-btn { border: 1px solid rgba(197,163,255,0.12); background: rgba(197,163,255,0.05); color: rgba(255,255,255,0.45); border-radius: 12px; font-size: 9px; padding: 3px 7px; cursor: pointer; flex-shrink: 0; }
         .memory-btn:active { opacity: 0.65; }
+        .chat-settings-btn { border: 1px solid var(--theme-border); background: var(--theme-soft); color: var(--primary); border-radius: 10px; font-size: 18px; line-height: 1; padding: 5px 8px; cursor: pointer; flex-shrink: 0; }
         .chat-input-area { display: flex; gap: 6px; align-items: flex-end; padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; background: rgba(0,0,0,0.3); backdrop-filter: blur(4px); }
         .chat-input-area .file-label { cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.2); transition: 0.3s; flex-shrink: 0; line-height: 1; }
         .chat-input-area .file-label:active { color: var(--primary); }
@@ -686,7 +689,7 @@
                 <span class="num" id="mainAffectionNum">0/520</span>
             </div>
             <div class="tasks-area" id="tasksArea">
-                <div class="app-page active" id="pageToday">
+                <div class="app-page active" id="pageTasks">
                 <div class="checkin-section" id="checkinSection">
                     <div class="left"><div class="label">🌱 成长连续</div><div class="streak" id="streakDisplay">🔥 0 天</div></div>
                     <button class="btn-checkin" id="checkinBtn" onclick="doCheckin()">
@@ -717,64 +720,55 @@
                 </div>
                 </div>
 
-                <div class="app-page" id="pagePlan">
+                <div class="app-page" id="pageFocus">
                     <div class="page-card">
-                        <h3>计划中心</h3>
-                        <p>每日任务会在凌晨刷新。主线负责长期成长，支线用于补充状态，任务修改需要先通过主监管者审核。</p>
-                        <div class="page-stats">
-                            <div class="page-stat"><strong id="planDailyCount">0</strong><span>每日任务</span></div>
-                            <div class="page-stat"><strong id="planMainCount">0</strong><span>主线任务</span></div>
-                            <div class="page-stat"><strong id="planSideCount">0</strong><span>支线任务</span></div>
+                        <h3>专注模式</h3>
+                        <p>选择一个任务，设定专注时长。专注结束后会记录本次结果，并进入每日总结。</p>
+                        <label class="profile-form-label">关联任务</label>
+                        <select id="focusTaskSelect" style="width:100%; margin-top:6px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--theme-border); border-radius:8px; padding:8px;"></select>
+                        <div class="card-actions" style="margin-top:10px;">
+                            <button class="btn" onclick="setFocusDuration(25)">25 分钟</button>
+                            <button class="btn" onclick="setFocusDuration(45)">45 分钟</button>
+                            <button class="btn" onclick="setFocusDuration(60)">60 分钟</button>
                         </div>
+                        <div class="focus-timer" id="focusTimerDisplay">25:00</div>
+                        <div class="setup-status" id="focusTimerStatus">准备开始</div>
                         <div class="card-actions">
-                            <button class="btn primary" onclick="openOnboarding(true)">重新生成计划</button>
-                            <button class="btn" onclick="openShopView()">打开臻品阁</button>
+                            <button class="btn primary" id="focusStartBtn" onclick="toggleFocusTimer()">开始专注</button>
+                            <button class="btn" onclick="endFocusSession()">结束本次</button>
                         </div>
                     </div>
                     <div class="page-card">
-                        <h3>计划状态</h3>
-                        <p id="planStatusText">任务状态读取中。</p>
-                    </div>
-                </div>
-
-                <div class="app-page" id="pageMessages">
-                    <div class="page-card">
-                        <h3>消息中心</h3>
-                        <p>监督提醒、聊天消息、任务审核和系统信件会集中显示在这里。</p>
+                        <h3>本次专注记录</h3>
                         <div class="page-stats">
-                            <div class="page-stat"><strong id="messageUnreadCount">0</strong><span>未读消息</span></div>
-                            <div class="page-stat"><strong id="messageMailCount">0</strong><span>未读邮件</span></div>
-                            <div class="page-stat"><strong id="messageTodayCount">0</strong><span>今日完成</span></div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn primary" onclick="openSupervisorChat()">打开对话</button>
-                            <button class="btn" onclick="openMailView()">打开邮箱</button>
+                            <div class="page-stat"><strong id="focusTodayMinutes">0</strong><span>今日分钟</span></div>
+                            <div class="page-stat"><strong id="focusSessionCount">0</strong><span>今日次数</span></div>
+                            <div class="page-stat"><strong id="focusInterruptCount">0</strong><span>中断次数</span></div>
                         </div>
                     </div>
                 </div>
 
-                <div class="app-page" id="pageGrowth">
+                <div class="app-page" id="pageDailySummary">
                     <div class="page-card">
-                        <h3>成长面板</h3>
-                        <p>任务完成、连续打卡和成长数据会在这里汇总。</p>
+                        <h3>今日总结</h3>
+                        <p>记录今天的任务进度、专注时间和监管者评价。</p>
                         <div class="page-stats">
-                            <div class="page-stat"><strong id="growthStreak">0</strong><span>连续天数</span></div>
-                            <div class="page-stat"><strong id="growthAffection">0</strong><span>好感度</span></div>
-                            <div class="page-stat"><strong id="growthCompleted">0</strong><span>已完成</span></div>
-                        </div>
-                        <div class="card-actions">
-                            <button class="btn primary" onclick="openDiaryView()">写日记</button>
-                            <button class="btn" onclick="openTimeCapsuleView()">时光笺</button>
-                            <button class="btn" onclick="openTreasureView()">珍藏阁</button>
+                            <div class="page-stat"><strong id="summaryCoreProgress">0/0</strong><span>核心任务</span></div>
+                            <div class="page-stat"><strong id="summaryCompleted">0</strong><span>今日完成</span></div>
+                            <div class="page-stat"><strong id="summaryFocusMinutes">0</strong><span>专注分钟</span></div>
                         </div>
                     </div>
                     <div class="page-card">
-                        <h3>BB 状态</h3>
-                        <p id="growthCatStatus">状态读取中。</p>
+                        <h3>完成记录</h3>
+                        <div id="dailySummaryTaskList"></div>
+                    </div>
+                    <div class="page-card">
+                        <h3>监管者评价</h3>
+                        <p id="summarySupervisorNote">完成今天的核心任务后，监管者会在这里留下评价。</p>
                     </div>
                 </div>
 
-                <div class="app-page" id="pageProfile">
+                <div class="app-page" id="pageAssets">
                     <div class="page-card binding-card">
                         <h3>主监管者</h3>
                         <p id="bindingSupervisorText">尚未选择主监管者。</p>
@@ -807,6 +801,14 @@
                         <div class="card-actions"><button class="btn primary" id="useChangeTokenBtn" onclick="useSupervisorChangeToken()" style="display:none;">使用更换权限</button></div>
                     </div>
                     <div class="page-card">
+                        <h3>资产统计</h3>
+                        <div class="page-stats">
+                            <div class="page-stat"><strong id="assetsStreak">0</strong><span>连续天数</span></div>
+                            <div class="page-stat"><strong id="assetsCompleted">0</strong><span>完成任务</span></div>
+                            <div class="page-stat"><strong id="assetsFocusMinutes">0</strong><span>专注分钟</span></div>
+                        </div>
+                    </div>
+                    <div class="page-card">
                         <h3>订阅与充值</h3>
                         <p>额度用于聊天、图片识别和任务审核。订阅用户将获得额度、专属监管者皮肤和更多记忆容量。</p>
                         <div class="card-actions">
@@ -816,11 +818,10 @@
                 </div>
             </div>
             <div class="bottom-tabs">
-                <div class="tab active" id="navToday" onclick="switchAppPage('today', this)">今日</div>
-                <div class="tab" id="navPlan" onclick="switchAppPage('plan', this)">计划</div>
-                <div class="tab" id="navMessages" onclick="switchAppPage('messages', this)">消息</div>
-                <div class="tab" id="navGrowth" onclick="switchAppPage('growth', this)">成长</div>
-                <div class="tab" id="navProfile" onclick="switchAppPage('profile', this)">我的</div>
+                <div class="tab active" id="navTasks" onclick="switchAppPage('tasks', this)">任务</div>
+                <div class="tab" id="navFocus" onclick="switchAppPage('focus', this)">专注</div>
+                <div class="tab" id="navDailySummary" onclick="switchAppPage('dailySummary', this)">每日总结</div>
+                <div class="tab" id="navAssets" onclick="switchAppPage('assets', this)">资产统计</div>
             </div>
         </div>
 
@@ -830,12 +831,7 @@
                 <div class="back-avatar"><img src="./avatar.jpg" alt="欣原" id="chatSupervisorAvatar"></div>
                 <div class="chat-title"><h3 id="chatSupervisorName">欣原</h3><div class="signature" id="chatSupervisorSignature">爱是世界上最不保值的资产</div></div>
                 <div class="chat-unread" id="chatUnreadBadge">未读</div>
-                <!-- ★ 爱心 + 星星环绕 -->
-                <div class="chat-heart-wrapper">
-                    <span class="orbit-star">✦</span>
-                    <span class="chat-heart level-0" id="chatHeart" onclick="clickHeart(event)">❤️</span>
-                    <span class="orbit-star">✦</span>
-                </div>
+                <button class="chat-settings-btn" id="chatSettingsBtn" onclick="event.stopPropagation();openChatSettings()">☰</button>
             </div>
             <div class="chat-messages-area" id="chatMessagesArea"></div>
             <div class="chat-input-area">
@@ -1069,6 +1065,18 @@
         </div>
     </div>
 
+    <div class="modal" id="chatSettingsModal">
+        <div class="content">
+            <h3>聊天设置</h3>
+            <div class="setup-copy">当前只开放聊天背景更换，其他设置后续继续加入。</div>
+            <div class="card-actions" style="margin-top:10px;">
+                <label class="btn" style="display:inline-block; padding:7px 12px; border-radius:8px; background:var(--theme-soft); color:var(--primary); cursor:pointer;">更换背景<input type="file" id="chatBackgroundInput" accept="image/*" style="display:none" onchange="handleChatBackground(this)"></label>
+                <button class="btn" onclick="resetChatBackground()">恢复默认</button>
+            </div>
+            <div class="actions"><button class="btn secondary" onclick="closeChatSettings()">关闭</button></div>
+        </div>
+    </div>
+
     <div id="randomNotificationContainer"></div>
     <!-- ===== 第二段结束 ===== -->
     <!-- ===== 第三段开始 ===== -->
@@ -1193,8 +1201,9 @@
             history: []
         },
         memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
+        focus: { sessions: [], current: null, defaultMinutes: 25 },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
-        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true },
+        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true, chatBackground: '' },
         reminder: {
             enabled: true,
             lastInactivityAt: 0,
@@ -1368,6 +1377,9 @@ const DEFAULT_TASK_POOL = [
     if (!Array.isArray(GameData.memory.facts)) GameData.memory.facts = [];
     if (typeof GameData.memory.summary !== 'string') GameData.memory.summary = '';
     if (typeof GameData.memory.lastProcessedIndex !== 'number') GameData.memory.lastProcessedIndex = 0;
+    if (!GameData.focus) GameData.focus = { sessions: [], current: null, defaultMinutes: 25 };
+    if (!Array.isArray(GameData.focus.sessions)) GameData.focus.sessions = [];
+    if (!GameData.focus.defaultMinutes) GameData.focus.defaultMinutes = 25;
     if (!GameData.reminder) {
         GameData.reminder = {
             enabled: true,
@@ -1385,6 +1397,7 @@ const DEFAULT_TASK_POOL = [
     GameData.settings.betaFreeModels = true;
     GameData.settings.betaNoSupervisorLock = true;
     if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
+    if (typeof GameData.settings.chatBackground !== 'string') GameData.settings.chatBackground = '';
     GameData.user.currency.milkTea = 99999999;
     if (typeof GameData.user.currency.starShine !== 'number') GameData.user.currency.starShine = 0;
     if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
@@ -1882,6 +1895,7 @@ const DEFAULT_TASK_POOL = [
             const themeBg = getComputedStyle(document.body).getPropertyValue('--theme-bg-start').trim();
             if (themeBg) themeColorMeta.setAttribute('content', themeBg);
         }
+        applyChatBackground();
         const avatar = supervisor.avatar || './icon.svg';
         const set = (id, value) => {
             const el = document.getElementById(id);
@@ -3242,6 +3256,58 @@ ${transcript}
         showNotif(`聊天模型已切换为 ${model.name}`);
     }
 
+    function openChatSettings() {
+        document.getElementById('chatSettingsModal').classList.add('active');
+    }
+
+    function closeChatSettings() {
+        document.getElementById('chatSettingsModal').classList.remove('active');
+    }
+
+    function applyChatBackground() {
+        const chatView = document.getElementById('chatView');
+        if (!chatView) return;
+        chatView.style.backgroundImage = GameData.settings.chatBackground
+            ? `url('${GameData.settings.chatBackground}')`
+            : "url('./background.png')";
+    }
+
+    function handleChatBackground(input) {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const image = new Image();
+            image.onload = function() {
+                const canvas = document.createElement('canvas');
+                const maxSize = 900;
+                let width = image.width;
+                let height = image.height;
+                if (width > maxSize || height > maxSize) {
+                    const ratio = Math.min(maxSize / width, maxSize / height);
+                    width = Math.round(width * ratio);
+                    height = Math.round(height * ratio);
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+                GameData.settings.chatBackground = canvas.toDataURL('image/jpeg', 0.72);
+                applyChatBackground();
+                saveData();
+                showNotif('聊天背景已更新');
+            };
+            image.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function resetChatBackground() {
+        GameData.settings.chatBackground = '';
+        applyChatBackground();
+        saveData();
+        showNotif('已恢复默认聊天背景');
+    }
+
     function handleChatImage(input) {
         if (!input.files || !input.files[0]) return;
         const file = input.files[0];
@@ -4541,6 +4607,126 @@ ${memoryFacts}
         showNotif(`已兑换 ${stars} 星辉`);
     }
 
+    let focusTickTimer = null;
+
+    function getAllTasks() {
+        return [
+            ...GameData.tasks.daily.map(t => ({ ...t, area: '每日' })),
+            ...GameData.tasks.mainQuests.map(t => ({ ...t, area: '主线' })),
+            ...GameData.tasks.sideQuests.map(t => ({ ...t, area: '支线' }))
+        ];
+    }
+
+    function renderFocusTaskSelect() {
+        const select = document.getElementById('focusTaskSelect');
+        if (!select) return;
+        const tasks = getAllTasks().filter(t => !t.done && !t.exempted);
+        select.innerHTML = '<option value="">不关联具体任务</option>' + tasks.map(t =>
+            `<option value="${escapeHtml(t.id)}">${escapeHtml(t.area)} · ${escapeHtml(t.title)}</option>`
+        ).join('');
+    }
+
+    function setFocusDuration(minutes) {
+        if (GameData.focus.current && GameData.focus.current.running) {
+            showNotif('请先结束当前专注');
+            return;
+        }
+        GameData.focus.defaultMinutes = minutes;
+        updateFocusDisplay();
+    }
+
+    function formatFocusTime(seconds) {
+        const safe = Math.max(0, Math.floor(seconds));
+        return String(Math.floor(safe / 60)).padStart(2, '0') + ':' + String(safe % 60).padStart(2, '0');
+    }
+
+    function updateFocusDisplay() {
+        const display = document.getElementById('focusTimerDisplay');
+        const status = document.getElementById('focusTimerStatus');
+        const button = document.getElementById('focusStartBtn');
+        if (!display || !status || !button) return;
+        const current = GameData.focus.current;
+        if (!current) {
+            display.textContent = formatFocusTime(GameData.focus.defaultMinutes * 60);
+            status.textContent = `${GameData.focus.defaultMinutes} 分钟专注`;
+            button.textContent = '开始专注';
+            return;
+        }
+        display.textContent = formatFocusTime(current.remainingSeconds);
+        status.textContent = current.running ? '专注进行中' : '专注已暂停';
+        button.textContent = current.running ? '暂停专注' : '继续专注';
+    }
+
+    function toggleFocusTimer() {
+        let current = GameData.focus.current;
+        if (!current) {
+            const taskId = document.getElementById('focusTaskSelect')?.value || null;
+            const seconds = GameData.focus.defaultMinutes * 60;
+            current = GameData.focus.current = {
+                taskId,
+                plannedSeconds: seconds,
+                remainingSeconds: seconds,
+                startedAt: Date.now(),
+                running: true,
+                pausedAt: null
+            };
+            focusTickTimer = setInterval(focusTick, 1000);
+        } else {
+            current.running = !current.running;
+            current.pausedAt = current.running ? null : Date.now();
+        }
+        saveData();
+        updateFocusDisplay();
+    }
+
+    function focusTick() {
+        const current = GameData.focus.current;
+        if (!current || !current.running) return;
+        current.remainingSeconds = Math.max(0, current.remainingSeconds - 1);
+        if (current.remainingSeconds <= 0) {
+            endFocusSession(true);
+            return;
+        }
+        updateFocusDisplay();
+    }
+
+    function endFocusSession(completed = false) {
+        const current = GameData.focus.current;
+        if (!current) {
+            showNotif('当前没有进行中的专注');
+            return;
+        }
+        const elapsed = Math.max(0, current.plannedSeconds - current.remainingSeconds);
+        if (elapsed >= 60) {
+            GameData.focus.sessions.push({
+                id: Date.now(),
+                taskId: current.taskId || null,
+                startedAt: current.startedAt,
+                endedAt: Date.now(),
+                minutes: Math.round(elapsed / 60),
+                completed: Boolean(completed),
+                interrupted: !completed
+            });
+        }
+        if (focusTickTimer) clearInterval(focusTickTimer);
+        focusTickTimer = null;
+        GameData.focus.current = null;
+        saveData();
+        updateFocusDisplay();
+        updateAppPages();
+        showNotif(completed ? '专注完成，已记录到今日总结' : '本次专注已结束');
+    }
+
+    function getTodayFocusStats() {
+        const today = new Date().toDateString();
+        const sessions = (GameData.focus.sessions || []).filter(s => new Date(s.endedAt).toDateString() === today);
+        return {
+            sessions,
+            minutes: sessions.reduce((sum, s) => sum + (s.minutes || 0), 0),
+            interrupts: sessions.filter(s => s.interrupted).length
+        };
+    }
+
     function updateAppPages() {
         const allTasks = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests];
         const completed = allTasks.filter(t => t.done || t.exempted).length;
@@ -4548,14 +4734,23 @@ ${memoryFacts}
             const el = document.getElementById(id);
             if (el) el.textContent = String(value);
         };
-        setText('planDailyCount', GameData.tasks.daily.length);
-        setText('planMainCount', GameData.tasks.mainQuests.length);
-        setText('planSideCount', GameData.tasks.sideQuests.length);
         const standard = getDailyStandard();
-        setText('planStatusText', `今日核心任务达标 ${standard.completed}/${standard.required}，主线至少完成一项。最近三天完成率 ${Math.round(calculateRecentRate() * 100)}%。`);
-        setText('messageUnreadCount', GameData.chat.unreadCount + (GameData.chat.storyUnread ? 1 : 0));
-        setText('messageMailCount', GameData.mail.items.filter(m => !m.read).length);
-        setText('messageTodayCount', allTasks.filter(t => t.done || t.exempted).length);
+        const focusStats = getTodayFocusStats();
+        setText('focusTodayMinutes', focusStats.minutes);
+        setText('focusSessionCount', focusStats.sessions.length);
+        setText('focusInterruptCount', focusStats.interrupts);
+        setText('summaryCoreProgress', `${standard.completed}/${standard.required}`);
+        setText('summaryCompleted', allTasks.filter(t => t.done || t.exempted).length);
+        setText('summaryFocusMinutes', focusStats.minutes);
+        setText('summarySupervisorNote', standard.met
+            ? '今天已达到核心任务标准。保持这个节奏，明天继续。'
+            : `今天还差 ${Math.max(0, standard.required - standard.completed)} 项核心任务，至少完成一项主线后即可达标。`);
+        if (document.getElementById('dailySummaryTaskList')) {
+            const completedTasks = allTasks.filter(t => t.done || t.exempted);
+            document.getElementById('dailySummaryTaskList').innerHTML = completedTasks.length
+                ? completedTasks.map(t => `<div class="memory-item"><div class="text">${escapeHtml(t.title)}</div></div>`).join('')
+                : '<div class="memory-item"><div class="text">今天还没有完成记录。</div></div>';
+        }
         setText('propertyMilkTea', GameData.user.currency.milkTea || 0);
         setText('propertyStarShine', GameData.user.currency.starShine || 0);
         setText('propertyBiscuit', GameData.user.currency.biscuit || 0);
@@ -4565,11 +4760,11 @@ ${memoryFacts}
         if (useChangeTokenBtn) {
             useChangeTokenBtn.style.display = (GameData.supervisor.changeTokens || 0) > 0 && GameData.supervisor.state === 'locked' ? 'inline-block' : 'none';
         }
-        setText('growthStreak', GameData.checkin.streak || 0);
-        setText('growthAffection', GameData.ai.affection || 0);
-        setText('growthCompleted', completed);
-        const catStatus = document.getElementById('catStatus');
-        setText('growthCatStatus', catStatus ? catStatus.textContent : '');
+        setText('assetsStreak', GameData.checkin.streak || 0);
+        setText('assetsCompleted', completed);
+        setText('assetsFocusMinutes', focusStats.minutes);
+        renderFocusTaskSelect();
+        updateFocusDisplay();
         const supervisor = getSupervisorById(GameData.supervisor && GameData.supervisor.activeId);
         const stateText = getSupervisorStateText();
         setText('bindingSupervisorText', supervisor ? `${supervisor.name}：${supervisor.role}` : '尚未选择主监管者。');
@@ -5211,6 +5406,9 @@ ${memoryFacts}
         loadData();
         applySupervisorUI();
         updateAppPages();
+        if (GameData.focus.current && GameData.focus.current.running) {
+            focusTickTimer = setInterval(focusTick, 1000);
+        }
         startPush();
         updateMemoryCount();
         if (!GameData.profile.onboarded) {
@@ -5221,7 +5419,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.1', '欢迎回来，VIP009。\n\nV5.1 升级：\n- 彻底关闭好感度满级特效和爱心自动台词\n- 内测期间主监管者可更换\n- 监管者主题扩展到卡片、导航和进度组件\n- 预留三天监管者体验卡框架\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.2', '欢迎回来，VIP009。\n\nV5.2 升级：\n- 底部改为任务、专注、每日总结、资产统计四页\n- 专注模式基础计时框架\n- 今日总结记录任务与专注数据\n- 聊天设置支持更换背景图\n- 监管者独立主题继续扩展\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
