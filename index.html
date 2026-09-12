@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.0</title>
+    <title>VIP009 · 欣原监督系统 V5.1</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -16,6 +16,7 @@
             --envelope-bg: #f5efe6; --envelope-border: #d4c5b0; --heart-color: #ff6b9d;
             --theme-bg-start: #0a0518; --theme-bg-mid: #150a24; --theme-bg-end: #1f1035;
             --theme-glow-1: rgba(197,163,255,0.15); --theme-glow-2: rgba(156,100,255,0.10);
+            --theme-soft: rgba(197,163,255,0.055); --theme-border: rgba(197,163,255,0.12);
             --theme-app-bg: rgba(18,10,30,0.75); --theme-view-bg: rgba(18,10,30,0.96); --theme-main-bg: rgba(18,10,30,0.75);
             --theme-user-start: #9c64ff; --theme-user-end: #c5a3ff;
         }
@@ -23,6 +24,7 @@
             --primary: #e85a6a; --secondary: #9e1f34;
             --theme-bg-start: #150508; --theme-bg-mid: #260a10; --theme-bg-end: #3a1119;
             --theme-glow-1: rgba(232,90,106,0.14); --theme-glow-2: rgba(158,31,52,0.12);
+            --theme-soft: rgba(232,90,106,0.055); --theme-border: rgba(232,90,106,0.15);
             --theme-app-bg: rgba(30,10,16,0.78); --theme-view-bg: rgba(30,10,16,0.96); --theme-main-bg: rgba(30,10,16,0.78);
             --theme-user-start: #c23b52; --theme-user-end: #e56b78;
         }
@@ -30,6 +32,7 @@
             --primary: #c6ced8; --secondary: #74808f;
             --theme-bg-start: #080a0d; --theme-bg-mid: #151a20; --theme-bg-end: #242b34;
             --theme-glow-1: rgba(198,206,216,0.12); --theme-glow-2: rgba(116,128,143,0.12);
+            --theme-soft: rgba(198,206,216,0.045); --theme-border: rgba(198,206,216,0.14);
             --theme-app-bg: rgba(16,20,25,0.80); --theme-view-bg: rgba(16,20,25,0.97); --theme-main-bg: rgba(16,20,25,0.80);
             --theme-user-start: #7b8796; --theme-user-end: #b8c1cc;
         }
@@ -37,6 +40,7 @@
             --primary: #d9c17a; --secondary: #9c7835;
             --theme-bg-start: #080706; --theme-bg-mid: #15120d; --theme-bg-end: #241d11;
             --theme-glow-1: rgba(217,193,122,0.13); --theme-glow-2: rgba(156,120,53,0.11);
+            --theme-soft: rgba(217,193,122,0.05); --theme-border: rgba(217,193,122,0.15);
             --theme-app-bg: rgba(20,17,12,0.82); --theme-view-bg: rgba(20,17,12,0.97); --theme-main-bg: rgba(20,17,12,0.82);
             --theme-user-start: #8f6d2d; --theme-user-end: #d9c17a;
         }
@@ -66,7 +70,7 @@
         #mainView .top-bar .info .name-row h3 { font-size: 15px; color: #fff; font-weight: 600; }
         #mainView .top-bar .info .name-row .unread-badge { font-size: 10px; background: #ff3b30; color: #fff; font-weight: 700; min-width: 18px; height: 18px; border-radius: 10px; display: none; align-items: center; justify-content: center; padding: 0 5px; box-shadow: 0 0 8px rgba(255,59,48,0.3); }
         #mainView .top-bar .info .name-row .unread-badge.show { display: flex; }
-        #mainView .top-bar .info .signature { font-size: 10px; background: linear-gradient(135deg, #c5a3ff, #d4bfff, #e8d5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 400; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(197,163,255,0.3); animation: sigGlow 3s ease-in-out infinite alternate; }
+        #mainView .top-bar .info .signature { font-size: 10px; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 400; letter-spacing: 0.5px; text-shadow: 0 0 20px var(--theme-glow-1); animation: sigGlow 3s ease-in-out infinite alternate; }
         @keyframes sigGlow { 0% { text-shadow: 0 0 10px rgba(197,163,255,0.2); } 100% { text-shadow: 0 0 25px rgba(197,163,255,0.5), 0 0 40px rgba(156,100,255,0.2); } }
         #mainView .top-bar .right-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: rgba(255,255,255,0.3); }
         #mainView .top-bar .right-stats .stat-item { display: flex; align-items: center; gap: 3px; }
@@ -95,7 +99,7 @@
         .task-item .t-countdown { font-size: 10px; color: var(--danger); margin-top: 2px; font-weight: 500; }
         .task-item .t-countdown.urgent { color: #ff3b30; animation: pulseRed 1s ease-in-out infinite; }
         @keyframes pulseRed { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .task-category { background: rgba(0,0,0,0.12); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.02); }
+        .task-category { background: var(--theme-soft); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; border: 1px solid var(--theme-border); }
         .category-title { font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
         .task-item {
             background: rgba(0,0,0,0.12);
@@ -114,7 +118,7 @@
         .task-item .t-progress-bar .fill { height: 100%; background: linear-gradient(90deg, var(--secondary), var(--primary)); border-radius: 4px; transition: width 0.5s ease; }
         .task-item .t-subtasks { font-size: 9px; color: rgba(255,255,255,0.2); margin: 2px 0; padding-left: 4px; }
         .task-item .t-subtasks .done { color: #69f0ae; }
-        .task-item .t-btn { font-size: 9px; color: var(--primary); background: rgba(197,163,255,0.06); border: none; border-radius: 6px; padding: 1px 8px; cursor: pointer; margin-top: 2px; transition: 0.3s; }
+        .task-item .t-btn { font-size: 9px; color: var(--primary); background: var(--theme-soft); border: none; border-radius: 6px; padding: 1px 8px; cursor: pointer; margin-top: 2px; transition: 0.3s; }
         .task-item .t-btn:active { background: rgba(197,163,255,0.15); }
         .task-item .t-btn.danger { color: var(--danger); background: rgba(255,82,82,0.08); }
         .task-item .t-btn.danger:active { background: rgba(255,82,82,0.15); }
@@ -145,7 +149,7 @@
         .task-item .difficulty-stars { color: var(--gold); font-size: 10px; margin-left: 4px; }
         .task-item.exempted { opacity: 0.5; border-left-color: var(--gold); }
         .task-item.exempted .t-title { text-decoration: line-through; color: var(--gold); }
-        .checkin-section { background: rgba(0,0,0,0.12); border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .checkin-section { background: var(--theme-soft); border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; border: 1px solid var(--theme-border); display: flex; align-items: center; justify-content: space-between; position: relative; }
         .checkin-section .left { display: flex; flex-direction: column; gap: 1px; }
         .checkin-section .left .label { font-size: 11px; color: rgba(255,255,255,0.3); }
         .checkin-section .left .streak { font-size: 13px; color: var(--gold); font-weight: 600; }
@@ -186,13 +190,13 @@
         .checkin-section .btn-checkin .star-dust:nth-child(4) { width: 3px; height: 3px; top: 20%; right: -6px; animation-delay: 0.6s; }
         @keyframes floatDust { 0% { transform: translate(0,0) scale(1); opacity: 0.2; } 100% { transform: translate(6px,-8px) scale(1.2); opacity: 0.7; } }
         .quick-entries { display: flex; gap: 6px; margin-bottom: 6px; flex-wrap: wrap; }
-        .quick-entries .entry { flex: 1; min-width: 56px; background: rgba(0,0,0,0.12); border-radius: 8px; padding: 6px 4px; text-align: center; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; transition: 0.3s; -webkit-tap-highlight-color: transparent; font-size: 10px; color: rgba(255,255,255,0.3); }
+        .quick-entries .entry { flex: 1; min-width: 56px; background: var(--theme-soft); border-radius: 8px; padding: 6px 4px; text-align: center; border: 1px solid var(--theme-border); cursor: pointer; transition: 0.3s; -webkit-tap-highlight-color: transparent; font-size: 10px; color: rgba(255,255,255,0.38); }
         .quick-entries .entry:active { opacity: 0.6; }
         .quick-entries .entry .icon { font-size: 16px; display: block; margin-bottom: 1px; }
         .quick-entries .entry.treasure-entry { background: rgba(197,163,255,0.06); border-color: rgba(197,163,255,0.08); }
         .quick-entries .entry.timecapsule-entry { background: rgba(255,213,79,0.06); border-color: rgba(255,213,79,0.08); }
         .quick-entries .entry.timecapsule-entry .icon { color: var(--gold); }
-        .mail-section { background: rgba(0,0,0,0.12); border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.02); cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .mail-section { background: var(--theme-soft); border-radius: 10px; padding: 8px 12px; margin-bottom: 6px; border: 1px solid var(--theme-border); cursor: pointer; -webkit-tap-highlight-color: transparent; }
         .mail-section:active { opacity: 0.7; }
         .mail-section .mail-header { display: flex; justify-content: space-between; align-items: center; }
         .mail-section .mail-header .title { font-size: 12px; font-weight: 600; color: var(--gold); }
@@ -202,22 +206,22 @@
         .bottom-tabs { display: flex; gap: 4px; padding: 6px 0 0; flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.03); }
         .bottom-tabs .tab { padding: 5px 8px; border-radius: 14px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); color: rgba(255,255,255,0.2); font-size: 11px; cursor: pointer; transition: 0.3s; flex: 1; text-align: center; user-select: none; -webkit-tap-highlight-color: transparent; }
         .bottom-tabs .tab:active { opacity: 0.6; }
-        .bottom-tabs .tab.active { background: rgba(197,163,255,0.06); border-color: rgba(197,163,255,0.08); color: #fff; }
+        .bottom-tabs .tab.active { background: var(--theme-soft); border-color: var(--theme-border); color: #fff; }
         .app-page { display: none; }
         .app-page.active { display: block; }
-        .page-card { background: rgba(0,0,0,0.12); border: 1px solid rgba(255,255,255,0.03); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
+        .page-card { background: var(--theme-soft); border: 1px solid var(--theme-border); border-radius: 12px; padding: 12px; margin-bottom: 8px; }
         .page-card h3 { font-size: 14px; color: #fff; margin-bottom: 4px; }
         .page-card p { font-size: 11px; color: rgba(255,255,255,0.35); line-height: 1.65; }
         .page-card .card-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
-        .page-card .card-actions .btn { padding: 5px 11px; border-radius: 8px; border: none; background: rgba(197,163,255,0.08); color: var(--primary); font-size: 11px; cursor: pointer; }
-        .page-card .card-actions .btn.primary { background: linear-gradient(135deg, #c5a3ff, #9c64ff); color: #000; font-weight: 600; }
+        .page-card .card-actions .btn { padding: 5px 11px; border-radius: 8px; border: none; background: var(--theme-soft); color: var(--primary); font-size: 11px; cursor: pointer; }
+        .page-card .card-actions .btn.primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #000; font-weight: 600; }
         .page-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
         .page-stat { background: rgba(255,255,255,0.025); border-radius: 8px; padding: 8px 4px; text-align: center; }
         .page-stat strong { display: block; color: #fff; font-size: 16px; }
         .page-stat span { display: block; color: rgba(255,255,255,0.28); font-size: 9px; margin-top: 2px; }
         .supervisor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; margin-top: 8px; }
         .supervisor-card { border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.025); border-radius: 10px; padding: 9px 7px; cursor: pointer; text-align: center; transition: 0.25s; }
-        .supervisor-card.active { border-color: rgba(197,163,255,0.5); background: rgba(197,163,255,0.09); }
+        .supervisor-card.active { border-color: var(--theme-border); background: var(--theme-soft); }
         .supervisor-card.disabled { opacity: 0.32; cursor: not-allowed; }
         .supervisor-avatar { width: 44px; height: 44px; margin: 0 auto 5px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; background: linear-gradient(145deg, #9c64ff, #4b2e82); color: #fff; font-size: 17px; font-weight: 700; }
         .supervisor-avatar img { width: 100%; height: 100%; object-fit: cover; }
@@ -270,7 +274,7 @@
         #chatView .chat-top .back-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
         #chatView .chat-top .chat-title { flex: 1; }
         #chatView .chat-top .chat-title h3 { font-size: 16px; color: #fff; font-weight: 600; text-shadow: 0 0 10px rgba(0,0,0,0.6); }
-        #chatView .chat-top .chat-title .signature { font-size: 10px; background: linear-gradient(135deg, #c5a3ff, #d4bfff, #e8d5ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 400; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(197,163,255,0.3); animation: sigGlow 3s ease-in-out infinite alternate; }
+        #chatView .chat-top .chat-title .signature { font-size: 10px; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 400; letter-spacing: 0.5px; text-shadow: 0 0 20px var(--theme-glow-1); animation: sigGlow 3s ease-in-out infinite alternate; }
         #chatView .chat-top .chat-unread { font-size: 10px; color: #ff3b30; background: rgba(255,59,48,0.1); padding: 2px 10px; border-radius: 10px; display: none; }
         #chatView .chat-top .chat-unread.show { display: inline-block; }
 
@@ -1190,7 +1194,7 @@
         },
         memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
-        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true },
+        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true },
         reminder: {
             enabled: true,
             lastInactivityAt: 0,
@@ -1209,6 +1213,8 @@
             special: 0,
             coupons: { act_cute: 0, meow: 0, story: 0 },
             specialStories: [],
+            supervisorTrialCards: 0,
+            supervisorTrialDays: 3,
             lastSpecialBuyDate: null,
             _storyIdCounter: 0
         },
@@ -1377,6 +1383,7 @@ const DEFAULT_TASK_POOL = [
     if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
     GameData.settings.betaUnlimitedCurrency = true;
     GameData.settings.betaFreeModels = true;
+    GameData.settings.betaNoSupervisorLock = true;
     if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
     GameData.user.currency.milkTea = 99999999;
     if (typeof GameData.user.currency.starShine !== 'number') GameData.user.currency.starShine = 0;
@@ -1386,6 +1393,8 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
     if (!GameData.treasure.coupons) GameData.treasure.coupons = { act_cute: 0, meow: 0, story: 0 };
     if (!GameData.treasure.specialStories) GameData.treasure.specialStories = [];
+    if (typeof GameData.treasure.supervisorTrialCards !== 'number') GameData.treasure.supervisorTrialCards = 0;
+    if (!GameData.treasure.supervisorTrialDays) GameData.treasure.supervisorTrialDays = 3;
     if (!GameData.treasure._storyIdCounter) GameData.treasure._storyIdCounter = 0;
     if (!GameData.pets) GameData.pets = {};
     if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
@@ -1681,13 +1690,13 @@ const DEFAULT_TASK_POOL = [
             }
 
             const penaltyMessages = [
-                `[严厉] 你已经连续 ${GameData.penalty.level} 次拖延了。完成率只有 ${ratePercent}%，扣除了 ${deduction} 🍰 小奶糕和 ${affectionDeduction} 好感度。追加一个任务，希望你清醒一点。`,
-                `[推眼镜] ${ratePercent}% 的完成率……你是在挑战我的耐心吗？扣除 ${deduction} 🍰 小奶糕，好感度 -${affectionDeduction}。`,
-                `[冷眼] 完成率 ${ratePercent}%，已经低于我的容忍线了。扣除 ${deduction} 🍰 小奶糕，好感度 -${affectionDeduction}。下次不会再提醒你了。`
+                `[严厉] 你已经连续 ${GameData.penalty.level} 次拖延了。完成率只有 ${ratePercent}%，扣除 ${deduction} 🍰 小奶糕。追加一个任务，希望你清醒一点。`,
+                `[推眼镜] ${ratePercent}% 的完成率……你是在挑战我的耐心吗？扣除 ${deduction} 🍰 小奶糕。`,
+                `[冷眼] 完成率 ${ratePercent}%，已经低于我的容忍线了。扣除 ${deduction} 🍰 小奶糕。下次不会再提醒你了。`
             ];
             const msg = penaltyMessages[Math.floor(Math.random() * penaltyMessages.length)];
             addChatMessage('assistant', msg, true);
-            showNotif(`💀 处罚升级！扣除 ${deduction} 🍰 小奶糕，好感度 -${affectionDeduction}，追加任务已添加！`);
+            showNotif(`处罚升级：扣除 ${deduction} 🍰 小奶糕，追加任务已添加`);
             saveData();
             updateUI();
             renderPunishTasks();
@@ -1844,6 +1853,10 @@ const DEFAULT_TASK_POOL = [
 
     function getSupervisorStateText() {
         const state = GameData.supervisor || {};
+        if (GameData.settings.betaNoSupervisorLock && state.activeId) {
+            const supervisor = getSupervisorById(state.activeId);
+            return `内测期间当前主监管者：${supervisor ? supervisor.name : '未知'}，可以随时重新选择`;
+        }
         if (state.state === 'locked') {
             const supervisor = getSupervisorById(state.activeId);
             return `已永久锁定：${supervisor ? supervisor.name : '未知监管者'}`;
@@ -1893,8 +1906,8 @@ const DEFAULT_TASK_POOL = [
         const selectedId = pendingSupervisorId || state.activeId;
         grid.innerHTML = SUPERVISOR_CATALOG.map(supervisor => {
             const isSelected = supervisor.id === selectedId;
-            const lockedOther = state.state === 'locked' && supervisor.id !== state.activeId;
-            const pendingOther = state.state === 'pending' && supervisor.id !== state.activeId;
+            const lockedOther = !GameData.settings.betaNoSupervisorLock && state.state === 'locked' && supervisor.id !== state.activeId;
+            const pendingOther = !GameData.settings.betaNoSupervisorLock && state.state === 'pending' && supervisor.id !== state.activeId;
             const disabled = lockedOther || pendingOther;
             const avatarHtml = supervisor.avatar === './avatar.jpg'
                 ? `<img src="${supervisor.avatar}" alt="${escapeHtml(supervisor.name)}">`
@@ -1917,7 +1930,14 @@ const DEFAULT_TASK_POOL = [
         const returnBtn = document.getElementById('supervisorReturnBtn');
         const confirmBtn = document.getElementById('supervisorConfirmBtn');
         const closeBtn = document.getElementById('supervisorCloseBtn');
-        if (state === 'locked') {
+        if (GameData.settings.betaNoSupervisorLock && GameData.supervisor.activeId) {
+            const supervisor = getSupervisorById(GameData.supervisor.activeId);
+            status.textContent = `当前主监管者：${supervisor ? supervisor.name : ''}。内测期间可以重新选择，正式版会按体验卡和权限控制。`;
+            returnBtn.style.display = 'none';
+            confirmBtn.style.display = 'inline-block';
+            confirmBtn.textContent = '确认并切换';
+            closeBtn.textContent = '关闭';
+        } else if (state === 'locked') {
             const supervisor = getSupervisorById(GameData.supervisor.activeId);
             status.textContent = `主监管者已永久锁定为 ${supervisor ? supervisor.name : ''}。`;
             returnBtn.style.display = 'none';
@@ -1946,11 +1966,11 @@ const DEFAULT_TASK_POOL = [
 
     function selectSupervisorCard(id) {
         const state = GameData.supervisor.state;
-        if (state === 'locked' && id !== GameData.supervisor.activeId) {
+        if (!GameData.settings.betaNoSupervisorLock && state === 'locked' && id !== GameData.supervisor.activeId) {
             showNotif('主监管者已经永久锁定');
             return;
         }
-        if (state === 'pending' && id !== GameData.supervisor.activeId) {
+        if (!GameData.settings.betaNoSupervisorLock && state === 'pending' && id !== GameData.supervisor.activeId) {
             showNotif('需要使用唯一返回机会后才能重新选择');
             return;
         }
@@ -1983,14 +2003,15 @@ const DEFAULT_TASK_POOL = [
     function finalizeSupervisorSelection(id) {
         const supervisor = getSupervisorById(id);
         if (!supervisor) return;
+        const betaMode = Boolean(GameData.settings.betaNoSupervisorLock);
         GameData.supervisor.activeId = id;
-        GameData.supervisor.state = 'locked';
-        GameData.supervisor.lockedAt = Date.now();
-        GameData.supervisor.history.push({ type: 'final_lock', supervisorId: id, time: Date.now() });
+        GameData.supervisor.state = betaMode ? 'beta_active' : 'locked';
+        GameData.supervisor.lockedAt = betaMode ? null : Date.now();
+        GameData.supervisor.history.push({ type: betaMode ? 'beta_select' : 'final_lock', supervisorId: id, time: Date.now() });
         saveData();
         applySupervisorUI();
         closeSupervisorSelection();
-        showNotif(`主监管者已永久锁定为 ${supervisor.name}`);
+        showNotif(betaMode ? `已切换为 ${supervisor.name}（内测可更换）` : `主监管者已永久锁定为 ${supervisor.name}`);
     }
 
     function useSupervisorReturn() {
@@ -2041,6 +2062,7 @@ const DEFAULT_TASK_POOL = [
     }
 
     function lockSupervisorAfterWork() {
+        if (GameData.settings.betaNoSupervisorLock) return;
         if (GameData.supervisor && GameData.supervisor.state === 'pending' && GameData.supervisor.activeId) {
             GameData.supervisor.state = 'locked';
             GameData.supervisor.lockedAt = Date.now();
@@ -3096,6 +3118,7 @@ ${transcript}
         if (!text) return text;
         text = String(text)
             .replace(/^.*💕.*$/gm, '')
+            .replace(/^.*(?:好感度|亲密度)\s*[:：]?\s*[+\-]?\s*\d+(?:\s*\/\s*\d+)?.*$/gm, '')
             .replace(/^.*(?:好感度|亲密度)\s*(?:[+\-]?\s*\d+|提升|增加|减少).*$/gm, '')
             .replace(/^.*(?:系统提示|内部状态|当前好感度)\s*[:：].*$/gm, '')
             .replace(/\n{3,}/g, '\n\n')
@@ -3773,23 +3796,6 @@ ${memoryFacts}
         void el.offsetWidth;
         el.classList.add('beating');
         setTimeout(() => el.classList.remove('beating'), 700);
-
-        if (heartClickCount >= 10) {
-            heartClickCount = 0;
-            const loveLine = LOVE_LINES[Math.floor(Math.random() * LOVE_LINES.length)];
-            addChatMessage('assistant', '❤️ ' + loveLine, true);
-            GameData.chat.unreadCount++;
-            updateUnreadBadge();
-            showEmotionBubble('……你够了。', 'tsundere', 2000);
-            saveData();
-            return;
-        }
-
-        if (Math.random() < 0.15) {
-            const shortLines = ['……别点了。', '你手不累吗？', '……喜欢？', '……哼。', '……够了啊。'];
-            const line = shortLines[Math.floor(Math.random() * shortLines.length)];
-            showChibiBubble(line, 1200);
-        }
     }
 
     // ============================================================
@@ -3811,31 +3817,7 @@ ${memoryFacts}
     //  ★ 好感度满级特效
     // ============================================================
     function triggerMax() {
-        const container = document.createElement('div');
-        container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99998;overflow:hidden;';
-        document.body.appendChild(container);
-        const hearts = ['❤️', '💜', '💕', '✨', '💖', '🌸'];
-        for (let i = 0; i < 50; i++) {
-            const el = document.createElement('div');
-            el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-            el.style.cssText = 'position:absolute;left:' + Math.random() * 100 + '%;font-size:' + (16 + Math.random() * 20) + 'px;animation:fall ' + (2 + Math.random() * 2) + 's linear ' + Math.random() * 1.5 + 's forwards;opacity:0.8;';
-            container.appendChild(el);
-        }
-        if (!document.getElementById('heartStyle')) {
-            const style = document.createElement('style');
-            style.id = 'heartStyle';
-            style.textContent = '@keyframes fall{0%{transform:translateY(-20px) rotate(0deg);opacity:0.9;}100%{transform:translateY(110vh) rotate(720deg);opacity:0;}}';
-            document.head.appendChild(style);
-        }
-        setTimeout(() => container.remove(), 3000);
-        setTimeout(() => {
-            addChatMessage('assistant', '[轻轻放下酒杯，目光柔和] VIP009……你做到了。从现在起，你不只是我的VIP009。你是我的永恒契约。\n\n[指尖划过桌面] 欢迎回家。', false);
-        }, 600);
-        document.getElementById('mainAffectionFill').classList.add('gold');
-        showNotif('💖 永恒契约 · 达成！');
-        saveData();
-        updateUI();
-        updateHeartColor();
+        // 内测阶段关闭满级特效与自动台词，避免重复打扰聊天。
     }
 
     // ============================================================
@@ -4595,7 +4577,10 @@ ${memoryFacts}
         setText('profileSummaryText', `好感度 ${GameData.ai.affection || 0} / ${MAX_AF}，连续打卡 ${GameData.checkin.streak || 0} 天，已完成 ${completed} 项任务。`);
         const manageBtn = document.getElementById('supervisorManageBtn');
         if (manageBtn) {
-            if (GameData.supervisor && GameData.supervisor.state === 'locked') {
+            if (GameData.settings.betaNoSupervisorLock && GameData.supervisor && GameData.supervisor.activeId) {
+                manageBtn.textContent = '更换主监管者';
+                manageBtn.disabled = false;
+            } else if (GameData.supervisor && GameData.supervisor.state === 'locked') {
                 manageBtn.textContent = '主监管者已锁定';
                 manageBtn.disabled = true;
             } else if (GameData.supervisor && GameData.supervisor.state === 'pending') {
@@ -4667,7 +4652,7 @@ ${memoryFacts}
         '少来。', '别碰了。', '上瘾了是吧？', '手拿开。', '你以为你是谁？',
         '这么喜欢我？', 'VIP009，你很闲。', '你的任务做完了？', '在这浪费时间？',
         '我看你是欠训了。', '……还行。', '勉强让你碰一下。', '就一下。',
-        '再点我，好感度会掉哦。', '你点我一下，我扣你10个小奶糕。',
+        '再点我，我可要记账了。', '你点我一下，我扣你10个小奶糕。',
         '哼。', '……烦。', '离我远点。',
         '你欠我的，是"练习"，不是"眼泪"。',
         '你连任务都没做完，还敢来碰我？',
@@ -5236,7 +5221,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.0', '欢迎回来，VIP009。\n\nV5.0 升级：\n- 四位监管者独立配色框架\n- 关系阶段不再自动打扰聊天\n- 信封查看与历史署名修复\n- 玩家档案入口调整\n- 臻品阁与珍藏阁款式统一\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.1', '欢迎回来，VIP009。\n\nV5.1 升级：\n- 彻底关闭好感度满级特效和爱心自动台词\n- 内测期间主监管者可更换\n- 监管者主题扩展到卡片、导航和进度组件\n- 预留三天监管者体验卡框架\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
