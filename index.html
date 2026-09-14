@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.5</title>
+    <title>VIP009 · 欣原监督系统 V5.6</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -735,6 +735,7 @@
                             <div class="page-stat"><strong id="summaryCompleted">0</strong><span>今日完成</span></div>
                             <div class="page-stat"><strong id="summaryFocusMinutes">0</strong><span>专注分钟</span></div>
                         </div>
+                        <p id="summaryChatUsage" style="margin-top:8px;">今日聊天：0 条 · 预计消耗 0 饼干</p>
                     </div>
                     <div class="page-card">
                         <h3>完成记录</h3>
@@ -813,6 +814,7 @@
                 <div class="back-avatar"><img src="./avatar.jpg" alt="欣原" id="chatSupervisorAvatar"></div>
                 <div class="chat-title"><h3 id="chatSupervisorName">欣原</h3><div class="signature" id="chatSupervisorSignature">爱是世界上最不保值的资产</div></div>
                 <div class="chat-unread" id="chatUnreadBadge">未读</div>
+                <div class="chat-unread" id="chatModeBadge" style="display:none;">工作模式</div>
                 <button class="chat-settings-btn" id="chatSettingsBtn" onclick="event.stopPropagation();openChatSettings()">☰</button>
             </div>
             <div class="chat-messages-area" id="chatMessagesArea"></div>
@@ -1050,6 +1052,15 @@
         <div class="content">
             <h3>聊天设置</h3>
             <div class="setup-copy">当前只开放聊天背景更换，其他设置后续继续加入。</div>
+            <div class="page-card" style="background:var(--theme-soft); border-color:var(--theme-border);">
+                <div class="model-name" style="margin-bottom:6px;">聊天模式</div>
+                <div class="card-actions">
+                    <button class="btn" id="chatModeDailyBtn" onclick="setChatMode('daily')">日常聊天</button>
+                    <button class="btn" id="chatModeWorkBtn" onclick="setChatMode('work')">工作模式</button>
+                </div>
+                <select id="chatWorkTaskSelect" style="width:100%; margin-top:8px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--theme-border); border-radius:8px; padding:7px;"></select>
+                <p id="chatUsageSummary" style="margin-top:8px; font-size:9px; color:rgba(255,255,255,0.35);"></p>
+            </div>
             <div class="card-actions" style="margin-top:10px;">
                 <label class="btn" style="display:inline-block; padding:7px 12px; border-radius:8px; background:var(--theme-soft); color:var(--primary); cursor:pointer;">更换背景<input type="file" id="chatBackgroundInput" accept="image/*" style="display:none" onchange="handleChatBackground(this)"></label>
                 <button class="btn" onclick="resetChatBackground()">恢复默认</button>
@@ -1192,7 +1203,13 @@
         },
         random: { active: null, cooldown: 0, lastTrigger: 0, mood: 50 },
         mail: { items: [], nextId: 1 },
-        chat: { unreadCount: 0, storyUnread: false },
+        chat: {
+            unreadCount: 0,
+            storyUnread: false,
+            mode: 'daily',
+            workTaskId: null,
+            usage: { messages: 0, biscuitSpent: 0, estimatedCost: 0, daily: {} }
+        },
         treasure: {
             milkTea: 99999999,
             offsetCards: 0,
@@ -1349,6 +1366,12 @@ const DEFAULT_TASK_POOL = [
     }
     if (!Array.isArray(GameData.supervisor.history)) GameData.supervisor.history = [];
     if (typeof GameData.supervisor.changeTokens !== 'number') GameData.supervisor.changeTokens = 0;
+    if (!GameData.chat) GameData.chat = { unreadCount: 0, storyUnread: false };
+    if (!GameData.chat.mode) GameData.chat.mode = 'daily';
+    if (!Object.prototype.hasOwnProperty.call(GameData.chat, 'workTaskId')) GameData.chat.workTaskId = null;
+    if (!GameData.chat.usage) GameData.chat.usage = { messages: 0, biscuitSpent: 0, estimatedCost: 0, daily: {} };
+    if (!GameData.chat.usage.daily) GameData.chat.usage.daily = {};
+    if (typeof GameData.chat.usage.estimatedCost !== 'number') GameData.chat.usage.estimatedCost = 0;
     if (!GameData.memory) GameData.memory = { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null };
     if (!Array.isArray(GameData.memory.facts)) GameData.memory.facts = [];
     if (typeof GameData.memory.summary !== 'string') GameData.memory.summary = '';
@@ -1885,6 +1908,7 @@ const DEFAULT_TASK_POOL = [
         const chatAvatar = document.getElementById('chatSupervisorAvatar');
         if (topAvatar) topAvatar.src = avatar;
         if (chatAvatar) chatAvatar.src = avatar;
+        updateChatModeUI();
         updateAppPages();
     }
 
@@ -3277,6 +3301,7 @@ ${transcript}
     }
 
     function openChatSettings() {
+        renderChatModeControls();
         document.getElementById('chatSettingsModal').classList.add('active');
     }
 
@@ -3326,6 +3351,54 @@ ${transcript}
         applyChatBackground();
         saveData();
         showNotif('已恢复默认聊天背景');
+    }
+
+    function renderChatModeControls() {
+        const select = document.getElementById('chatWorkTaskSelect');
+        if (select) {
+            const tasks = getAllTasks().filter(t => !t.done && !t.exempted);
+            select.innerHTML = '<option value="">选择一个进行中的任务</option>' + tasks.map(t =>
+                `<option value="${escapeHtml(t.id)}">${escapeHtml(t.title)}</option>`
+            ).join('');
+            if (GameData.chat.workTaskId) select.value = GameData.chat.workTaskId;
+        }
+        document.getElementById('chatModeDailyBtn')?.classList.toggle('primary', GameData.chat.mode !== 'work');
+        document.getElementById('chatModeWorkBtn')?.classList.toggle('primary', GameData.chat.mode === 'work');
+        const usage = GameData.chat.usage || {};
+        const usageEl = document.getElementById('chatUsageSummary');
+        if (usageEl) {
+            usageEl.textContent = `今日聊天 ${usage.daily?.[getLocalDateKey()]?.messages || 0} 条，预计消耗 ${usage.daily?.[getLocalDateKey()]?.estimatedCost || 0} 饼干，内测实扣 0。`;
+        }
+    }
+
+    function setChatMode(mode) {
+        if (mode === 'work') {
+            const taskId = document.getElementById('chatWorkTaskSelect')?.value || GameData.chat.workTaskId;
+            if (!taskId) {
+                showNotif('请先选择一个进行中的任务');
+                return;
+            }
+            GameData.chat.mode = 'work';
+            GameData.chat.workTaskId = taskId;
+        } else {
+            GameData.chat.mode = 'daily';
+            GameData.chat.workTaskId = null;
+        }
+        saveData();
+        updateChatModeUI();
+        renderChatModeControls();
+    }
+
+    function updateChatModeUI() {
+        const badge = document.getElementById('chatModeBadge');
+        if (!badge) return;
+        if (GameData.chat.mode === 'work' && GameData.chat.workTaskId) {
+            const task = getAllTasks().find(t => t.id === GameData.chat.workTaskId);
+            badge.textContent = `工作模式 · ${task ? task.title : '任务'}`;
+            badge.style.display = 'inline-block';
+        } else {
+            badge.style.display = 'none';
+        }
     }
 
     function handleChatImage(input) {
@@ -3471,6 +3544,16 @@ ${memoryFacts}
 4. 必须称呼用户为“${userCodename}”，不能叫错名字
 5. 记住：你现在是${activeSupervisor.name}，不是通用助手`;
 
+            if (GameData.chat.mode === 'work' && GameData.chat.workTaskId) {
+                const workTask = getAllTasks().find(t => t.id === GameData.chat.workTaskId);
+                if (workTask) {
+                    sysPrompt += `\n\n【工作模式】\n当前只讨论任务「${workTask.title}」。任务目标：${workTask.desc || ''}。如果用户发送与当前任务无关的内容，拒绝闲聊并把话题拉回任务执行。`;
+                } else {
+                    GameData.chat.mode = 'daily';
+                    GameData.chat.workTaskId = null;
+                }
+            }
+
             let userContent;
             let modelName;
             const selectedModel = CHAT_MODELS.find(model => model.id === GameData.settings.selectedModelId) || CHAT_MODELS[1];
@@ -3495,7 +3578,6 @@ ${memoryFacts}
                 if ((GameData.user.currency.biscuit || 0) < selectedModel.price) {
                     throw new Error(`饼干不足，当前模型每条需要 ${selectedModel.price} 饼干`);
                 }
-                GameData.user.currency.biscuit -= selectedModel.price;
             }
 
             const hist = buildRelevantMemory(msg, 12).filter(m => {
@@ -3582,6 +3664,19 @@ ${memoryFacts}
                 reply = data.choices[0].message.content;
             }
             const cleaned = deduplicateText(reply) || '……嗯。';
+            const usageDate = getLocalDateKey();
+            const dailyUsage = GameData.chat.usage.daily[usageDate] || { messages: 0, biscuitSpent: 0, estimatedCost: 0 };
+            const actualCost = GameData.settings.betaFreeModels ? 0 : selectedModel.price;
+            if (actualCost > 0) {
+                GameData.user.currency.biscuit = Math.max(0, (GameData.user.currency.biscuit || 0) - actualCost);
+            }
+            GameData.chat.usage.messages += 1;
+            GameData.chat.usage.biscuitSpent += actualCost;
+            GameData.chat.usage.estimatedCost += selectedModel.price;
+            dailyUsage.messages += 1;
+            dailyUsage.biscuitSpent += actualCost;
+            dailyUsage.estimatedCost += selectedModel.price;
+            GameData.chat.usage.daily[usageDate] = dailyUsage;
 
             if (img) {
                 const msgs = document.querySelectorAll('#chatMessagesArea .chat-msg.ai');
@@ -4642,6 +4737,11 @@ ${memoryFacts}
                 running: true,
                 pausedAt: null
             };
+            if (taskId) {
+                GameData.chat.mode = 'work';
+                GameData.chat.workTaskId = taskId;
+                updateChatModeUI();
+            }
             focusTickTimer = setInterval(focusTick, 1000);
         } else {
             current.running = !current.running;
@@ -4683,9 +4783,12 @@ ${memoryFacts}
         if (focusTickTimer) clearInterval(focusTickTimer);
         focusTickTimer = null;
         GameData.focus.current = null;
+        GameData.chat.mode = 'daily';
+        GameData.chat.workTaskId = null;
         saveData();
         checkDailyReportSchedule();
         updateFocusDisplay();
+        updateChatModeUI();
         updateAppPages();
         showNotif(completed ? '专注完成，已记录到今日总结' : '本次专注已结束');
     }
@@ -4716,6 +4819,7 @@ ${memoryFacts}
         const allTasks = getAllTasks().map(ensureTaskTiming);
         const standard = getDailyStandard();
         const focusStats = getTodayFocusStats();
+        const chatUsage = (GameData.chat.usage && GameData.chat.usage.daily && GameData.chat.usage.daily[todayKey]) || { messages: 0, biscuitSpent: 0, estimatedCost: 0 };
         const completedToday = allTasks.filter(task => {
             if (!(task.done || task.exempted)) return false;
             const date = new Date(task.completedAt || task.lastUpdate || Date.now());
@@ -4744,6 +4848,9 @@ ${memoryFacts}
             focusMinutes: focusStats.minutes,
             focusSessions: focusStats.sessions.length,
             interrupts: focusStats.interrupts,
+            chatMessages: chatUsage.messages || 0,
+            estimatedBiscuitCost: chatUsage.estimatedCost || 0,
+            biscuitSpent: chatUsage.biscuitSpent || 0,
             taskDurations: durationLogs,
             completedTitles: completedToday.map(task => task.title),
             note: standard.met
@@ -4811,6 +4918,7 @@ ${memoryFacts}
         setText('summaryCoreProgress', `${dailyReport.coreCompleted}/${dailyReport.coreRequired}`);
         setText('summaryCompleted', dailyReport.completed);
         setText('summaryFocusMinutes', dailyReport.focusMinutes);
+        setText('summaryChatUsage', `今日聊天：${dailyReport.chatMessages || 0} 条 · 预计消耗 ${dailyReport.estimatedBiscuitCost || 0} 饼干`);
         setText('summarySupervisorNote', dailyReport.note);
         setText('summaryReportTime', dailyReport.generatedAt
             ? `报告生成时间：${TS.fmt(new Date(dailyReport.generatedAt))}${dailyReport.final ? ' · 已结算' : ' · 实时预览'}`
@@ -5467,7 +5575,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.5', '欢迎回来，VIP009。\n\nV5.5 升级：\n- 任务接收与提交时间记录\n- 任务耗时自动统计\n- 每日总结报告\n- 月度总结汇总\n- 专注记录自动进入每日报告\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.6', '欢迎回来，VIP009。\n\nV5.6 升级：\n- 日常聊天与工作模式\n- 专注任务自动进入工作模式\n- 工作模式只处理任务内容\n- 模型按饼干记录用量\n- 回复成功后才计算消费\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
