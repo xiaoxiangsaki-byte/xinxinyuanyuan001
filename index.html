@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.3</title>
+    <title>VIP009 · 欣原监督系统 V5.4</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -218,13 +218,10 @@
         .supervisor-card .s-desc { color: rgba(255,255,255,0.3); font-size: 9px; line-height: 1.45; margin-top: 4px; min-height: 26px; }
         .binding-card { border-left: 3px solid var(--primary); }
         .binding-state { font-size: 10px; color: var(--gold); margin-top: 4px; }
-        .property-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+        .property-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px; }
         .property-item { background: rgba(255,255,255,0.025); border-radius: 8px; padding: 8px 4px; text-align: center; }
         .property-item strong { display: block; font-size: 13px; color: #fff; overflow: hidden; text-overflow: ellipsis; }
         .property-item span { display: block; font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 2px; }
-        .exchange-row { display: flex; gap: 6px; margin-top: 8px; }
-        .exchange-row input { flex: 1; min-width: 0; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 6px 8px; outline: none; }
-        .exchange-row button { border: none; border-radius: 8px; padding: 6px 10px; background: rgba(197,163,255,0.12); color: var(--primary); cursor: pointer; }
         .profile-form label { display: block; font-size: 10px; color: rgba(255,255,255,0.35); margin: 9px 0 4px; }
         .profile-form input[type="text"], .profile-form textarea { width: 100%; box-sizing: border-box; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: #fff; padding: 7px 9px; outline: none; font-family: inherit; font-size: 11px; }
         .profile-form textarea { min-height: 62px; resize: vertical; }
@@ -770,14 +767,8 @@
                         <p id="propertyUserCode">用户代号：VIP009</p>
                         <div class="property-grid">
                             <div class="property-item"><strong id="propertyMilkTea">0</strong><span>小奶糕</span></div>
-                            <div class="property-item"><strong id="propertyStarShine">0</strong><span>星辉</span></div>
                             <div class="property-item"><strong id="propertyBiscuit">0</strong><span>饼干</span></div>
                         </div>
-                        <div class="exchange-row">
-                            <input id="milkTeaConvertInput" type="number" min="1" step="1" placeholder="想获得多少星辉" oninput="updateExchangePreview()">
-                            <button onclick="convertMilkTeaToStarShine()">兑换星辉</button>
-                        </div>
-                        <p id="exchangeCostPreview" style="margin-top:6px;">兑换比例：2 小奶糕 = 1 星辉。</p>
                         <p id="supervisorChangeTokenText" style="margin-top:4px;">更换主监管者权限：0 次</p>
                         <div class="card-actions"><button class="btn primary" id="useChangeTokenBtn" onclick="useSupervisorChangeToken()" style="display:none;">使用更换权限</button></div>
                     </div>
@@ -1162,7 +1153,7 @@
     // ★ GameData 结构
     const GameData = {
         user: {
-            currency: { milkTea: 99999999, starShine: 0, biscuit: 0 },
+            currency: { milkTea: 99999999, biscuit: 0 },
             records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
         },
         ai: { affection: 0, dialogHistory: [], loveMilestones: { level250: false, level450: false } },
@@ -1373,8 +1364,8 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
     if (typeof GameData.settings.chatBackground !== 'string') GameData.settings.chatBackground = '';
     GameData.user.currency.milkTea = 99999999;
-    if (typeof GameData.user.currency.starShine !== 'number') GameData.user.currency.starShine = 0;
     if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
+    if (GameData.user.currency.starShine != null) delete GameData.user.currency.starShine;
     GameData.treasure.milkTea = 99999999;
     if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
     if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
@@ -2682,22 +2673,22 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             { id:'g14', name:'喵喵券', icon:'🐈', price:300, af:5, desc:'她会学猫叫一次', special: true, type: 'meow' },
             { id:'g15', name:'暧昧故事券', icon:'💜', price:800, af:15, desc:'她会讲一个关于你们的暧昧小故事', special: true, type: 'story' },
             { id:'g16', name:'10克拉粉钻项链', icon:'💎', price:5200, af:200, desc:'稀有粉钻，极致奢华' },
-            { id:'g17', name:'更换主监管者权限', icon:'🔁', price:1000, currency:'starShine', af:0, desc:'购买一次更换主监管者的机会', effect:'supervisor_change_token' }
+            { id:'g17', name:'更换主监管者权限', icon:'🔁', price:20000, currency:'milkTea', af:0, desc:'购买一次更换主监管者的机会', effect:'supervisor_change_token' }
         ],
         buy(id) {
             const item = this.items.find(i => i.id === id);
             if (!item) return;
 
-            const currency = item.currency || 'milkTea';
+            const currency = 'milkTea';
             const balance = GameData.user.currency[currency] || 0;
             if (balance < item.price) {
                 const failMsg = '财务还没自由就想买这些？先完成任务。';
                 showEmotionBubble(failMsg, 'tsundere', 2500);
-                showNotif(currency === 'starShine' ? '❌ 星辉不足' : '❌ 小奶糕不足');
+                showNotif('❌ 小奶糕不足');
                 return;
             }
 
-            const shouldDeduct = currency !== 'milkTea' || !GameData.settings.betaUnlimitedCurrency;
+            const shouldDeduct = !GameData.settings.betaUnlimitedCurrency;
             if (shouldDeduct) GameData.user.currency[currency] -= item.price;
 
             if (item.effect === 'supervisor_change_token') {
@@ -2748,7 +2739,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         el.innerHTML = Shop.items.map(i => {
             const displayItem = i;
             const specialTag = i.special ? ' 特殊道具' : '';
-            const currencySymbol = displayItem.currency === 'starShine' ? '✨' : '🍰';
+            const currencySymbol = '🍰';
             return '<div class="shop-item" onclick="Shop.buy(\''+displayItem.id+'\')"><div class="icon">'+displayItem.icon+'</div><div class="name">'+displayItem.name+'</div><div class="price">'+displayItem.price+currencySymbol+'</div><div class="desc">'+displayItem.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">'+(displayItem.af ? '+'+displayItem.af+'❤️' : '')+'</div></div>';
         }).join('');
     }
@@ -4508,47 +4499,6 @@ ${memoryFacts}
         }, 100);
     }
 
-    function updateExchangePreview() {
-        const input = document.getElementById('milkTeaConvertInput');
-        const preview = document.getElementById('exchangeCostPreview');
-        const stars = Math.max(0, Math.floor(Number(input && input.value) || 0));
-        if (preview) preview.textContent = stars > 0 ? `你将获得 ${stars} 星辉，需要支付 ${stars * 2} 小奶糕。` : '兑换比例：2 小奶糕 = 1 星辉。';
-    }
-
-    function convertMilkTeaToStarShine() {
-        const input = document.getElementById('milkTeaConvertInput');
-        const stars = Math.floor(Number(input && input.value) || 0);
-        const cost = stars * 2;
-        if (stars < 1) {
-            showNotif('请先选择要兑换的星辉数量');
-            return;
-        }
-        if (GameData.user.currency.milkTea < cost) {
-            showNotif('小奶糕数量不足');
-            return;
-        }
-        document.getElementById('confirmIcon').textContent = '✨';
-        document.getElementById('confirmTitle').textContent = `兑换 ${stars} 星辉？`;
-        document.getElementById('confirmDesc').textContent = `本次需要支付 ${cost} 小奶糕。确认后立即完成兑换。`;
-        document.getElementById('confirmYesBtn').onclick = function() {
-            closeConfirmModal();
-            executeMilkTeaToStarShine(stars, cost);
-        };
-        document.getElementById('confirmModal').classList.add('active');
-    }
-
-    function executeMilkTeaToStarShine(stars, cost) {
-        GameData.user.currency.milkTea -= cost;
-        GameData.user.currency.starShine = (GameData.user.currency.starShine || 0) + stars;
-        GameData.treasure.milkTea = GameData.user.currency.milkTea;
-        const input = document.getElementById('milkTeaConvertInput');
-        if (input) input.value = '';
-        updateExchangePreview();
-        saveData();
-        updateUI();
-        showNotif(`已兑换 ${stars} 星辉`);
-    }
-
     let focusTickTimer = null;
 
     function getAllTasks() {
@@ -4694,7 +4644,6 @@ ${memoryFacts}
                 : '<div class="memory-item"><div class="text">今天还没有完成记录。</div></div>';
         }
         setText('propertyMilkTea', GameData.user.currency.milkTea || 0);
-        setText('propertyStarShine', GameData.user.currency.starShine || 0);
         setText('propertyBiscuit', GameData.user.currency.biscuit || 0);
         setText('propertyUserCode', `用户代号：${GameData.profile.codename || 'VIP009'}`);
         setText('supervisorChangeTokenText', `更换主监管者权限：${GameData.supervisor.changeTokens || 0} 次`);
@@ -5328,7 +5277,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.3', '欢迎回来，VIP009。\n\nV5.3 升级：\n- 移除宠物模式与所有宠物内容\n- 产品聚焦任务、专注、总结和资产\n- 保留监管者独立主题框架\n- 聊天继续通过顶部入口进入\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.4', '欢迎回来，VIP009。\n\nV5.4 升级：\n- 货币体系改为小奶糕与饼干双货币\n- 移除星辉和兑换流程\n- 商店统一使用小奶糕\n- 聊天模型使用饼干\n- 资产页只显示两种货币\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
