@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.6</title>
+    <title>VIP009 · 欣原监督系统 V5.7</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -790,6 +790,8 @@
                             <div class="page-stat"><strong id="assetsCompleted">0</strong><span>完成任务</span></div>
                             <div class="page-stat"><strong id="assetsFocusMinutes">0</strong><span>专注分钟</span></div>
                         </div>
+                        <p id="userLevelText" style="margin-top:8px;">用户等级：1 级 · 0 经验</p>
+                        <p id="photoUnlockText" style="margin-top:4px;">监管者照片：已解锁 0 / 4（素材待制作）</p>
                     </div>
                     <div class="page-card">
                         <h3>订阅与充值</h3>
@@ -867,6 +869,7 @@
                 <div class="setting-item"><span class="label">🔑 API Key</span><input type="password" id="apiKeyInput" autocomplete="off" placeholder="输入硅基密钥"></div>
                 <div class="setting-item"><span class="label">📢 主动提醒</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" id="pushToggle" onclick="togglePush()">已开启</button><button class="btn" onclick="requestNotificationPermission()">开启通知</button><button class="btn" onclick="testReminder()">测试提醒</button></div></div>
                 <div class="setting-item"><span class="label">🎯 个人计划</span><button class="btn" onclick="openOnboarding(true)">重新设定并生成任务</button></div>
+                <div class="setting-item"><span class="label">👧 Q版形象</span><button class="btn" id="chibiToggle" onclick="toggleChibi()">已开启</button></div>
                 <div class="setting-item"><span class="label">💾 数据</span><div style="display:flex; gap:4px; flex-wrap:wrap;"><button class="btn" onclick="exportData()">导出</button><button class="btn" onclick="importData()">导入</button><button class="btn danger" onclick="resetData()">重置</button></div></div>
                 <div class="task-pool-area" style="display:none;">
                     <label>📋 自定义任务池 (JSON 数组)</label>
@@ -1077,6 +1080,9 @@
     //  CORE DATA
     // ============================================================
     const MAX_AF = 520;
+    const TASK_BASE_REWARD = 100;
+    const TASK_EXP_REWARD = 20;
+    const PHOTO_MILESTONES = [50, 150, 300, 520];
     const RELS = [
         { max: 0, label: '陌生人' },
         { max: 50, label: '熟人' },
@@ -1092,6 +1098,20 @@
         if (af >= MAX_AF) return RELS[RELS.length - 1];
         for (let r of RELS) { if (af <= r.max) return r; }
         return RELS[0];
+    }
+
+    function addUserExp(amount) {
+        const progression = GameData.user.progression;
+        progression.exp += amount;
+        progression.totalExp += amount;
+        let levelUps = 0;
+        while (progression.exp >= 100 + (progression.level - 1) * 50) {
+            progression.exp -= 100 + (progression.level - 1) * 50;
+            progression.level += 1;
+            levelUps += 1;
+        }
+        if (levelUps > 0) showNotif(`用户等级提升到 ${progression.level} 级`);
+        return levelUps;
     }
 
     const LOVE_LINES = [
@@ -1175,7 +1195,8 @@
     const GameData = {
         user: {
             currency: { milkTea: 99999999, biscuit: 0 },
-            records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() }
+            records: { streak: 0, lastCheckIn: null, lastActiveTime: Date.now() },
+            progression: { level: 1, exp: 0, totalExp: 0 }
         },
         ai: { affection: 0, dialogHistory: [], loveMilestones: { level250: false, level450: false } },
         profile: { onboarded: false, summary: '', goals: [], codename: 'VIP009', avatar: '', hobbies: '', preferences: '', dislikes: '', updatedAt: null },
@@ -1191,7 +1212,8 @@
         memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
         focus: { sessions: [], current: null, defaultMinutes: 25 },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
-        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true, chatBackground: '', reportCutoff: '22:00' },
+        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true, chatBackground: '', reportCutoff: '22:00', showChibi: true },
+        gallery: { unlockedPhotos: {} },
         reports: { daily: {}, monthly: {} },
         reminder: {
             enabled: true,
@@ -1242,6 +1264,9 @@
         },
         penalty: {
             level: 0,
+            warningStage: 0,
+            shields: 0,
+            taskMultiplier: 1,
             history: [],
             lastPenaltyDate: null,
             pendingTasks: []
@@ -1397,13 +1422,20 @@ const DEFAULT_TASK_POOL = [
     GameData.settings.betaNoSupervisorLock = true;
     if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
     if (typeof GameData.settings.chatBackground !== 'string') GameData.settings.chatBackground = '';
+    if (typeof GameData.settings.showChibi !== 'boolean') GameData.settings.showChibi = true;
     if (!GameData.settings.reportCutoff) GameData.settings.reportCutoff = '22:00';
     if (!GameData.reports) GameData.reports = { daily: {}, monthly: {} };
     if (!GameData.reports.daily) GameData.reports.daily = {};
     if (!GameData.reports.monthly) GameData.reports.monthly = {};
+    if (!GameData.gallery) GameData.gallery = { unlockedPhotos: {} };
+    if (!GameData.gallery.unlockedPhotos) GameData.gallery.unlockedPhotos = {};
     GameData.user.currency.milkTea = 99999999;
     if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
     if (GameData.user.currency.starShine != null) delete GameData.user.currency.starShine;
+    if (!GameData.user.progression) GameData.user.progression = { level: 1, exp: 0, totalExp: 0 };
+    if (typeof GameData.user.progression.level !== 'number') GameData.user.progression.level = 1;
+    if (typeof GameData.user.progression.exp !== 'number') GameData.user.progression.exp = 0;
+    if (typeof GameData.user.progression.totalExp !== 'number') GameData.user.progression.totalExp = 0;
     GameData.treasure.milkTea = 99999999;
     if (!GameData.taskPool || GameData.taskPool.length === 0) GameData.taskPool = JSON.parse(JSON.stringify(DEFAULT_TASK_POOL));
     if (!GameData.exemptionStatus) GameData.exemptionStatus = { active: false, endDate: null, usedToday: 0, maxPerDay: 3, lastUsedDate: null };
@@ -1413,6 +1445,9 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.treasure.supervisorTrialDays) GameData.treasure.supervisorTrialDays = 3;
     if (!GameData.treasure._storyIdCounter) GameData.treasure._storyIdCounter = 0;
     if (!GameData.penalty) GameData.penalty = { level: 0, history: [], lastPenaltyDate: null, pendingTasks: [] };
+    if (typeof GameData.penalty.warningStage !== 'number') GameData.penalty.warningStage = 0;
+    if (typeof GameData.penalty.shields !== 'number') GameData.penalty.shields = 0;
+    if (typeof GameData.penalty.taskMultiplier !== 'number') GameData.penalty.taskMultiplier = 1;
     if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
 
     GameData.ai.dialogHistory = GameData.ai.dialogHistory.filter(m => {
@@ -1456,8 +1491,9 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.tasks.daily || !GameData.tasks.daily.length) {
         GameData.tasks.daily = TaskSystem.genDaily();
     }
-    if (GameData.tasks.daily.length > 2) {
-        GameData.tasks.daily = GameData.tasks.daily.slice(0, 2);
+    const dailyLimit = GameData.penalty && GameData.penalty.taskMultiplier > 1 ? 4 : 2;
+    if (GameData.tasks.daily.length > dailyLimit) {
+        GameData.tasks.daily = GameData.tasks.daily.slice(0, dailyLimit);
     }
     if (!GameData.tasks.mainQuests || !GameData.tasks.mainQuests.length) {
         GameData.tasks.mainQuests = TaskSystem.initMain();
@@ -1680,7 +1716,26 @@ const DEFAULT_TASK_POOL = [
 
         // ★ 1. 拖延处罚
         if (rate < 0.6) {
+            if (GameData.penalty.shields > 0) {
+                GameData.penalty.shields -= 1;
+                GameData.penalty.warningStage = 0;
+                addChatMessage('assistant', `这次完成率只有 ${ratePercent}%。连败保护卡已经替你挡掉处罚，但不会有下一次这么轻松。`, true);
+                showNotif('连败保护卡已使用，本次不扣款');
+                saveData();
+                updateUI();
+                return;
+            }
+            if (GameData.penalty.warningStage < 1) {
+                GameData.penalty.warningStage = 1;
+                addChatMessage('assistant', `完成率只有 ${ratePercent}%。这是警告，不扣款。下一次低于标准，处罚会直接执行。`, true);
+                showNotif('收到一次未完成警告，本次不处罚');
+                saveData();
+                updateUI();
+                return;
+            }
             GameData.penalty.level = Math.min(3, GameData.penalty.level + 1);
+            GameData.penalty.warningStage = 0;
+            GameData.penalty.taskMultiplier = 2;
             const deduction = 30 * GameData.penalty.level;
             const affectionDeduction = 5 * GameData.penalty.level;
 
@@ -1908,6 +1963,8 @@ const DEFAULT_TASK_POOL = [
         const chatAvatar = document.getElementById('chatSupervisorAvatar');
         if (topAvatar) topAvatar.src = avatar;
         if (chatAvatar) chatAvatar.src = avatar;
+        checkAffectionPhotoUnlocks();
+        applyChibiVisibility();
         updateChatModeUI();
         updateAppPages();
     }
@@ -2390,7 +2447,8 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             // 每日必做：英语 + 金融
             const dailyPool = pool.filter(t => t.type === 'daily');
             const shuffled = [...dailyPool].sort(() => Math.random() - 0.5);
-            const tasks = shuffled.slice(0, 2).map((t, idx) => ({
+            const targetCount = GameData.penalty && GameData.penalty.taskMultiplier > 1 ? 4 : 2;
+            const tasks = shuffled.slice(0, targetCount).map((t, idx) => ({
                 id: 'd' + (idx + 1),
                 title: t.title,
                 desc: t.desc || '完成这项任务',
@@ -2403,7 +2461,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                 lastUpdate: Date.now(),
                 difficulty: t.difficulty || 1
             }));
-            while (tasks.length < 2) {
+            while (tasks.length < targetCount) {
                 tasks.push({
                     id: 'd' + (tasks.length + 1),
                     title: '额外任务: 自我提升',
@@ -2485,6 +2543,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             saveData();
             updateUI();
             showNotif(`已接收任务「${task.title}」`);
+            startFocusForTask(taskId);
         },
         triggerVerify(taskId, isPunish) {
             if (!GameData.supervisor || !GameData.supervisor.activeId) {
@@ -2642,8 +2701,15 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                     task.reviewResult = 'pass';
                     addChatMessage('assistant', cleanReply || '嗯，勉强算你通过了。', true);
 
+                    task.max = task.max || 1;
+                    task.progress = task.progress || 0;
                     task.progress = Math.min(task.progress + 1, task.max);
                     task.lastUpdate = Date.now();
+                    if (key === 'punish') {
+                        GameData.penalty.taskMultiplier = 1;
+                        GameData.penalty.pendingTasks = (GameData.penalty.pendingTasks || []).filter(t => t.id !== task.id);
+                        showNotif('处罚任务完成，任务加倍已解除');
+                    }
 
                     if (task.progress >= task.max && !task.done) {
                         task.done = true;
@@ -2651,9 +2717,10 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                         const latestLog = task.timeLogs && task.timeLogs[task.timeLogs.length - 1];
                         if (latestLog) latestLog.result = 'pass';
                         markTaskActivity(true);
-                        if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += task.reward;
+                        if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += TASK_BASE_REWARD;
                         GameData.treasure.milkTea = GameData.user.currency.milkTea;
-                        showNotif(`✅ 任务完成！+${task.reward} 🍰 小奶糕`);
+                        addUserExp(TASK_EXP_REWARD);
+                        showNotif(`✅ 任务完成！+${TASK_BASE_REWARD} 🍰 小奶糕 · +${TASK_EXP_REWARD} 经验`);
                         GameData.ai.affection = Math.min(MAX_AF, GameData.ai.affection + 5);
 
                         if (GameData.ai.affection >= MAX_AF && !window._afTriggered) {
@@ -2777,27 +2844,45 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             { id:'g14', name:'喵喵券', icon:'🐈', price:300, af:5, desc:'她会学猫叫一次', special: true, type: 'meow' },
             { id:'g15', name:'暧昧故事券', icon:'💜', price:800, af:15, desc:'她会讲一个关于你们的暧昧小故事', special: true, type: 'story' },
             { id:'g16', name:'10克拉粉钻项链', icon:'💎', price:5200, af:200, desc:'稀有粉钻，极致奢华' },
-            { id:'g17', name:'更换主监管者权限', icon:'🔁', price:20000, currency:'milkTea', af:0, desc:'购买一次更换主监管者的机会', effect:'supervisor_change_token' }
+            { id:'g17', name:'更换主监管者权限', icon:'🔁', price:20000, currency:'milkTea', af:0, desc:'购买一次更换主监管者的机会', effect:'supervisor_change_token' },
+            { id:'g18', name:'连败保护卡', icon:'🛡️', price:1500, currency:'milkTea', af:0, desc:'抵挡一次处罚扣除', effect:'penalty_shield' },
+            { id:'g19', name:'监管者体验卡（3天）', icon:'🎟️', price:30, currency:'biscuit', af:0, desc:'获得一张三天监管者体验卡', effect:'supervisor_trial_card' }
         ],
         buy(id) {
             const item = this.items.find(i => i.id === id);
             if (!item) return;
 
-            const currency = 'milkTea';
+            const currency = item.currency === 'biscuit' ? 'biscuit' : 'milkTea';
             const balance = GameData.user.currency[currency] || 0;
             if (balance < item.price) {
                 const failMsg = '财务还没自由就想买这些？先完成任务。';
                 showEmotionBubble(failMsg, 'tsundere', 2500);
-                showNotif('❌ 小奶糕不足');
+                showNotif(currency === 'biscuit' ? '❌ 饼干不足' : '❌ 小奶糕不足');
                 return;
             }
 
-            const shouldDeduct = !GameData.settings.betaUnlimitedCurrency;
+            const shouldDeduct = currency !== 'milkTea' || !GameData.settings.betaUnlimitedCurrency;
             if (shouldDeduct) GameData.user.currency[currency] -= item.price;
 
             if (item.effect === 'supervisor_change_token') {
                 GameData.supervisor.changeTokens = (GameData.supervisor.changeTokens || 0) + 1;
                 showNotif('已获得一次更换主监管者权限');
+                saveData();
+                updateUI();
+                updateShopGrid();
+                return;
+            }
+            if (item.effect === 'penalty_shield') {
+                GameData.penalty.shields = (GameData.penalty.shields || 0) + 1;
+                showNotif('已获得一张连败保护卡');
+                saveData();
+                updateUI();
+                updateShopGrid();
+                return;
+            }
+            if (item.effect === 'supervisor_trial_card') {
+                GameData.treasure.supervisorTrialCards = (GameData.treasure.supervisorTrialCards || 0) + 1;
+                showNotif('已获得一张三天监管者体验卡');
                 saveData();
                 updateUI();
                 updateShopGrid();
@@ -2843,7 +2928,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         el.innerHTML = Shop.items.map(i => {
             const displayItem = i;
             const specialTag = i.special ? ' 特殊道具' : '';
-            const currencySymbol = '🍰';
+            const currencySymbol = displayItem.currency === 'biscuit' ? '🍪' : '🍰';
             return '<div class="shop-item" onclick="Shop.buy(\''+displayItem.id+'\')"><div class="icon">'+displayItem.icon+'</div><div class="name">'+displayItem.name+'</div><div class="price">'+displayItem.price+currencySymbol+'</div><div class="desc">'+displayItem.desc+specialTag+'</div><div style="font-size:8px;color:var(--primary);">'+(displayItem.af ? '+'+displayItem.af+'❤️' : '')+'</div></div>';
         }).join('');
     }
@@ -3769,9 +3854,10 @@ ${memoryFacts}
                 if (dTask.progress >= dTask.max) {
                     dTask.done = true;
                     markTaskActivity(true);
-                    if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += dTask.reward;
+                    if (!GameData.settings.betaUnlimitedCurrency) GameData.user.currency.milkTea += TASK_BASE_REWARD;
                     GameData.treasure.milkTea = GameData.user.currency.milkTea;
-                    showNotif('✅ 深度咨询完成！+' + dTask.reward + ' 🍰 小奶糕');
+                    addUserExp(TASK_EXP_REWARD);
+                    showNotif('✅ 深度咨询完成！+' + TASK_BASE_REWARD + ' 🍰 小奶糕');
                     updateTaskHistory();
                     checkTaskSchedule();
                 }
@@ -4724,25 +4810,37 @@ ${memoryFacts}
         button.textContent = current.running ? '暂停专注' : '继续专注';
     }
 
+    function startFocusForTask(taskId, minutes = null) {
+        if (GameData.focus.current) endFocusSession(false);
+        const duration = minutes || GameData.focus.defaultMinutes || 25;
+        GameData.focus.defaultMinutes = duration;
+        GameData.focus.current = {
+            taskId: taskId || null,
+            plannedSeconds: duration * 60,
+            remainingSeconds: duration * 60,
+            startedAt: Date.now(),
+            running: true,
+            pausedAt: null
+        };
+        if (taskId) {
+            GameData.chat.mode = 'work';
+            GameData.chat.workTaskId = taskId;
+        }
+        if (focusTickTimer) clearInterval(focusTickTimer);
+        focusTickTimer = setInterval(focusTick, 1000);
+        saveData();
+        updateFocusDisplay();
+        updateChatModeUI();
+        switchAppPage('focus');
+        showNotif(`已启动 ${duration} 分钟专注`);
+    }
+
     function toggleFocusTimer() {
         let current = GameData.focus.current;
         if (!current) {
             const taskId = document.getElementById('focusTaskSelect')?.value || null;
-            const seconds = GameData.focus.defaultMinutes * 60;
-            current = GameData.focus.current = {
-                taskId,
-                plannedSeconds: seconds,
-                remainingSeconds: seconds,
-                startedAt: Date.now(),
-                running: true,
-                pausedAt: null
-            };
-            if (taskId) {
-                GameData.chat.mode = 'work';
-                GameData.chat.workTaskId = taskId;
-                updateChatModeUI();
-            }
-            focusTickTimer = setInterval(focusTick, 1000);
+            startFocusForTask(taskId);
+            return;
         } else {
             current.running = !current.running;
             current.pausedAt = current.running ? null : Date.now();
@@ -4900,6 +4998,36 @@ ${memoryFacts}
         }
     }
 
+    function checkAffectionPhotoUnlocks() {
+        const supervisor = getActiveSupervisor();
+        if (!GameData.gallery.unlockedPhotos[supervisor.id]) {
+            GameData.gallery.unlockedPhotos[supervisor.id] = [];
+        }
+        const unlocked = GameData.gallery.unlockedPhotos[supervisor.id];
+        let changed = false;
+        PHOTO_MILESTONES.forEach(threshold => {
+            if (GameData.ai.affection >= threshold && !unlocked.includes(threshold)) {
+                unlocked.push(threshold);
+                changed = true;
+                showNotif(`已解锁 ${supervisor.name} 好感度照片福利 ${threshold}`);
+            }
+        });
+        if (changed) saveData();
+    }
+
+    function applyChibiVisibility() {
+        const chibi = document.getElementById('chibi');
+        const button = document.getElementById('chibiToggle');
+        if (chibi) chibi.style.display = GameData.settings.showChibi ? 'block' : 'none';
+        if (button) button.textContent = GameData.settings.showChibi ? '已开启' : '已关闭';
+    }
+
+    function toggleChibi() {
+        GameData.settings.showChibi = !GameData.settings.showChibi;
+        applyChibiVisibility();
+        saveData();
+    }
+
     function updateAppPages() {
         const allTasks = [...GameData.tasks.daily, ...GameData.tasks.mainQuests, ...GameData.tasks.sideQuests];
         const completed = allTasks.filter(t => t.done || t.exempted).length;
@@ -4948,6 +5076,12 @@ ${memoryFacts}
         setText('assetsStreak', GameData.checkin.streak || 0);
         setText('assetsCompleted', completed);
         setText('assetsFocusMinutes', focusStats.minutes);
+        setText('userLevelText', `用户等级：${GameData.user.progression.level} 级 · ${GameData.user.progression.exp} 经验`);
+        const currentSupervisorId = GameData.supervisor && GameData.supervisor.activeId;
+        const unlockedCount = currentSupervisorId && GameData.gallery.unlockedPhotos[currentSupervisorId]
+            ? GameData.gallery.unlockedPhotos[currentSupervisorId].length
+            : 0;
+        setText('photoUnlockText', `监管者照片：已解锁 ${unlockedCount} / ${PHOTO_MILESTONES.length}（素材待制作）`);
         renderFocusTaskSelect();
         updateFocusDisplay();
         const supervisor = getSupervisorById(GameData.supervisor && GameData.supervisor.activeId);
@@ -5204,6 +5338,7 @@ ${memoryFacts}
         renderTimeCapsule();
         updateHeartColor();
         updateExemptionUI();
+        checkAffectionPhotoUnlocks();
         updateAppPages();
     }
 
@@ -5575,7 +5710,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.6', '欢迎回来，VIP009。\n\nV5.6 升级：\n- 日常聊天与工作模式\n- 专注任务自动进入工作模式\n- 工作模式只处理任务内容\n- 模型按饼干记录用量\n- 回复成功后才计算消费\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.7', '欢迎回来，VIP009。\n\nV5.7 升级：\n- 接收任务后自动启动番茄钟\n- 固定任务奖励与用户经验等级\n- 警告、惩罚和任务加倍框架\n- 连败保护卡与监管者体验卡\n- 好感度照片解锁框架与Q版开关\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
