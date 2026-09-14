@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.7</title>
+    <title>VIP009 · 欣原监督系统 V5.8</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -19,6 +19,7 @@
             --theme-soft: rgba(197,163,255,0.055); --theme-border: rgba(197,163,255,0.12);
             --theme-app-bg: rgba(18,10,30,0.75); --theme-view-bg: rgba(18,10,30,0.96); --theme-main-bg: rgba(18,10,30,0.75);
             --theme-user-start: #9c64ff; --theme-user-end: #c5a3ff;
+            --chat-bg: url('./background.png'); --chat-font-size: 13px; --chat-brightness: 1; --chat-bg-blur: 0px;
         }
         body[data-supervisor="linwu"] {
             --primary: #e85a6a; --secondary: #9e1f34;
@@ -75,6 +76,10 @@
         #mainView .top-bar .right-stats { display: flex; align-items: center; gap: 12px; font-size: 12px; color: rgba(255,255,255,0.3); }
         #mainView .top-bar .right-stats .stat-item { display: flex; align-items: center; gap: 3px; }
         #mainView .top-bar .right-stats .stat-item .val { color: #fff; font-weight: 600; }
+        .top-streak { flex: 1; min-width: 72px; max-width: 132px; margin-left: 10px; display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+        .top-streak .streak { font-size: 10px; color: var(--gold); font-weight: 600; }
+        .top-streak .top-checkin-btn { border: 1px solid var(--theme-border); background: var(--theme-soft); color: var(--primary); border-radius: 10px; padding: 3px 8px; font-size: 9px; cursor: pointer; }
+        .top-streak .top-checkin-btn:disabled { opacity: 0.45; cursor: default; }
         .affection-mini { flex-shrink: 0; padding: 4px 0 6px; display: flex; align-items: center; gap: 8px; }
         .affection-mini .label { font-size: 9px; color: rgba(255,255,255,0.3); white-space: nowrap; }
         .affection-mini .bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
@@ -254,7 +259,9 @@
         .exemption-status { font-size: 10px; color: var(--gold); background: rgba(255,213,79,0.06); padding: 2px 10px; border-radius: 10px; display: inline-block; margin-left: 6px; }
 
         /* ===== 聊天视图 ===== */
-        #chatView { background: rgba(18,10,30,0.92); background-image: url('./background.png'); background-size: cover; background-position: center; background-blend-mode: overlay; }
+        #chatView { background: var(--theme-view-bg); isolation: isolate; }
+        #chatView::before { content: ''; position: absolute; inset: -12px; background-image: var(--chat-bg); background-size: cover; background-position: center; filter: blur(var(--chat-bg-blur)) brightness(var(--chat-brightness)); z-index: -1; }
+        #chatView > * { position: relative; z-index: 1; }
         #chatView .chat-top { display: flex; align-items: center; padding: 8px 0 8px; border-bottom: 1px solid rgba(255,255,255,0.04); flex-shrink: 0; gap: 10px; cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; background: rgba(18,10,30,0.5); backdrop-filter: blur(4px); }
         #chatView .chat-top:active { opacity: 0.7; }
         #chatView .chat-top .back-avatar { width: 38px; height: 38px; border-radius: 50%; overflow: hidden; flex-shrink: 0; }
@@ -366,7 +373,7 @@
         .chat-msg { display: flex; flex-direction: column; max-width: 88%; animation: fadeUp 0.25s ease; }
         .chat-msg.ai { align-self: flex-start; }
         .chat-msg.user { align-self: flex-end; align-items: flex-end; }
-        .chat-msg .bubble { padding: 8px 14px; border-radius: 14px; font-size: 13px; line-height: 1.6; color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.08); word-break: break-word; position: relative; }
+        .chat-msg .bubble { padding: 8px 14px; border-radius: 14px; font-size: var(--chat-font-size); line-height: 1.6; color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.08); word-break: break-word; position: relative; }
         .chat-msg.ai .bubble { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.05); border-top-left-radius: 3px; color: #ddd6f0; backdrop-filter: blur(4px); }
         .chat-msg.user .bubble { background: linear-gradient(135deg, var(--theme-user-start), var(--theme-user-end)); border-top-right-radius: 3px; box-shadow: 0 4px 16px rgba(0,0,0,0.14); }
         .chat-msg .bubble img { max-width: 150px; border-radius: 8px; margin-bottom: 3px; display: block; }
@@ -399,7 +406,9 @@
         .chat-input-area .chat-input:focus { border-color: rgba(197,163,255,0.1); }
         .chat-input-area .chat-send { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; color: #000; font-size: 14px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 16px rgba(0,0,0,0.16); }
         .chat-input-area .chat-send:active { transform: scale(0.92); }
-        .chat-input-area #chatImgPreview { width: 30px; height: 30px; border-radius: 6px; display: none; object-fit: cover; border: 1px solid rgba(197,163,255,0.1); flex-shrink: 0; }
+        .chat-img-wrap { position: relative; width: 32px; height: 32px; flex-shrink: 0; display: none; }
+        .chat-img-wrap #chatImgPreview { width: 30px; height: 30px; border-radius: 6px; display: block; object-fit: cover; border: 1px solid var(--theme-border); }
+        .chat-img-wrap .remove-chat-img { position: absolute; top: -5px; right: -5px; width: 16px; height: 16px; border-radius: 50%; border: none; background: rgba(255,59,48,0.9); color: #fff; font-size: 10px; line-height: 1; cursor: pointer; }
 
         /* ===== 邮箱、日记等样式（精简） ===== */
         #mailView .mail-top, #diaryView .diary-top, #timeCapsuleView .mail-top {
@@ -563,7 +572,7 @@
         .diary-detail-content .actions .btn.secondary { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.3); }
 
         .upload-area { display: none !important; }
-        .modal.active .upload-area { display: block !important; }
+        .modal .content.task-mode .upload-area { display: block !important; }
 
         .notification { position: fixed; top: 14px; right: 14px; padding: 6px 14px; background: rgba(18,10,30,0.9); backdrop-filter: blur(12px); border: 1px solid rgba(197,163,255,0.06); border-radius: 10px; color: #fff; font-size: 11px; z-index: 99999; animation: slideIn 0.3s ease; box-shadow: 0 8px 32px rgba(0,0,0,0.4); max-width: 240px; }
         @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
@@ -660,6 +669,10 @@
                         <div class="signature" id="currentSupervisorSignature">爱是世界上最不保值的资产</div>
                     </div>
                 </div>
+                <div class="top-streak" id="checkinSection">
+                    <div class="streak" id="streakDisplay">🌱 0 天</div>
+                    <button class="top-checkin-btn" id="checkinBtn" onclick="doCheckin()"><span id="checkinBtnText">达标 0/3</span></button>
+                </div>
             </div>
             <div class="affection-mini">
                 <span class="label">❤️</span>
@@ -668,19 +681,8 @@
             </div>
             <div class="tasks-area" id="tasksArea">
                 <div class="app-page active" id="pageTasks">
-                <div class="checkin-section" id="checkinSection">
-                    <div class="left"><div class="label">🌱 成长连续</div><div class="streak" id="streakDisplay">🔥 0 天</div></div>
-                    <button class="btn-checkin" id="checkinBtn" onclick="doCheckin()">
-                        <span id="checkinBtnText">✨ 刻下印记</span>
-                        <span class="star-dust"></span>
-                        <span class="star-dust"></span>
-                        <span class="star-dust"></span>
-                        <span class="star-dust"></span>
-                    </button>
-                </div>
                 <div class="quick-entries">
                     <div class="entry" onclick="openDiaryView()"><span class="icon">📔</span> 日记</div>
-                    <div class="entry" onclick="openMailView()"><span class="icon">✉️</span> 邮箱</div>
                     <div class="entry treasure-entry" onclick="openTreasureView()"><span class="icon">🔮</span> 珍藏阁</div>
                     <div class="entry treasure-entry" onclick="openShopView()"><span class="icon">✨</span> 臻品阁</div>
                     <div class="entry timecapsule-entry" onclick="openTimeCapsuleView()"><span class="icon">💌</span> 时光笺</div>
@@ -701,9 +703,7 @@
                 <div class="app-page" id="pageFocus">
                     <div class="page-card">
                         <h3>专注模式</h3>
-                        <p>选择一个任务，设定专注时长。专注结束后会记录本次结果，并进入每日总结。</p>
-                        <label class="profile-form-label">关联任务</label>
-                        <select id="focusTaskSelect" style="width:100%; margin-top:6px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--theme-border); border-radius:8px; padding:8px;"></select>
+                        <p>接收任务后会自动进入专注。也可以在这里直接选择时长，开始一次自主专注。</p>
                         <div class="card-actions" style="margin-top:10px;">
                             <button class="btn" onclick="setFocusDuration(25)">25 分钟</button>
                             <button class="btn" onclick="setFocusDuration(45)">45 分钟</button>
@@ -823,7 +823,9 @@
             <div class="chat-input-area">
                 <button class="chat-tool-btn" id="chatToolsBtn" onclick="openChatTools()" title="相机与模型">＋</button>
                 <input type="file" id="chatImageInput" accept="image/*" style="display:none" onchange="handleChatImage(this)">
-                <img id="chatImgPreview" src="">
+                <div class="chat-img-wrap" id="chatImgWrap">
+                    <img id="chatImgPreview" src=""><button class="remove-chat-img" onclick="clearChatImage()" title="取消图片">×</button>
+                </div>
                 <textarea rows="1" class="chat-input" id="chatInput" placeholder="输入消息..." oninput="autoGrowChatInput(this)" onkeydown="handleChatInputKeydown(event)"></textarea>
                 <button class="chat-send" id="chatSendBtn" onclick="sendChatMessage()">▶</button>
             </div>
@@ -832,11 +834,12 @@
         <!-- ===== 邮箱 ===== -->
         <div id="mailView" class="view">
             <div class="mail-top" id="mailTop"><span class="back" id="mailBack">←</span><span class="mail-title">✉️ 邮箱</span></div>
-            <div class="mail-tabs">
-                <span class="mtab active" id="mailTabMails" onclick="switchMailTab('mails', this)">📬 邮件</span>
-                <span class="mtab" id="mailTabTreasure" onclick="switchMailTab('treasure', this)">🔮 珍藏阁</span>
-            </div>
             <div class="mail-list" id="mailListContainer"></div>
+        </div>
+
+        <div id="treasureView" class="view">
+            <div class="mail-top" id="treasureTop"><span class="back" id="treasureBack">←</span><span class="mail-title">🔮 珍藏阁</span></div>
+            <div class="mail-list" id="treasureListContainer"></div>
         </div>
 
         <!-- ===== 日记 ===== -->
@@ -1064,6 +1067,16 @@
                 <select id="chatWorkTaskSelect" style="width:100%; margin-top:8px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--theme-border); border-radius:8px; padding:7px;"></select>
                 <p id="chatUsageSummary" style="margin-top:8px; font-size:9px; color:rgba(255,255,255,0.35);"></p>
             </div>
+            <div class="page-card" style="background:var(--theme-soft); border-color:var(--theme-border);">
+                <label class="profile-form-label">人物备注</label>
+                <input type="text" id="chatRemarkInput" maxlength="20" placeholder="例如：我的监督者" oninput="updateChatAppearanceSetting('remark', this.value)" style="width:100%; box-sizing:border-box; margin-top:5px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--theme-border); border-radius:8px; padding:7px;">
+                <label class="profile-form-label">字体大小：<span id="chatFontSizeValue">13</span> px</label>
+                <input type="range" id="chatFontSizeRange" min="11" max="18" step="1" style="width:100%;" oninput="updateChatAppearanceSetting('font', this.value)">
+                <label class="profile-form-label">界面亮度：<span id="chatBrightnessValue">100</span>%</label>
+                <input type="range" id="chatBrightnessRange" min="50" max="130" step="5" style="width:100%;" oninput="updateChatAppearanceSetting('brightness', this.value)">
+                <label class="profile-form-label">背景模糊：<span id="chatBlurValue">0</span> px</label>
+                <input type="range" id="chatBlurRange" min="0" max="10" step="1" style="width:100%;" oninput="updateChatAppearanceSetting('blur', this.value)">
+            </div>
             <div class="card-actions" style="margin-top:10px;">
                 <label class="btn" style="display:inline-block; padding:7px 12px; border-radius:8px; background:var(--theme-soft); color:var(--primary); cursor:pointer;">更换背景<input type="file" id="chatBackgroundInput" accept="image/*" style="display:none" onchange="handleChatBackground(this)"></label>
                 <button class="btn" onclick="resetChatBackground()">恢复默认</button>
@@ -1083,6 +1096,7 @@
     const TASK_BASE_REWARD = 100;
     const TASK_EXP_REWARD = 20;
     const PHOTO_MILESTONES = [50, 150, 300, 520];
+    const DAILY_UNMET_CHAT_LIMIT = 5;
     const RELS = [
         { max: 0, label: '陌生人' },
         { max: 50, label: '熟人' },
@@ -1209,11 +1223,12 @@
             changeTokens: 0,
             history: []
         },
-        memory: { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null },
+        memory: { version: 2, summary: '', facts: [], pendingQuestions: [], lastProcessedIndex: 0, lastCompactedAt: null },
         focus: { sessions: [], current: null, defaultMinutes: 25 },
         tasks: { daily: [], mainQuests: [], sideQuests: [] },
-        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true, chatBackground: '', reportCutoff: '22:00', showChibi: true },
+        settings: { apiKey: '', autoPushEnabled: true, selectedModelId: 'qwen-main', betaFreeModels: true, betaNoSupervisorLock: true, chatBackground: '', chatRemark: '', chatFontSize: 13, chatBrightness: 1, chatBlur: 0, reportCutoff: '22:00', showChibi: true },
         gallery: { unlockedPhotos: {} },
+        subscription: { active: false, tier: 'free', expireAt: null },
         reports: { daily: {}, monthly: {} },
         reminder: {
             enabled: true,
@@ -1267,6 +1282,7 @@
             warningStage: 0,
             shields: 0,
             taskMultiplier: 1,
+            defianceCount: 0,
             history: [],
             lastPenaltyDate: null,
             pendingTasks: []
@@ -1397,8 +1413,9 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.chat.usage) GameData.chat.usage = { messages: 0, biscuitSpent: 0, estimatedCost: 0, daily: {} };
     if (!GameData.chat.usage.daily) GameData.chat.usage.daily = {};
     if (typeof GameData.chat.usage.estimatedCost !== 'number') GameData.chat.usage.estimatedCost = 0;
-    if (!GameData.memory) GameData.memory = { version: 2, summary: '', facts: [], lastProcessedIndex: 0, lastCompactedAt: null };
+    if (!GameData.memory) GameData.memory = { version: 2, summary: '', facts: [], pendingQuestions: [], lastProcessedIndex: 0, lastCompactedAt: null };
     if (!Array.isArray(GameData.memory.facts)) GameData.memory.facts = [];
+    if (!Array.isArray(GameData.memory.pendingQuestions)) GameData.memory.pendingQuestions = [];
     if (typeof GameData.memory.summary !== 'string') GameData.memory.summary = '';
     if (typeof GameData.memory.lastProcessedIndex !== 'number') GameData.memory.lastProcessedIndex = 0;
     if (!GameData.focus) GameData.focus = { sessions: [], current: null, defaultMinutes: 25 };
@@ -1416,12 +1433,17 @@ const DEFAULT_TASK_POOL = [
     }
     if (!Array.isArray(GameData.ai.dialogHistory)) GameData.ai.dialogHistory = [];
     if (!GameData.ai.loveMilestones) GameData.ai.loveMilestones = { level250: false, level450: false };
-    if (GameData.ai.dialogHistory.length > 240) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
+    const historyLimit = getDialogHistoryLimit();
+    if (GameData.ai.dialogHistory.length > historyLimit) GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-historyLimit);
     GameData.settings.betaUnlimitedCurrency = true;
     GameData.settings.betaFreeModels = true;
     GameData.settings.betaNoSupervisorLock = true;
     if (!GameData.settings.selectedModelId) GameData.settings.selectedModelId = 'qwen-main';
     if (typeof GameData.settings.chatBackground !== 'string') GameData.settings.chatBackground = '';
+    if (typeof GameData.settings.chatRemark !== 'string') GameData.settings.chatRemark = '';
+    if (!GameData.settings.chatFontSize) GameData.settings.chatFontSize = 13;
+    if (!GameData.settings.chatBrightness) GameData.settings.chatBrightness = 1;
+    if (typeof GameData.settings.chatBlur !== 'number') GameData.settings.chatBlur = 0;
     if (typeof GameData.settings.showChibi !== 'boolean') GameData.settings.showChibi = true;
     if (!GameData.settings.reportCutoff) GameData.settings.reportCutoff = '22:00';
     if (!GameData.reports) GameData.reports = { daily: {}, monthly: {} };
@@ -1429,6 +1451,7 @@ const DEFAULT_TASK_POOL = [
     if (!GameData.reports.monthly) GameData.reports.monthly = {};
     if (!GameData.gallery) GameData.gallery = { unlockedPhotos: {} };
     if (!GameData.gallery.unlockedPhotos) GameData.gallery.unlockedPhotos = {};
+    if (!GameData.subscription) GameData.subscription = { active: false, tier: 'free', expireAt: null };
     GameData.user.currency.milkTea = 99999999;
     if (typeof GameData.user.currency.biscuit !== 'number') GameData.user.currency.biscuit = 0;
     if (GameData.user.currency.starShine != null) delete GameData.user.currency.starShine;
@@ -1448,6 +1471,7 @@ const DEFAULT_TASK_POOL = [
     if (typeof GameData.penalty.warningStage !== 'number') GameData.penalty.warningStage = 0;
     if (typeof GameData.penalty.shields !== 'number') GameData.penalty.shields = 0;
     if (typeof GameData.penalty.taskMultiplier !== 'number') GameData.penalty.taskMultiplier = 1;
+    if (typeof GameData.penalty.defianceCount !== 'number') GameData.penalty.defianceCount = 0;
     if (!GameData._lastDailyReset) GameData._lastDailyReset = null;
 
     GameData.ai.dialogHistory = GameData.ai.dialogHistory.filter(m => {
@@ -1456,7 +1480,7 @@ const DEFAULT_TASK_POOL = [
         return !text.includes('💕') && !/^\s*好感度\s*[+\-]?\s*\d+/i.test(text);
     });
 
-    chatMessages = GameData.ai.dialogHistory.slice(-240).map(m => {
+    chatMessages = GameData.ai.dialogHistory.slice(-historyLimit).map(m => {
         let c = m.content;
         let img = null;
         if (typeof c === 'object' && c !== null) {
@@ -1482,6 +1506,7 @@ const DEFAULT_TASK_POOL = [
             GameData.exemptionStatus.active = false;
             GameData.exemptionStatus.endDate = null;
         }
+        if (GameData.penalty) GameData.penalty.defianceCount = 0;
         showNotif('📅 新的一天，每日任务已刷新！');
         saveData();
     }
@@ -1838,6 +1863,43 @@ const DEFAULT_TASK_POOL = [
     }
 
     // ★ 加任务检测
+    function handleDefianceIfNeeded(text) {
+        const message = String(text || '').trim();
+        const defiant = /(不服|少管我|凭什么|滚|烦死|我就不做|拒绝执行|不加任务)/.test(message);
+        if (!defiant) return false;
+        GameData.penalty.defianceCount = (GameData.penalty.defianceCount || 0) + 1;
+        const supervisor = getActiveSupervisor();
+        const extraTask = {
+            id: 'defiance_' + Date.now(),
+            title: GameData.penalty.defianceCount >= 2 ? '深刻反思与行动修正' : '即时纠正任务',
+            desc: GameData.penalty.defianceCount >= 2
+                ? '写下拒绝执行的原因，并立即完成一次与当前任务相关的行动记录。'
+                : '说明当前遇到的阻碍，并给出一个马上可以执行的最小步骤。',
+            progress: 0,
+            max: 1,
+            reward: TASK_BASE_REWARD,
+            done: false,
+            exempted: false,
+            acceptedAt: Date.now(),
+            submittedAt: null,
+            completedAt: null,
+            reviewedAt: null,
+            timeLogs: [],
+            lastUpdate: Date.now(),
+            difficulty: 1
+        };
+        GameData.tasks.daily.push(extraTask);
+        saveData();
+        updateUI();
+        if (GameData.penalty.defianceCount >= 2) {
+            addChatMessage('assistant', `${supervisor.name}没有接受你的反抗。已追加任务，并强制进入工作模式。`, true);
+            startFocusForTask(extraTask.id, 60);
+        } else {
+            addChatMessage('assistant', `不服可以，但代价由你承担。我已经追加一项即时任务，先完成它。`, true);
+        }
+        return true;
+    }
+
     function detectTaskRequest(text) {
         if (text.trim().startsWith('$加任务')) return true;
         if (text.trim().startsWith('$强制加任务')) return true;
@@ -1963,6 +2025,7 @@ const DEFAULT_TASK_POOL = [
         const chatAvatar = document.getElementById('chatSupervisorAvatar');
         if (topAvatar) topAvatar.src = avatar;
         if (chatAvatar) chatAvatar.src = avatar;
+        applyChatAppearance();
         checkAffectionPhotoUnlocks();
         applyChibiVisibility();
         updateChatModeUI();
@@ -2700,6 +2763,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
                     task.reviewedAt = Date.now();
                     task.reviewResult = 'pass';
                     addChatMessage('assistant', cleanReply || '嗯，勉强算你通过了。', true);
+                    showNotif('✅ 审核通过');
 
                     task.max = task.max || 1;
                     task.progress = task.progress || 0;
@@ -2829,7 +2893,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
     // ============================================================
     const Shop = {
         items: [
-            { id:'g1', name:'珍珠奶茶', icon:'🧋', price:100, af:5, desc:'经典奶茶' },
+            { id:'g1', name:'珍珠奶茶', icon:'🥤', price:100, af:5, desc:'经典奶茶' },
             { id:'g2', name:'草莓蛋糕', icon:'🍰', price:200, af:10, desc:'甜蜜甜品' },
             { id:'g3', name:'冰镇白葡萄酒', icon:'🥂', price:500, af:35, desc:'冰凉清透，解压首选' },
             { id:'g4', name:'毛绒玩偶', icon:'🧸', price:600, af:45, desc:'可爱玩偶' },
@@ -2898,7 +2962,14 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
 
                 const typeLabels = { act_cute: '🥺 撒娇券', meow: '🐈 喵喵券', story: '💜 暧昧故事券' };
                 showNotif('✅ 购买成功！已存入珍藏阁 → ' + typeLabels[type]);
-                showEmotionBubble('……哼，算你识货。', 'tsundere', 2000);
+                const activeSupervisor = getActiveSupervisor();
+                const specialPurchaseLines = [
+                    '……算你识货。别以为这样就结束了。',
+                    '东西我收下了，任务也别忘了。',
+                    '你倒是很会挑。下次未必答应你。',
+                    '……行，我记住了。'
+                ];
+                addChatMessage('assistant', `[${activeSupervisor.name}] ${specialPurchaseLines[Math.floor(Math.random() * specialPurchaseLines.length)]}`, true);
 
                 if (GameData.ai.affection >= MAX_AF && !window._afTriggered) { window._afTriggered = true; triggerMax(); }
                 saveData();
@@ -2914,7 +2985,18 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
 
             if (GameData.ai.affection >= MAX_AF && !window._afTriggered) { window._afTriggered = true; triggerMax(); }
             showNotif(`✅ 购买成功！好感+${item.af} ❤️`);
-            const msgs = ['[微微一怔] 你倒是懂得试探我的喜好。', '[接过] 谢谢。', '[推眼镜] 花这么多 🍰 小奶糕，是想买我的仁慈？', '[优雅收下] 既然你坚持，我就收下了。'];
+            const msgs = [
+                '[微微一怔] 你倒是懂得试探我的喜好。',
+                '[接过礼物，视线停了一瞬] ……算你有心。别指望我会夸你。',
+                '[把礼物放到一旁] 花这么多小奶糕，是想让我少催你两次？',
+                '[推了推眼镜] 礼物我收下，不代表今天可以偷懒。',
+                '[指尖轻轻碰了碰礼物] ……还行，品味勉强合格。',
+                '[别开视线] 我不是喜欢这个，只是不想浪费你的钱。',
+                '[认真收好] 记住了。下次不用买这么贵的东西。',
+                '[轻轻哼了一声] 你以为这样就能让我心软？',
+                '[把包装整理好] 东西我留下了，任务也别忘了。',
+                '[沉默片刻] ……谢谢。只准这一次。'
+            ];
             addChatMessage('assistant', msgs[Math.floor(Math.random()*msgs.length)], true);
             saveData();
             updateUI();
@@ -3010,6 +3092,26 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
         return String(content || '').trim();
     }
 
+    function getMemoryFactLimit() {
+        return GameData.subscription && GameData.subscription.active ? 100 : 40;
+    }
+
+    function getDialogHistoryLimit() {
+        return GameData.subscription && GameData.subscription.active ? 600 : 240;
+    }
+
+    function rememberPendingQuestion(content) {
+        const text = String(content || '').trim();
+        const match = text.match(/[^。！\n]{4,90}[？?]/);
+        if (!match) return;
+        const question = match[0].trim();
+        const list = GameData.memory.pendingQuestions;
+        if (!list.some(item => item.text === question)) {
+            list.push({ text: question, time: Date.now() });
+            while (list.length > (GameData.subscription && GameData.subscription.active ? 10 : 5)) list.shift();
+        }
+    }
+
     function updateMemoryCount() {
         const el = document.getElementById('memoryCount');
         if (el) el.textContent = String((GameData.ai.dialogHistory || []).length);
@@ -3051,7 +3153,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             seen.add(key);
             merged.push(item);
         });
-        GameData.memory.facts = merged.slice(-40);
+        GameData.memory.facts = merged.slice(-getMemoryFactLimit());
     }
 
     async function extractFactsFromText(text, source) {
@@ -3166,6 +3268,7 @@ ${transcript}
         const lastChat = chatMessages[chatMessages.length - 1];
         if (lastChat && lastChat.role === role && lastChat.content === finalContent && !img) return;
 
+        if (role === 'assistant') rememberPendingQuestion(finalContent);
         chatMessages.push({ role, content: finalContent, time, img, action });
 
         const historyEntry = {
@@ -3178,8 +3281,9 @@ ${transcript}
         let lastHistContent = lastHist ? (typeof lastHist.content === 'object' ? lastHist.content.text : lastHist.content) : '';
         if (!lastHist || lastHistContent !== historyEntry.content || lastHist.role !== historyEntry.role) {
             GameData.ai.dialogHistory.push(historyEntry);
-            if (GameData.ai.dialogHistory.length > 240) {
-                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-240);
+            const historyLimit = getDialogHistoryLimit();
+            if (GameData.ai.dialogHistory.length > historyLimit) {
+                GameData.ai.dialogHistory = GameData.ai.dialogHistory.slice(-historyLimit);
                 GameData.memory.lastProcessedIndex = Math.max(0, GameData.memory.lastProcessedIndex - 1);
             }
         }
@@ -3387,6 +3491,11 @@ ${transcript}
 
     function openChatSettings() {
         renderChatModeControls();
+        document.getElementById('chatRemarkInput').value = GameData.settings.chatRemark || '';
+        document.getElementById('chatFontSizeRange').value = GameData.settings.chatFontSize || 13;
+        document.getElementById('chatBrightnessRange').value = Math.round((GameData.settings.chatBrightness || 1) * 100);
+        document.getElementById('chatBlurRange').value = GameData.settings.chatBlur || 0;
+        applyChatAppearance();
         document.getElementById('chatSettingsModal').classList.add('active');
     }
 
@@ -3397,9 +3506,36 @@ ${transcript}
     function applyChatBackground() {
         const chatView = document.getElementById('chatView');
         if (!chatView) return;
-        chatView.style.backgroundImage = GameData.settings.chatBackground
+        const background = GameData.settings.chatBackground
             ? `url('${GameData.settings.chatBackground}')`
             : "url('./background.png')";
+        chatView.style.setProperty('--chat-bg', background);
+        applyChatAppearance();
+    }
+
+    function applyChatAppearance() {
+        const root = document.documentElement;
+        root.style.setProperty('--chat-font-size', `${GameData.settings.chatFontSize || 13}px`);
+        root.style.setProperty('--chat-brightness', String(GameData.settings.chatBrightness || 1));
+        root.style.setProperty('--chat-bg-blur', `${GameData.settings.chatBlur || 0}px`);
+        const remark = GameData.settings.chatRemark || getActiveSupervisor().name;
+        const chatName = document.getElementById('chatSupervisorName');
+        if (chatName) chatName.textContent = remark;
+        const fontVal = document.getElementById('chatFontSizeValue');
+        const brightVal = document.getElementById('chatBrightnessValue');
+        const blurVal = document.getElementById('chatBlurValue');
+        if (fontVal) fontVal.textContent = GameData.settings.chatFontSize || 13;
+        if (brightVal) brightVal.textContent = Math.round((GameData.settings.chatBrightness || 1) * 100);
+        if (blurVal) blurVal.textContent = GameData.settings.chatBlur || 0;
+    }
+
+    function updateChatAppearanceSetting(type, value) {
+        if (type === 'font') GameData.settings.chatFontSize = Number(value);
+        if (type === 'brightness') GameData.settings.chatBrightness = Number(value) / 100;
+        if (type === 'blur') GameData.settings.chatBlur = Number(value);
+        if (type === 'remark') GameData.settings.chatRemark = String(value || '').slice(0, 20);
+        applyChatAppearance();
+        saveData();
     }
 
     function handleChatBackground(input) {
@@ -3509,7 +3645,7 @@ ${transcript}
                 chatUploadedImage = base64;
                 const preview = document.getElementById('chatImgPreview');
                 preview.src = 'data:image/jpeg;base64,' + chatUploadedImage;
-                preview.style.display = 'inline-block';
+                document.getElementById('chatImgWrap').style.display = 'block';
                 showNotif('📷 照片已压缩，准备识别');
             };
             img.src = e.target.result;
@@ -3587,6 +3723,7 @@ ${transcript}
             const activeSupervisor = getActiveSupervisor();
             const memorySummary = GameData.memory.summary || '暂无压缩记忆';
             const memoryFacts = (GameData.memory.facts || []).slice(-16).map(item => `- ${item}`).join('\n') || '- 暂无精华记忆';
+            const pendingQuestions = (GameData.memory.pendingQuestions || []).slice(-5).map(item => `- ${item.text}`).join('\n') || '- 无';
 
             // ★ 人设写死系统 Prompt
             let sysPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。你的身份是：${activeSupervisor.role}。
@@ -3619,6 +3756,8 @@ ${activeSupervisor.prompt}
 - 长期记忆摘要：${memorySummary}
 - 必须记住的精华事实：
 ${memoryFacts}
+- 之前没有解决、可以适时提醒的问题：
+${pendingQuestions}
 - 未完成每日任务：${daily}
 - 未完成主线任务：${main}
 
@@ -3813,7 +3952,7 @@ ${memoryFacts}
         if (!text && !hasImg) return;
         const img = chatUploadedImage;
         chatUploadedImage = null;
-        document.getElementById('chatImgPreview').style.display = 'none';
+        document.getElementById('chatImgWrap').style.display = 'none';
         document.getElementById('chatImgPreview').src = '';
 
         const sendBtn = document.getElementById('chatSendBtn');
@@ -3837,6 +3976,8 @@ ${memoryFacts}
                 return;
             }
 
+            if (handleDefianceIfNeeded(text)) return;
+
             // ★ 检测加任务指令
             if (detectTaskRequest(text)) {
                 await handleTaskRequest(text);
@@ -3844,6 +3985,12 @@ ${memoryFacts}
                 sendBtn.style.opacity = '1';
                 input.disabled = false;
                 input.focus();
+                return;
+            }
+
+            const todayUsage = GameData.chat.usage.daily[getLocalDateKey()] || { messages: 0 };
+            if (GameData.chat.mode !== 'work' && !getDailyStandard().met && todayUsage.messages >= DAILY_UNMET_CHAT_LIMIT) {
+                addChatMessage('assistant', '今天的核心任务还没有达标，闲聊额度已经用完。先完成任务，或者进入工作模式讨论任务。', true);
                 return;
             }
 
@@ -4145,8 +4292,6 @@ ${memoryFacts}
         if (item.type === 'gift') {
             if (item.title.includes('时光回溯卡')) { GameData.treasure.offsetCards += 1;
                 showNotif('🎫 获得时光回溯卡 x1'); }
-            if (item.title.includes('手写信')) { GameData.treasure.letters += 1;
-                showNotif('💌 获得手写信 x1'); }
             if (item.title.includes('彩蛋') || item.title.includes('特殊')) {
                 const story = {
                     id: ++GameData.treasure._storyIdCounter,
@@ -4255,25 +4400,16 @@ ${memoryFacts}
     //  TREASURE
     // ============================================================
     function renderTreasure() {
-        const container = document.getElementById('mailListContainer');
+        const container = document.getElementById('treasureListContainer');
         if (!container) return;
         const coupons = GameData.treasure.coupons || { act_cute: 0, meow: 0, story: 0 };
-        const items = [
-            { icon: '🍰', name: '小奶糕', count: GameData.treasure.milkTea || GameData.user.currency.milkTea, desc: '货币，可在臻品阁使用' },
-            { icon: '🎫', name: '时光回溯卡', count: GameData.treasure.offsetCards || 0, desc: '抵消一次未打卡记录' },
-            { icon: '💌', name: '手写信', count: GameData.treasure.letters || 0, desc: '欣原的碎碎念，可阅读' },
-            { icon: '🌟', name: '特殊彩蛋', count: GameData.treasure.special || 0, desc: '稀有物品，神秘用途' }
-        ];
-        container.innerHTML = '<div class="treasure-grid">' + items.map(i =>
-            '<div class="treasure-item"><div class="icon">' + i.icon + '</div><div class="name">' + i.name + '</div><div class="count">x ' + i.count + '</div><div class="desc">' + i.desc + '</div></div>'
-        ).join('') + '</div>';
 
         const couponItems = [
             { icon: '🥺', name: '撒娇券', key: 'act_cute', count: coupons.act_cute || 0 },
             { icon: '🐈', name: '喵喵券', key: 'meow', count: coupons.meow || 0 },
             { icon: '💜', name: '暧昧故事券', key: 'story', count: coupons.story || 0 }
         ];
-        container.innerHTML += '<hr class="treasure-divider"><div class="treasure-grid">' + couponItems.map(i =>
+        container.innerHTML = '<div class="treasure-grid">' + couponItems.map(i =>
             '<div class="treasure-item coupon" onclick="useCoupon(\'' + i.key + '\')"><div class="icon">' + i.icon + '</div><div class="name">' + i.name + '</div><div class="count">x ' + i.count + '</div><div class="use-hint">点击使用</div></div>'
         ).join('') + '</div>';
         container.innerHTML += '<div style="margin-top:12px; padding:8px 10px; background:rgba(0,0,0,0.1); border-radius:8px; text-align:center; color:rgba(255,255,255,0.2); font-size:9px;">💡 点击券使用，生成专属内容存入《紫翼·时光笺》</div>';
@@ -4343,9 +4479,10 @@ ${memoryFacts}
             const info = typeMap[type] || typeMap.story;
 
             const recent = GameData.treasure.specialStories.slice(0, 3).map(s => s.content).join('\n---\n');
+            const variationSeed = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
             const activeSupervisor = getActiveSupervisor();
-            const systemPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。\n【监管者档案】\n身份：${activeSupervisor.role}\n性格与文风：${activeSupervisor.prompt}\n个性签名：${activeSupervisor.signature}\n【用户代号】${GameData.profile.codename || 'VIP009'}\n【长期记忆摘要】${GameData.memory.summary || '暂无'}\n\n现在你要生成一段` + info.label + `，作为特殊彩蛋送给用户。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}，不能写成通用旁白或客服文风\n3. 同时生成一个好听、有诗意的标题（不超过10个字）\n4. 输出格式：标题 + 换行 + 正文\n5. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
+            const systemPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。\n【监管者档案】\n身份：${activeSupervisor.role}\n性格与文风：${activeSupervisor.prompt}\n个性签名：${activeSupervisor.signature}\n【用户代号】${GameData.profile.codename || 'VIP009'}\n【长期记忆摘要】${GameData.memory.summary || '暂无'}\n【本次创作编号】${variationSeed}\n\n现在你要生成一段` + info.label + `，作为特殊彩蛋送给用户。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}，不能写成通用旁白或客服文风\n3. 场景、动作、开场和结尾都必须与最近历史不同，禁止换词复刻\n4. 同时生成一个好听、有诗意的标题（不超过10个字）\n5. 输出格式：标题 + 换行 + 正文\n6. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
 
             const resultText = await callAICreative('请生成一段' + info.label + '。', systemPrompt);
 
@@ -4612,18 +4749,17 @@ ${memoryFacts}
 
     function openMailView() {
         showView('mailView');
-        mailTab = 'mails';
-        document.querySelectorAll('.mail-tabs .mtab').forEach(t => t.classList.remove('active'));
-        document.getElementById('mailTabMails').classList.add('active');
         renderMailList();
     }
 
     function openTreasureView() {
-        showView('mailView');
-        mailTab = 'treasure';
-        document.querySelectorAll('.mail-tabs .mtab').forEach(t => t.classList.remove('active'));
-        document.getElementById('mailTabTreasure').classList.add('active');
+        showView('treasureView');
         renderTreasure();
+    }
+
+    function closeTreasureView() {
+        showView('mainView');
+        updateUI();
     }
 
     function openTimeCapsuleView() {
@@ -4701,6 +4837,15 @@ ${memoryFacts}
             image.src = event.target.result;
         };
         reader.readAsDataURL(file);
+    }
+
+    function clearChatImage() {
+        chatUploadedImage = null;
+        const wrap = document.getElementById('chatImgWrap');
+        const preview = document.getElementById('chatImgPreview');
+        if (wrap) wrap.style.display = 'none';
+        if (preview) preview.src = '';
+        showNotif('已取消图片');
     }
 
     function saveUserProfile() {
@@ -5376,6 +5521,7 @@ ${memoryFacts}
     function submitReport() { TaskSystem.submit(); }
 
     function hideTaskSubmissionControls() {
+        document.getElementById('modalContent')?.classList.remove('task-mode');
         const report = document.getElementById('evidenceReport');
         const uploadArea = document.getElementById('uploadArea');
         const confirmBtn = document.getElementById('modalConfirmBtn');
@@ -5385,6 +5531,7 @@ ${memoryFacts}
     }
 
     function restoreTaskSubmissionControls() {
+        document.getElementById('modalContent')?.classList.add('task-mode');
         const actions = document.querySelector('.modal .actions');
         if (actions) {
             actions.innerHTML = '<button class="btn secondary" onclick="closeModal()">取消</button><button class="btn primary" id="modalConfirmBtn" onclick="submitReport()">✅ 提交并审核</button>';
@@ -5669,6 +5816,8 @@ ${memoryFacts}
         updateUI(); });
     document.getElementById('mailTop').addEventListener('click', function() { showView('mainView');
         updateUI(); });
+    document.getElementById('treasureBack').addEventListener('click', closeTreasureView);
+    document.getElementById('treasureTop').addEventListener('click', closeTreasureView);
     document.getElementById('diaryTop').addEventListener('click', closeDiaryView);
     document.getElementById('diaryBack').addEventListener('click', closeDiaryView);
     document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
@@ -5710,7 +5859,7 @@ ${memoryFacts}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.7', '欢迎回来，VIP009。\n\nV5.7 升级：\n- 接收任务后自动启动番茄钟\n- 固定任务奖励与用户经验等级\n- 警告、惩罚和任务加倍框架\n- 连败保护卡与监管者体验卡\n- 好感度照片解锁框架与Q版开关\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.8', '欢迎回来，VIP009。\n\nV5.8 升级：\n- 修复首次打开信封出现上传区\n- 分离邮箱与珍藏阁\n- 聊天外观设置与人物备注\n- 图片上传支持取消\n- 未达标时限制大量闲聊\n- 监管者可直接追加反抗惩罚任务\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');
