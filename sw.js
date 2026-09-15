@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xinyuan-app-v5-9';
+const CACHE_NAME = 'xinyuan-app-v5-10';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './chibi.jpg',
   './background.png',
   './guwei-avatar.png',
+  './guwei-avatar-square.png',
   './guwei-chibi.png'
 ];
 
