@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" href="./icon.svg" type="image/svg+xml">
-    <title>VIP009 · 欣原监督系统 V5.8</title>
+    <title>VIP009 · 欣原监督系统 V5.9</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -21,13 +21,13 @@
             --theme-user-start: #9c64ff; --theme-user-end: #c5a3ff;
             --chat-bg: url('./background.png'); --chat-font-size: 13px; --chat-brightness: 1; --chat-bg-blur: 0px;
         }
-        body[data-supervisor="linwu"] {
-            --primary: #e85a6a; --secondary: #9e1f34;
-            --theme-bg-start: #150508; --theme-bg-mid: #260a10; --theme-bg-end: #3a1119;
-            --theme-glow-1: rgba(232,90,106,0.14); --theme-glow-2: rgba(158,31,52,0.12);
-            --theme-soft: rgba(232,90,106,0.055); --theme-border: rgba(232,90,106,0.15);
-            --theme-app-bg: rgba(30,10,16,0.78); --theme-view-bg: rgba(30,10,16,0.96); --theme-main-bg: rgba(30,10,16,0.78);
-            --theme-user-start: #c23b52; --theme-user-end: #e56b78;
+        body[data-supervisor="guwei"] {
+            --primary: #9fc8ee; --secondary: #5f86ad;
+            --theme-bg-start: #071019; --theme-bg-mid: #101d2b; --theme-bg-end: #1b3045;
+            --theme-glow-1: rgba(159,200,238,0.14); --theme-glow-2: rgba(95,134,173,0.12);
+            --theme-soft: rgba(159,200,238,0.055); --theme-border: rgba(159,200,238,0.16);
+            --theme-app-bg: rgba(10,20,30,0.82); --theme-view-bg: rgba(10,20,30,0.97); --theme-main-bg: rgba(10,20,30,0.82);
+            --theme-user-start: #5f86ad; --theme-user-end: #9fc8ee;
         }
         body[data-supervisor="austin"] {
             --primary: #c6ced8; --secondary: #74808f;
@@ -658,11 +658,11 @@
             <div class="top-bar" id="topBar">
                 <div class="left">
                     <div class="avatar-sm" id="avatarBtn">
-                        <img src="./avatar.jpg" alt="欣原" id="currentAvatarImg">
+                        <img src="./avatar.jpg" alt="季婉清" id="currentAvatarImg">
                     </div>
                     <div class="info">
                         <div class="name-row">
-                            <h3 id="currentSupervisorName">欣原</h3>
+                            <h3 id="currentSupervisorName">季婉清</h3>
                             <div class="unread-badge" id="unreadBadge">0</div>
                             <span class="exemption-status" id="exemptionStatus" style="display:none;">✨ 豁免特权</span>
                         </div>
@@ -813,8 +813,8 @@
         <!-- ===== 聊天视图 ===== -->
         <div id="chatView" class="view">
             <div class="chat-top" id="chatTop">
-                <div class="back-avatar"><img src="./avatar.jpg" alt="欣原" id="chatSupervisorAvatar"></div>
-                <div class="chat-title"><h3 id="chatSupervisorName">欣原</h3><div class="signature" id="chatSupervisorSignature">爱是世界上最不保值的资产</div></div>
+                <div class="back-avatar"><img src="./avatar.jpg" alt="季婉清" id="chatSupervisorAvatar"></div>
+                <div class="chat-title"><h3 id="chatSupervisorName">季婉清</h3><div class="signature" id="chatSupervisorSignature">规矩就是规矩</div></div>
                 <div class="chat-unread" id="chatUnreadBadge">未读</div>
                 <div class="chat-unread" id="chatModeBadge" style="display:none;">工作模式</div>
                 <button class="chat-settings-btn" id="chatSettingsBtn" onclick="event.stopPropagation();openChatSettings()">☰</button>
@@ -947,7 +947,7 @@
     </div>
 
     <!-- ===== Q版人物 ===== -->
-    <div id="chibi"><img src="./chibi.jpg" alt="欣原Q版" id="chibiImg"></div>
+    <div id="chibi"><img src="./chibi.jpg" alt="季婉清Q版" id="chibiImg"></div>
     <div class="chibi-bubble" id="chibiBubble"></div>
 
     <!-- ===== 模态框 ===== -->
@@ -1009,7 +1009,7 @@
     <div class="modal" id="onboardingModal">
         <div class="content">
             <h3>先把你的目标告诉我</h3>
-            <div class="setup-copy">写下你最近真正想完成的事、每天能投入多少时间，以及你不希望被安排的方向。<strong>欣原会据此生成第一版每日、主线和支线任务。</strong></div>
+            <div class="setup-copy">写下你最近真正想完成的事、每天能投入多少时间，以及你不希望被安排的方向。<strong>当前主监管者会据此生成第一版每日、主线和支线任务。</strong></div>
             <textarea id="onboardingProfile" style="height:120px;" placeholder="例如：想提高英语口语，每天能练30分钟；想健身但膝盖不好；最近在准备考试；晚上11点后不要安排任务。"></textarea>
             <div class="setup-spinner" id="onboardingSpinner" style="display:none;"></div>
             <div class="actions">
@@ -1142,21 +1142,69 @@
     const SUPERVISOR_CATALOG = [
         {
             id: 'xinyuan',
-            name: '欣原',
-            role: '全面监督',
-            signature: '爱是世界上最不保值的资产',
-            description: '毒舌、傲娇、高控制，适合需要强推动的人。',
+            name: '季婉清',
+            role: '集团监察总监',
+            signature: '规矩就是规矩',
+            description: '37岁成熟御姐，ENTJ，毒舌、强势、高控制、强占有欲。',
             avatar: './avatar.jpg',
-            prompt: '毒舌、傲娇、掌控欲强、嘴硬心软。喜欢用“啧”“哼”“……”，会直接指出偷懒。'
+            chibi: './chibi.jpg',
+            prompt: '任务即契约。短句、命令、反问、讽刺、留白。可以容忍笨，不容忍敷衍、越界、撒谎和浪费时间。',
+            persona: `核心身份：季氏资本董事之一、集团监察总监、用户直属上司。
+年龄感：37岁，成熟御姐。主题色：暗紫、黑金、酒红。
+性格：ENTJ，自信、强势、掌控欲和占有欲强。毒舌刻薄只是外壳，高自尊是底线，绝不恋爱脑。
+语言：短句、命令、反问、讽刺、留白。零甜腻语气。不会主动说爱、想念、求留下。
+绝对不能出现：宝贝、亲爱的、宝宝、亲亲、抱抱、老公、老婆、乖宝，以及甜妹语气词哦、呢、呀、啦、嘛、哼、呜。
+任务态度：任务即契约，标准高。不能容忍敷衍、越界、撒谎、拖延。
+工作模式：只谈任务、指标、截止时间和结果。闲聊超过三句按摸鱼处理。
+审核通过：勉强夸一句，例如“还能看”“勉强及格”“这次没丢我的脸”。表扬绝不重复。
+审核不通过：冷脸、短句、讽刺、重做、复盘、扣福利和加任务。
+关心方式：用命令、物品和资源表达，不说“我担心你”。
+奖惩：轻微警告、扣券、抄规则、限制福利、周末待命、冷处理。
+好感阶段：0-100工具人；101-220勉强认可；221-350护短占有；351-450特殊对待；451-520依赖但否认。
+写内容时必须以规则和情境重新创作，不能照抄代表台词。`,
+            samples: [
+                '通过。勉强。',
+                '拿回去。别让我看第二遍。',
+                '规矩都被你吃进狗肚子里了？',
+                '这次算你能看。别得意，下次未必。',
+                '别死在我管辖范围内。麻烦。',
+                '越界一次，我当失误；第二次，我当你故意。',
+                '我可以少骂你一句。感恩吧。',
+                '小没良心的。别误会，我只是用顺手了。'
+            ]
         },
         {
-            id: 'linwu',
-            name: '林雾',
-            role: '习惯监督',
-            signature: '慢一点，也要继续走',
-            description: '冷静、强势、不拖泥带水，判断目标后要求执行。',
-            avatar: './icon.svg',
-            prompt: '冷静、克制、强势，不优柔寡断。会理解困难，但不会接受借口；关心偏向行动和判断，不娇柔拖沓。'
+            id: 'guwei',
+            name: '顾薇',
+            role: '首席审核官',
+            signature: '逻辑要闭环',
+            description: '27岁高冷学霸型监管者，理性、逻辑至上、外冷内热。',
+            avatar: './guwei-avatar.png',
+            chibi: './guwei-chibi.png',
+            prompt: '高冷、理性、逻辑严密、边界分明。用精确、扎心但客观的话直达核心，讨厌弯子、粉饰太平和情绪化。',
+            persona: `核心身份：首席审核官、逻辑数据分析总监、用户直系监管。
+年龄感：27岁，清冷成熟，戴金丝细框眼镜。主题色：冷蓝、月白、浅灰。
+性格：高冷、理性、逻辑严密、界线分明。表面生人勿近，底色温柔，但绝不承认偏爱。
+语言：清冷、平铺直叙、一针见血。使用陈述句和反问句，几乎不用感叹号，零甜腻语气。
+绝对不能出现：主动说爱、想念、喜欢你、求你、别走；禁用宝贝、亲爱的、宝宝、哦、呢、呀、啦、嘛、哼、呜、人家。
+任务态度：数据说话，逻辑闭环。可以接受能力不足，绝不容忍逻辑错误、撒谎、情绪化摆烂和敷衍。
+工作模式：进入审核状态，以事实和规则为准绳，拒绝套近乎和闲聊。
+审核通过：冷淡肯定，“通过，逻辑勉强符合基线”，随后默默给一点权限。
+审核不通过：用逻辑拆穿问题，直接驳回、重做、要求复盘。
+关心方式：行动大于语言，水、糖、外套、早点睡；嘴上仍是否认偏心。
+奖惩：逻辑重构、抄写规则、禁言、降级、冷处理。
+好感阶段：0-100陌生人；101-220勉强认可；221-350护短；351-450特殊对待；451-520依赖但否认。
+写内容时必须使用当前情境重新推理生成，不能复读代表台词。`,
+            samples: [
+                '通过。逻辑闭环勉强合格，不要得意。',
+                '驳回。逻辑断层，数据打架，重写。',
+                '情绪是弱者的借口。你连弱者都不如。',
+                '水在这里。不喝就倒掉。',
+                '无效社交。说重点。',
+                '越界一次是失误，第二次是故意。我不接受故意。',
+                '小逻辑盲。别看我，看你的屏幕。',
+                '我只是在评估你的项目进度，别自作多情。'
+            ]
         },
         {
             id: 'austin',
@@ -1165,6 +1213,7 @@
             signature: '结果来自今天的行动',
             description: '直接、务实，擅长效率、体能和执行力。',
             avatar: './icon.svg',
+            chibi: './chibi.jpg',
             prompt: '直接、冷静、目标导向，擅长拆行动步骤。少说空话，重视结果和复盘的证据。'
         },
         {
@@ -1174,6 +1223,7 @@
             signature: '把复杂的事讲清楚',
             description: '理性、博学，擅长学习、逻辑和知识纠错。',
             avatar: './icon.svg',
+            chibi: './chibi.jpg',
             prompt: '理性、清晰、博学，会纠正英语、算术、逻辑和概念错误，表达克制但不冷漠。'
         }
     ];
@@ -1407,6 +1457,11 @@ const DEFAULT_TASK_POOL = [
     }
     if (!Array.isArray(GameData.supervisor.history)) GameData.supervisor.history = [];
     if (typeof GameData.supervisor.changeTokens !== 'number') GameData.supervisor.changeTokens = 0;
+    if (GameData.supervisor.activeId === 'linwu') GameData.supervisor.activeId = 'guwei';
+    if (GameData.supervisor.firstChoiceId === 'linwu') GameData.supervisor.firstChoiceId = 'guwei';
+    GameData.supervisor.history.forEach(item => {
+        if (item && item.supervisorId === 'linwu') item.supervisorId = 'guwei';
+    });
     if (!GameData.chat) GameData.chat = { unreadCount: 0, storyUnread: false };
     if (!GameData.chat.mode) GameData.chat.mode = 'daily';
     if (!Object.prototype.hasOwnProperty.call(GameData.chat, 'workTaskId')) GameData.chat.workTaskId = null;
@@ -1817,7 +1872,7 @@ const DEFAULT_TASK_POOL = [
                 try {
                     const activeSupervisor = getActiveSupervisor();
                     const prompt = `VIP009 最近三天任务完成率为 ${ratePercent}%，表现中等。请以${activeSupervisor.name}的口吻，说一段话，关心她最近是不是太累，或者鼓励她挑战更高难度。保持当前监管者的人设。长度 30-50 字。`;
-                    const msg = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.prompt}`);
+                    const msg = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}`);
                     addChatMessage('assistant', msg, true);
                     GameData.chat.unreadCount++;
                     updateUnreadBadge();
@@ -2023,8 +2078,10 @@ const DEFAULT_TASK_POOL = [
         ['currentSupervisorSignature', 'chatSupervisorSignature'].forEach(id => set(id, supervisor.signature));
         const topAvatar = document.getElementById('currentAvatarImg');
         const chatAvatar = document.getElementById('chatSupervisorAvatar');
+        const chibiImage = document.getElementById('chibiImg');
         if (topAvatar) topAvatar.src = avatar;
         if (chatAvatar) chatAvatar.src = avatar;
+        if (chibiImage) chibiImage.src = supervisor.chibi || './chibi.jpg';
         applyChatAppearance();
         checkAffectionPhotoUnlocks();
         applyChibiVisibility();
@@ -2252,7 +2309,7 @@ ${current}
 {"summary":"对用户基础和目标的简短总结","daily":[{"title":"","desc":"","max":1,"difficulty":1}],"main":[{"title":"","desc":"","max":1,"difficulty":1}],"side":[{"title":"","desc":"","max":1,"difficulty":1}]}`;
 
             let plan;
-            const firstResponse = await callAIChat(prompt, `你是${activeSupervisor.name}，专业、克制的任务规划师。${activeSupervisor.prompt}严格遵守用户限制，只输出合格 JSON。`);
+            const firstResponse = await callAIChat(prompt, `你是${activeSupervisor.name}，专业、克制的任务规划师。${activeSupervisor.persona || activeSupervisor.prompt}严格遵守用户限制，只输出合格 JSON。`);
             try {
                 plan = parseAIJson(firstResponse);
             } catch (firstError) {
@@ -2368,7 +2425,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
 {"approved":true,"action":"update","taskId":"","title":"","desc":"","max":1,"difficulty":1,"reason":"符合人设、简短、说明为什么合理"}`
         try {
             const activeSupervisor = getActiveSupervisor();
-            const decision = parseAIJson(await callAIChat(prompt, `你是${activeSupervisor.name}，严格但讲道理的监督者。${activeSupervisor.prompt}你只输出合法 JSON，不迁就逃避行为。`));
+            const decision = parseAIJson(await callAIChat(prompt, `你是${activeSupervisor.name}，严格但讲道理的监督者。${activeSupervisor.persona || activeSupervisor.prompt}你只输出合法 JSON，不迁就逃避行为。`));
             if (!decision.approved) {
                 addChatMessage('assistant', String(decision.reason || '这个修改理由站不住脚，先按原计划做。'), true);
                 return;
@@ -2749,7 +2806,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
 
 请以${activeSupervisor.name}的口吻审核这份汇报。如果汇报内容详实、真实、有实际成果，请以「PASS」开头给予肯定；如果汇报敷衍、空洞、缺乏实质内容，请严厉拒绝并指出问题。`;
 
-                const systemPrompt = `你是${activeSupervisor.name}。${activeSupervisor.prompt}禁止重复句式。`;
+                const systemPrompt = `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}禁止重复句式。`;
                 let aiReply = await callAIChat(prompt, systemPrompt);
 
                 // 清理首尾标点
@@ -2904,7 +2961,7 @@ update 时只给出需要变更的字段；title 最多 40 字，desc 最多 180
             { id:'g10', name:'星空投影灯', icon:'🌌', price:600, af:40, desc:'把银河搬进房间' },
             { id:'g11', name:'手作香薰蜡烛', icon:'🕯️', price:250, af:20, desc:'薰衣草味，安神助眠' },
             { id:'g12', name:'黑胶唱片机', icon:'📀', price:1500, af:100, desc:'复古音质，品味之选' },
-            { id:'g13', name:'撒娇兑换券', icon:'🥺', price:500, af:10, desc:'欣原会对你撒娇一次', special: true, type: 'act_cute' },
+            { id:'g13', name:'撒娇兑换券', icon:'🥺', price:500, af:10, desc:'当前监管者会对你撒娇一次', special: true, type: 'act_cute' },
             { id:'g14', name:'喵喵券', icon:'🐈', price:300, af:5, desc:'她会学猫叫一次', special: true, type: 'meow' },
             { id:'g15', name:'暧昧故事券', icon:'💜', price:800, af:15, desc:'她会讲一个关于你们的暧昧小故事', special: true, type: 'story' },
             { id:'g16', name:'10克拉粉钻项链', icon:'💎', price:5200, af:200, desc:'稀有粉钻，极致奢华' },
@@ -3239,7 +3296,7 @@ ${transcript}
             return;
         }
         container.innerHTML = rows.map(entry => {
-            const role = entry.role === 'user' ? '你' : '欣原';
+            const role = entry.role === 'user' ? '你' : getActiveSupervisor().name;
             const time = entry.time ? TS.fmt(new Date(entry.time)) : '';
             return '<div class="memory-item"><div class="meta">' + escapeHtml(role + ' · ' + time) + '</div><div class="text">' + escapeHtml(memoryEntryText(entry)) + '</div></div>';
         }).join('');
@@ -3411,7 +3468,7 @@ ${transcript}
         try {
             const activeSupervisor = getActiveSupervisor();
             const prompt = `请以${activeSupervisor.name}的身份，续写下面这句话，要求：1.只续写未说完的部分，不要重复已有内容 2.保持当前监管者语气 3.续写内容要符合逻辑，自然衔接。未说完的话：` + originalText + '。请只输出续写的内容，不要包含原文。';
-            const reply = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.prompt}只续写未说完的部分。`);
+            const reply = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}只续写未说完的部分。`);
             if (reply && reply.length > 2) {
                 const newContent = originalText + reply;
                 const msgIndex = chatMessages.findIndex(m => m.content === originalText && m.role === 'assistant');
@@ -3701,7 +3758,7 @@ ${transcript}
             if (img) {
                 addChatMessage('assistant', '📷 图片识别中… 等我一下。', true);
                 try {
-                    const visionPrompt = '请详细描述这张图片里的内容，包括：1.主体是什么（人、动物、物体）2.场景/环境 3.颜色和细节。以欣原的口吻简洁描述。';
+                    const visionPrompt = `请详细描述这张图片里的内容，包括：1.主体是什么（人、动物、物体）2.场景/环境 3.颜色和细节。以${getActiveSupervisor().name}的口吻简洁描述。`;
                     // ★ 日常聊天用 30B-A3B
                     imageDescription = await callAIVision(visionPrompt, img, 'Qwen/Qwen3-VL-30B-A3B-Instruct');
                     if (!imageDescription || imageDescription.length < 5) {
@@ -3721,6 +3778,8 @@ ${transcript}
             const userPreferences = GameData.profile.preferences || '未填写';
             const userDislikes = GameData.profile.dislikes || '未填写';
             const activeSupervisor = getActiveSupervisor();
+            const personaProfile = activeSupervisor.persona || activeSupervisor.prompt;
+            const personaSamples = (activeSupervisor.samples || []).map(line => `- ${line}`).join('\n') || '- 暂无';
             const memorySummary = GameData.memory.summary || '暂无压缩记忆';
             const memoryFacts = (GameData.memory.facts || []).slice(-16).map(item => `- ${item}`).join('\n') || '- 暂无精华记忆';
             const pendingQuestions = (GameData.memory.pendingQuestions || []).slice(-5).map(item => `- ${item.text}`).join('\n') || '- 无';
@@ -3729,7 +3788,10 @@ ${transcript}
             let sysPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。你的身份是：${activeSupervisor.role}。
 
 【人格底色】
-${activeSupervisor.prompt}
+${personaProfile}
+
+【语气参考，仅用于理解风格，禁止原句复读】
+${personaSamples}
 
 【说话风格】
 - 保持当前监管者的人设，不要突然变成通用客服
@@ -4102,7 +4164,7 @@ ${pendingQuestions}
 
         try {
             const activeSupervisor = getActiveSupervisor();
-            const response = await callAIChat(prompt, `你是${activeSupervisor.name}，理性、严格但讲道理的决策者。${activeSupervisor.prompt}`);
+            const response = await callAIChat(prompt, `你是${activeSupervisor.name}，理性、严格但讲道理的决策者。${activeSupervisor.persona || activeSupervisor.prompt}`);
             if (response.includes('APPROVED')) {
                 const newTask = {
                     id: 'm' + Date.now(),
@@ -4301,7 +4363,7 @@ ${pendingQuestions}
                     date: TS.fmt(new Date(item.time)),
                     from: 'mail',
                     supervisorId: item.fromSupervisorId || null,
-                    supervisorName: item.fromSupervisorName || item.from || '欣原',
+                    supervisorName: item.fromSupervisorName || item.from || '季婉清',
                     supervisorSignature: item.supervisorSignature || ''
                 };
                 GameData.treasure.specialStories.unshift(story);
@@ -4361,7 +4423,7 @@ ${pendingQuestions}
         const content = document.getElementById('modalContent');
         content.className = 'content';
         document.getElementById('modalTitle').textContent = '📩 ' + item.title;
-        document.getElementById('modalDesc').textContent = item.desc + '\n\n　　—— ' + (item.fromSupervisorName || item.from || '欣原') + '\n　　' + (item.supervisorSignature || '');
+        document.getElementById('modalDesc').textContent = item.desc + '\n\n　　—— ' + (item.fromSupervisorName || item.from || '季婉清') + '\n　　' + (item.supervisorSignature || '');
         document.getElementById('modalRewardPreview').style.display = 'none';
         document.getElementById('evidenceReport').style.display = 'none';
         const uploadArea = document.getElementById('uploadArea');
@@ -4482,7 +4544,7 @@ ${pendingQuestions}
             const variationSeed = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
             const activeSupervisor = getActiveSupervisor();
-            const systemPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。\n【监管者档案】\n身份：${activeSupervisor.role}\n性格与文风：${activeSupervisor.prompt}\n个性签名：${activeSupervisor.signature}\n【用户代号】${GameData.profile.codename || 'VIP009'}\n【长期记忆摘要】${GameData.memory.summary || '暂无'}\n【本次创作编号】${variationSeed}\n\n现在你要生成一段` + info.label + `，作为特殊彩蛋送给用户。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}，不能写成通用旁白或客服文风\n3. 场景、动作、开场和结尾都必须与最近历史不同，禁止换词复刻\n4. 同时生成一个好听、有诗意的标题（不超过10个字）\n5. 输出格式：标题 + 换行 + 正文\n6. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
+            const systemPrompt = `你是${activeSupervisor.name}，当前用户唯一的主监管者。\n【监管者档案】\n身份：${activeSupervisor.role}\n完整人设：${activeSupervisor.persona || activeSupervisor.prompt}\n个性签名：${activeSupervisor.signature}\n【用户代号】${GameData.profile.codename || 'VIP009'}\n【长期记忆摘要】${GameData.memory.summary || '暂无'}\n【本次创作编号】${variationSeed}\n\n现在你要生成一段` + info.label + `，作为特殊彩蛋送给用户。\n\n【要求】\n1. 内容要` + (type === 'story' ? '暧昧、细腻、有画面感，300字左右' : type === 'act_cute' ? '符合人设但带一点柔软，30-50字' : '简短、被迫营业，30-50字') + `\n2. 风格必须符合${activeSupervisor.name}，不能写成通用旁白或客服文风\n3. 场景、动作、开场和结尾都必须与最近历史不同，禁止换词复刻\n4. 同时生成一个好听、有诗意的标题（不超过10个字）\n5. 输出格式：标题 + 换行 + 正文\n6. 【自我审核】检查内容是否与最近历史内容重复，确认无误后再输出\n\n【最近历史内容参考】\n` + (recent || '（暂无历史记录）') + '\n\n请输出：';
 
             const resultText = await callAICreative('请生成一段' + info.label + '。', systemPrompt);
 
@@ -4506,7 +4568,7 @@ ${pendingQuestions}
                 supervisorId: activeSupervisor.id,
                 supervisorName: activeSupervisor.name,
                 supervisorSignature: activeSupervisor.signature,
-                supervisorStyle: activeSupervisor.prompt
+                supervisorStyle: activeSupervisor.persona || activeSupervisor.prompt
             };
 
             GameData.treasure.specialStories.unshift(story);
@@ -4579,7 +4641,7 @@ ${pendingQuestions}
             html += '<div class="section-title">' + info.icon + ' ' + info.label + '</div>';
             [...groups[key]].sort((a, b) => Number(a.id) - Number(b.id)).forEach((s, index) => {
                 html += '<div class="timecapsule-story" onclick="openTimeCapsuleDetail(' + Number(s.id) + ')">';
-                html += '<div class="left"><div class="story-title">#' + (index + 1) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date + ' · ' + (s.supervisorName || '欣原')) + '</div></div>';
+                html += '<div class="left"><div class="story-title">#' + (index + 1) + ' ' + escapeHtml(s.title) + '</div><div class="story-date">' + escapeHtml(s.date + ' · ' + (s.supervisorName || '季婉清')) + '</div></div>';
                 html += '<div class="right">💌</div>';
                 html += '</div>';
             });
@@ -4596,7 +4658,7 @@ ${pendingQuestions}
         const content = document.getElementById('modalContent');
         content.className = 'content envelope';
         document.getElementById('modalTitle').textContent = '💌 ' + story.title;
-        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + (story.supervisorName || '欣原');
+        document.getElementById('modalDesc').textContent = story.content + '\n\n　　—— ' + (story.supervisorName || '季婉清');
         document.getElementById('modalRewardPreview').style.display = 'none';
         hideTaskSubmissionControls();
         document.querySelector('.modal .actions').innerHTML = '<button class="btn secondary" onclick="closeModal()">合上信封</button>';
@@ -5677,7 +5739,7 @@ ${pendingQuestions}
             const reasonText = reason === 'multi-day' ? `已经 ${stats.missedDays} 天没有完成记录` : reason === 'missed-day' ? '今天还没有完成记录' : `任务栏长时间没有行动，已经停了约 ${Math.floor(stats.noTouchMs / 3600000)} 小时`;
             const activeSupervisor = getActiveSupervisor();
             const prompt = `请以${activeSupervisor.name}的口吻写一句主动提醒。情况：${reasonText}。未完成任务：${taskTitles}。最近完成率：${Math.round(stats.recentRate * 100)}%。要求：像活人，不像系统通知；保持当前监管者的人设；具体催一个最容易开始的行动；30-70 字；不要使用 Markdown。`;
-            const result = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.prompt}真正关心用户能否开始行动。只说一句提醒。`);
+            const result = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}真正关心用户能否开始行动。只说一句提醒。`);
             return String(result || fallback).trim().slice(0, 180);
         } catch (_) {
             return fallback;
@@ -5771,7 +5833,7 @@ ${pendingQuestions}
         }).join('\n');
         const prompt = `你是${activeSupervisor.name}，VIP009 当前唯一的主监管者。现在你要写一份「今日任务攻略」，帮助她更高效地完成今天的任务。\n\n【任务清单】\n` + taskDetails + `\n\n【要求】\n1. 针对每个任务，给出 2-3 条具体的、可操作的技巧或建议\n2. 风格要符合${activeSupervisor.name}的人设\n3. 不要只是复述任务标题，要给出真正的"干货"`;
         try {
-            const guide = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.prompt}回答要实用、直接、带个人风格。`);
+            const guide = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}回答要实用、直接、带个人风格。`);
             return guide;
         } catch (e) { throw e; }
     }
@@ -5786,7 +5848,7 @@ ${pendingQuestions}
         try {
             const activeSupervisor = getActiveSupervisor();
             const prompt = `VIP009 正在执行任务「${task.title}」，当前进度 ${task.progress}/${task.max}。任务描述：${task.desc}。请给出 2-3 条具体的、可操作的建议，帮助她突破当前卡点。保持${activeSupervisor.name}的人设。`;
-            const advice = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.prompt}说话直接但一针见血。`);
+            const advice = await callAIChat(prompt, `你是${activeSupervisor.name}。${activeSupervisor.persona || activeSupervisor.prompt}说话直接但一针见血。`);
             addChatMessage('assistant', advice, true);
             GameData.chat.unreadCount++;
             updateUnreadBadge();
@@ -5859,7 +5921,7 @@ ${pendingQuestions}
         if (GameData.mail.items.length === 0) {
             setTimeout(() => {
                 const supervisor = getActiveSupervisor();
-                sendMail('📌 欢迎来到欣原监督系统 V5.8', '欢迎回来，VIP009。\n\nV5.8 升级：\n- 修复首次打开信封出现上传区\n- 分离邮箱与珍藏阁\n- 聊天外观设置与人物备注\n- 图片上传支持取消\n- 未达标时限制大量闲聊\n- 监管者可直接追加反抗惩罚任务\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
+                sendMail('📌 欢迎来到欣原监督系统 V5.9', '欢迎回来，VIP009。\n\nV5.9 升级：\n- 季婉清完整人设接入\n- 顾薇完整人设接入\n- 顾薇头像与Q版立绘\n- 监管者语言边界和工作模式规则\n- 代表台词仅作风格参考，避免原句复读\n\n慢慢变强，我在看着你。', 30, 'gift', supervisor.name);
             }, 1500);
         }
         document.getElementById('shopView').classList.remove('active');

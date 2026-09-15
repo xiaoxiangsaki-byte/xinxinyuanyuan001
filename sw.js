@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xinyuan-app-v5-8';
+const CACHE_NAME = 'xinyuan-app-v5-9';
 const APP_SHELL = [
   './',
   './index.html',
@@ -6,7 +6,9 @@ const APP_SHELL = [
   './icon.svg',
   './avatar.jpg',
   './chibi.jpg',
-  './background.png'
+  './background.png',
+  './guwei-avatar.png',
+  './guwei-chibi.png'
 ];
 
 self.addEventListener('install', event => {
